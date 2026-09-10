@@ -55,7 +55,7 @@ function ArchiveActs({
           aria-controls="discover-field"
           aria-haspopup="dialog"
           onClick={onDiscover}
-          className="archive-act archive-act-discover font-cond text-[11px] tracking-[0.2em] text-dust hover:text-paper"
+          className="archive-act archive-act-discover font-cond text-[12px] tracking-[0.1em] text-dust hover:text-paper"
         >
           DISCOVER
         </button>
@@ -63,7 +63,7 @@ function ArchiveActs({
       <button
         type="button"
         onClick={onSound}
-        className="archive-act archive-act-sound font-mono text-[10px] tracking-[0.16em] text-dust hover:text-paper"
+        className="archive-act archive-act-sound font-mono text-[12px] tracking-[0.1em] text-dust hover:text-paper"
         aria-pressed={sound}
         aria-label={sound ? "Sound on" : "Sound off"}
       >
@@ -122,7 +122,7 @@ function ArchiveChrome({ children }: { children: React.ReactNode }) {
       <a href="#main" className="skip-to-content" tabIndex={open ? -1 : undefined}>
         Skip to content
       </a>
-      <header className="archive-mast fixed inset-x-0 top-0 z-30 flex items-end justify-between bg-gradient-to-b from-void via-void/85 to-transparent px-4 py-3 md:px-6">
+      <header className="archive-mast fixed inset-x-0 top-0 z-30 flex items-end justify-between bg-void px-4 py-3 md:px-6">
         <Link href="/" className="archive-mark" aria-label="Creative Control">
           <BrandStill decorative className="archive-mark-still" />
         </Link>
@@ -220,7 +220,7 @@ function LensRail({ pathname }: { pathname: string }) {
             href={lens.href}
             aria-current={active ? "page" : undefined}
             onKeyDown={activateOnSpace}
-            className={`font-cond text-[12px] tracking-[0.22em] ${active ? "text-paper" : "text-dust hover:text-paper"}`}
+            className={`font-cond text-[12px] tracking-[0.1em] ${active ? "text-paper" : "text-dust hover:text-paper"}`}
           >
             {lens.label}
           </Link>

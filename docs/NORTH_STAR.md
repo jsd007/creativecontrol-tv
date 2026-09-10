@@ -26,7 +26,7 @@ Then the house:
 | **The World** | `/world` | Memory on a Chicago-weighted R3F globe (desktop). Authored coasts, night-side, gold limb. MAP is fallback only (narrow / reduced-motion / failed WebGL). Not surveyed GIS. Not globe.gl. |
 | **Television** | `/tv` | Programmed **CC-TV**. CH 07 airs the **366** official public uploads (ident first, then blocks / year books, PLAY · MUTED). Channels **00–06 / 08** stay house cuts. Mute remainder after. No invented show names. |
 | **The Tapes** | `/tapes` | A vault aisle of facing spines (STORAGE / DIGITAL VAULT / PHONE / STUDIO / BROADCAST / UNOPENED). A person held a camera. Broadcast years are holdings, not camera originals. |
-| **The Timeline** | `/timeline` | 1994—2026 as through-lines, not ALL / COODIE / CHIKE tabs. The span is the story until a name is followed. |
+| **The Timeline** | `/timeline` | 1994—2026 as through-lines (`?through=ye`), not ALL / COODIE / CHIKE tabs. The span is the story until a name is followed. Year cells are proving stills, not a poster wall. |
 | **The Clip** | `/clip/[slug]` | A frame in the gate, pulled from a labeled cassette. Official embed when there is a `youtubeId`. Closed visibility is a sleeve, not a 404. |
 | **Collections** | `/collections` | Editorial cuts of the same catalog. Classics is **19** house titles, not 366 official uploads. Studio Nights is **0** public frames. Not on the rail. |
 
@@ -80,7 +80,7 @@ CONFIRMED against the working tree and live hobby `https://creativecontrol-tv.ve
 - Collections as editorial house cuts. Classics **19**. Studio Nights **0**.
 - DISCOVER house-first. Constellation void + phone pocket. Person / place / project are a file of bonds. Not on the rail. Not in the show.
 - SOUND OFF. Verbs: threshold / acquire / cut / tape. No house WAVs on disk; procedural fallback in code.
-- Ten-beat show at `/?present=1` (beat 4 leftover, beat 7 official air, combo 1). Timeline through-line. Keyboard house walk. Mobile dock. Desktop `/world` is the globe; World Tab. Contrast floor 12px (dust / leader / bone). Tapes dossier outside the CSS camera.
+- Ten-beat show at `/?present=1` (beat 4 leftover, beat 7 official air, combo 1). Timeline through-line (`?through=ye`, stills under the span). Keyboard house walk. Mobile dock. Desktop `/world` is the globe; World Tab. Contrast floor 12px (dust / leader / bone). Tapes dossier outside the CSS camera.
 
 ## James’s advantage to demonstrate
 

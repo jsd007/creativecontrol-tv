@@ -1,32 +1,33 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { catalog, getEra, getLocation, getPerson, getProject, getTape } from "@/data";
 import type { ArchiveClip, SourceTape } from "@/data/types";
 import { HoldingLine } from "@/components/archive/HoldingLine";
 import { HeldFrame } from "@/components/media/HeldFrame";
-import { PrototypeMedia } from "@/components/media/PrototypeMedia";
+import { PrototypeField, PrototypeMedia } from "@/components/media/PrototypeMedia";
 import { TapeFrame } from "@/components/tapes/TapeFrame";
 import { filmBeat, isUnlogged } from "@/lib/clipDisplay";
 import { clipWhen, MONTHS, MONTHS_SHORT } from "@/lib/format";
 import { isOfficialHolding, officialHoldings, sortHoldings } from "@/lib/holdings";
 import { isTypingTarget } from "@/lib/keys";
 import { usePrefersReducedMotion } from "@/lib/motion";
-import { isClosed } from "@/lib/visibility";
+import {
+  TIMELINE_SPAN,
+  TIMELINE_THREADS,
+  parseTimelineQuery,
+  timelineSearch,
+  type TimelinePath,
+  type TimelineQuery,
+} from "@/lib/timelineQuery";
+import { holdFor, isClosed } from "@/lib/visibility";
 
-const THREADS = [
-  { id: "coodie", label: "COODIE" },
-  { id: "chike", label: "CHIKE" },
-  { id: "ye", label: "YE" },
-  { id: "dropout", label: "COLLEGE DROPOUT" },
-  { id: "chicago", label: "CHICAGO" },
-  { id: "cc", label: "CREATIVE CONTROL" },
-] as const;
+const THREADS = TIMELINE_THREADS;
+const SPAN = TIMELINE_SPAN;
 
-const SPAN = Array.from({ length: 2026 - 1994 + 1 }, (_, i) => 1994 + i);
-
-type PathId = "all" | (typeof THREADS)[number]["id"];
+type PathId = TimelinePath;
 
 function matchesPath(path: PathId, clip: ArchiveClip) {
   if (path === "coodie") return clip.peopleIds.includes("coodie");
@@ -80,14 +81,41 @@ function threadsThrough(
   });
 }
 
+function spanBonds(clip?: ArchiveClip) {
+  if (!clip) return "";
+  const people = clip.peopleIds
+    .map((id) => getPerson(id)?.shortName)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((name) => name!.toUpperCase());
+  const place = getLocation(clip.locationId)?.name;
+  const bits = [...people];
+  if (place) bits.push(place.toUpperCase());
+  return bits.join(" · ");
+}
+
+function threadYearsFromCatalog() {
+  const map = new Map<PathId, Set<number>>();
+  for (const t of THREADS) {
+    const years = new Set<number>();
+    for (const clip of catalog.clips) {
+      if (matchesPath(t.id, clip)) years.add(whenFor(clip).year);
+    }
+    map.set(t.id, years);
+  }
+  return map;
+}
+
 function ThroughLine({
   threads,
   onPath,
+  onHover,
   className = "mt-8 max-w-[42ch]",
   label = "Through",
 }: {
   threads: readonly (typeof THREADS)[number][];
   onPath: (id: PathId) => void;
+  onHover?: (id: PathId | null) => void;
   className?: string;
   label?: string;
 }) {
@@ -103,7 +131,15 @@ function ThroughLine({
                 —
               </span>
             ) : null}
-            <button type="button" onClick={() => onPath(t.id)} className="hover:text-paper">
+            <button
+              type="button"
+              onClick={() => onPath(t.id)}
+              onMouseEnter={() => onHover?.(t.id)}
+              onMouseLeave={() => onHover?.(null)}
+              onFocus={() => onHover?.(t.id)}
+              onBlur={() => onHover?.(null)}
+              className="hover:text-paper"
+            >
               {t.label}
             </button>
           </span>
@@ -114,11 +150,35 @@ function ThroughLine({
 }
 
 export function TimelineView() {
-  const [path, setPath] = useState<PathId>("all");
-  const [year, setYear] = useState<number | null>(null);
-  const [month, setMonth] = useState<number | null>(null);
-  const [day, setDay] = useState<string | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const search = useSearchParams();
+  const query = useMemo(() => parseTimelineQuery(search), [search]);
+  const path = query.through;
+  const year = query.year;
+  const month = query.month;
+  const day = query.day;
+  const [hoverPath, setHoverPath] = useState<PathId | null>(null);
   const reduced = usePrefersReducedMotion();
+  const threadYears = useMemo(() => threadYearsFromCatalog(), []);
+  const litPath = hoverPath && hoverPath !== "all" ? hoverPath : path !== "all" ? path : null;
+  const litYears = litPath ? (threadYears.get(litPath) ?? new Set<number>()) : null;
+
+  function write(next: Partial<TimelineQuery>) {
+    const merged: TimelineQuery = {
+      through: next.through ?? path,
+      year: "year" in next ? next.year ?? null : year,
+      month: "month" in next ? next.month ?? null : month,
+      day: "day" in next ? next.day ?? null : day,
+    };
+    if (!merged.year) {
+      merged.month = null;
+      merged.day = null;
+    }
+    if (merged.month === null) merged.day = null;
+    router.replace(`${pathname}${timelineSearch(merged, search)}`, { scroll: false });
+  }
+
   const clips = useMemo(() => catalog.clips.filter((c) => matchesPath(path, c)), [path]);
 
   const byYear = useMemo(() => {
@@ -170,26 +230,48 @@ export function TimelineView() {
   }, [dayClips]);
 
   function resetDrill() {
-    setYear(null);
-    setMonth(null);
-    setDay(null);
+    write({ year: null, month: null, day: null });
+  }
+
+  function choosePath(id: PathId) {
+    const nextClips = catalog.clips.filter((c) => matchesPath(id, c));
+    const keepYear = Boolean(year && nextClips.some((c) => whenFor(c).year === year));
+    const keepMonth =
+      keepYear &&
+      month !== null &&
+      month > 0 &&
+      nextClips.some((c) => {
+        const w = whenFor(c);
+        return w.year === year && w.month === month;
+      });
+    const keepDay =
+      keepMonth &&
+      day &&
+      day !== "UNDATED" &&
+      nextClips.some((c) => {
+        const w = whenFor(c);
+        return w.key === day;
+      });
+    write({
+      through: id,
+      year: keepYear ? year : null,
+      month: keepMonth ? month : null,
+      day: keepDay ? day : null,
+    });
   }
 
   function chooseYear(y: number) {
-    setYear((cur) => (cur === y && !month ? null : y));
-    setMonth(null);
-    setDay(null);
+    write({ year: year === y && !month ? null : y, month: null, day: null });
   }
 
   function chooseMonth(m: number) {
-    setMonth((cur) => (cur === m && !day ? null : m));
-    setDay(null);
+    write({ month: month === m && !day ? null : m, day: null });
   }
 
   function pop() {
-    if (day) setDay(null);
-    else if (month) setMonth(null);
-    else if (year) setYear(null);
+    if (day) write({ day: null });
+    else if (month !== null) write({ month: null, day: null });
+    else if (year) write({ year: null, month: null, day: null });
   }
 
   useEffect(() => {
@@ -207,13 +289,13 @@ export function TimelineView() {
   return (
     <div className="px-4 pb-24 md:px-6">
       <header className="pt-4">
-        <p className="font-cond text-[12px] tracking-[0.28em] text-leader">{thread ? "THROUGH" : "THE TIMELINE"}</p>
+          <p className="font-cond text-[12px] tracking-[0.12em] text-leader">{thread ? "THROUGH" : "THE TIMELINE"}</p>
         {thread ? (
           <>
             <h1 className="mt-2 font-display text-5xl leading-none text-paper md:text-6xl">{thread.label}</h1>
             <button
               type="button"
-              onClick={() => setPath("all")}
+              onClick={() => write({ through: "all" })}
               className="mt-4 font-cond text-[12px] tracking-[0.18em] text-dust hover:text-paper"
             >
               THE SPAN · 1994 — 2026
@@ -225,7 +307,11 @@ export function TimelineView() {
       </header>
 
       {path !== "all" || year ? (
-        <ThroughLine threads={THREADS.filter((t) => t.id !== path)} onPath={setPath} />
+        <ThroughLine
+          threads={THREADS.filter((t) => t.id !== path)}
+          onPath={choosePath}
+          onHover={setHoverPath}
+        />
       ) : null}
 
       {year ? (
@@ -236,10 +322,7 @@ export function TimelineView() {
           <span aria-hidden>/</span>
           <button
             type="button"
-            onClick={() => {
-              setMonth(null);
-              setDay(null);
-            }}
+            onClick={() => write({ month: null, day: null })}
             className={!month ? "text-paper" : "hover:text-paper"}
           >
             {year}
@@ -247,7 +330,7 @@ export function TimelineView() {
           {month && month > 0 ? (
             <>
               <span aria-hidden>/</span>
-              <button type="button" onClick={() => setDay(null)} className={!day ? "text-paper" : "hover:text-paper"}>
+              <button type="button" onClick={() => write({ day: null })} className={!day ? "text-paper" : "hover:text-paper"}>
                 {MONTHS[month - 1]}
               </button>
             </>
@@ -280,6 +363,7 @@ export function TimelineView() {
               const list = byYear.get(y) ?? [];
               const active = year === y;
               const empty = list.length === 0;
+              const onThread = Boolean(litYears?.has(y));
               return (
                 <button
                   key={y}
@@ -291,16 +375,20 @@ export function TimelineView() {
                 >
                   <span className="flex flex-col gap-0.5" aria-hidden>
                     <span
-                      className={`sprocket-hole ${active ? "bg-leader" : empty ? "bg-paper/12" : "bg-paper/50"}`}
+                      className={`sprocket-hole ${
+                        active ? "bg-leader" : onThread ? "bg-leader/75" : empty ? "bg-paper/12" : "bg-paper/50"
+                      }`}
                     />
                     <span
-                      className={`sprocket-hole ${active ? "bg-leader" : empty ? "bg-paper/12" : "bg-paper/50"}`}
+                      className={`sprocket-hole ${
+                        active ? "bg-leader" : onThread ? "bg-leader/75" : empty ? "bg-paper/12" : "bg-paper/50"
+                      }`}
                     />
                   </span>
-                  <span className={`block h-px w-full ${active ? "bg-leader/70" : "bg-paper/15"}`} aria-hidden />
+                  <span className={`block h-px w-full ${active || onThread ? "bg-leader/70" : "bg-paper/15"}`} aria-hidden />
                   <span
-                    className={`font-mono text-[11px] tracking-[0.06em] ${
-                      active ? "text-leader" : y % 5 === 0 ? "text-paper" : "text-dust"
+                    className={`font-mono text-[12px] tracking-[0.04em] ${
+                      active ? "text-leader" : onThread || y % 5 === 0 ? "text-paper" : "text-dust"
                     }`}
                   >
                     {String(y).slice(2)}
@@ -309,6 +397,15 @@ export function TimelineView() {
               );
             })}
           </div>
+          {litPath ? (
+            <div className="span-thread" aria-hidden>
+              {SPAN.map((y) => (
+                <span key={y} className={`span-thread-tick${litYears?.has(y) ? " span-thread-tick-on" : ""}`}>
+                  <i />
+                </span>
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
 
@@ -323,15 +420,12 @@ export function TimelineView() {
           <MonthSprocket byMonth={byMonth} selected={month && month > 0 ? month : null} onMonth={chooseMonth} />
           {month === null ? (
             <>
-              <MonthFilm key={`${path}-${year}`} byMonth={byMonth} year={year} onMonth={chooseMonth} reduced={reduced} />
+              <MonthFilm key={`${path}-${year}`} byMonth={byMonth} onMonth={chooseMonth} reduced={reduced} />
               <YearHoldings clips={yearClips} />
               {undated.some((c) => !isOfficialHolding(c)) ? (
                 <button
                   type="button"
-                  onClick={() => {
-                    setMonth(0);
-                    setDay("UNDATED");
-                  }}
+                  onClick={() => write({ month: 0, day: "UNDATED" })}
                   className="mt-6 font-cond text-[12px] tracking-[0.16em] text-dust hover:text-paper"
                 >
                   UNDATED IN {year}
@@ -349,14 +443,14 @@ export function TimelineView() {
               {MONTHS[month - 1]} {year}
             </h2>
           ) : null}
-          <DaySprocket year={year} month={month} byDay={byDay} selected={day} onDay={setDay} />
+          <DaySprocket year={year} month={month} byDay={byDay} selected={day} onDay={(key) => write({ day: key })} />
           {!day ? (
             <DayFilm
               key={`${path}-${year}-${month}`}
               month={month}
               byDay={byDay}
               dayKeys={dayKeys}
-              onDay={setDay}
+              onDay={(key) => write({ day: key })}
               reduced={reduced}
             />
           ) : null}
@@ -394,7 +488,8 @@ export function TimelineView() {
           byYear={byYear}
           populated={populated}
           onYear={chooseYear}
-          onPath={setPath}
+          onPath={choosePath}
+          onHover={setHoverPath}
           reduced={reduced}
         />
       ) : null}
@@ -462,9 +557,9 @@ function MonthSprocket({
               </span>
               <span className={`block h-px w-full ${active ? "bg-leader/70" : "bg-paper/15"}`} aria-hidden />
               <span
-                className={`font-mono text-[11px] tracking-[0.06em] ${
-                  active ? "text-leader" : empty ? "text-dust/55" : "text-paper"
-                }`}
+                    className={`font-mono text-[12px] tracking-[0.04em] ${
+                      active ? "text-leader" : empty ? "text-dust/55" : "text-paper"
+                    }`}
               >
                 {label}
               </span>
@@ -476,14 +571,56 @@ function MonthSprocket({
   );
 }
 
+function SpanFrame({
+  clip,
+  kicker,
+  story,
+  era,
+  onClick,
+}: {
+  clip?: ArchiveClip;
+  kicker: string;
+  story: string;
+  era?: string;
+  onClick: () => void;
+}) {
+  const unlogged = clip ? isUnlogged(clip) : false;
+  const closed = Boolean(clip && isClosed(clip) && !unlogged);
+  const hold = closed && clip ? holdFor(clip) : null;
+  const bonds = spanBonds(clip);
+  return (
+    <button type="button" onClick={onClick} className="span-frame film-cell group relative shrink-0 text-left">
+      <div className="relative aspect-[4/3] overflow-hidden bg-ink shadow-frame">
+        <div className="film-perfs" aria-hidden />
+        {clip && !unlogged ? (
+          <PrototypeField clip={clip} className="absolute inset-0 h-full w-full" />
+        ) : (
+          <div className="absolute inset-0 bg-ink" />
+        )}
+        {hold ? (
+          <p className="absolute right-2 top-2 bg-paper px-1.5 py-0.5 font-cond text-[11px] tracking-[0.12em] text-void">
+            {hold.status}
+          </p>
+        ) : null}
+      </div>
+      <div className="mt-3">
+        {era ? <p className="font-mono text-[12px] tracking-[0.08em] text-dust">{era}</p> : null}
+        <p className="mt-1 font-display text-3xl leading-none text-paper md:text-4xl">{kicker}</p>
+        {story ? (
+          <p className="mt-2 line-clamp-2 font-cond text-[13px] tracking-[0.06em] text-bone">{story}</p>
+        ) : null}
+        {bonds ? <p className="mt-2 font-cond text-[12px] tracking-[0.12em] text-dust">{bonds}</p> : null}
+      </div>
+    </button>
+  );
+}
+
 function MonthFilm({
   byMonth,
-  year,
   onMonth,
   reduced,
 }: {
   byMonth: Map<number, ArchiveClip[]>;
-  year: number;
   onMonth: (m: number) => void;
   reduced: boolean;
 }) {
@@ -497,32 +634,14 @@ function MonthFilm({
           const lead = spanLead(list);
           const era = getEra(lead?.era ?? "");
           return (
-            <button
+            <SpanFrame
               key={m}
-              type="button"
+              clip={lead}
+              kicker={MONTHS[m - 1]}
+              story={spanStory(lead)}
+              era={era?.name}
               onClick={() => onMonth(m)}
-              className="film-cell group relative w-[9.5rem] shrink-0 text-left md:w-44"
-            >
-              <div className="aspect-[3/4] overflow-hidden bg-ink shadow-frame">
-                <div className="film-perfs" aria-hidden />
-                <div
-                  className="absolute inset-0 opacity-70"
-                  style={{
-                    background: `radial-gradient(80% 70% at 30% 20%, hsl(${(year * 17 + m * 29) % 360} 28% 28%), #10100e)`,
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-void/20" />
-                <div className="relative flex h-full flex-col justify-between p-3">
-                  <p className="font-mono text-[10px] tracking-[0.16em] text-dust">{era?.name ?? ""}</p>
-                  <div>
-                    <p className="font-display text-3xl leading-none text-paper md:text-4xl">{MONTHS[m - 1]}</p>
-                    <p className="mt-2 line-clamp-3 font-cond text-[12px] tracking-[0.08em] text-bone/80">
-                      {spanStory(lead)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </button>
+            />
           );
         })}
       </div>
@@ -569,7 +688,7 @@ function DaySprocket({
               </span>
               <span className={`block h-px w-full ${active ? "bg-leader/70" : "bg-paper/15"}`} aria-hidden />
               <span
-                className={`font-mono text-[11px] tracking-[0.06em] ${
+                className={`font-mono text-[12px] tracking-[0.04em] ${
                   active ? "text-leader" : empty ? "text-dust/55" : d === 1 || d % 5 === 0 ? "text-paper" : "text-dust"
                 }`}
               >
@@ -604,39 +723,16 @@ function DayFilm({
           const list = byDay.get(key) ?? [];
           const lead = spanLead(list);
           const era = getEra(lead?.era ?? "");
-          const label = key === "UNDATED" ? "UNDATED" : String(Number(key.slice(8)));
+          const label = key === "UNDATED" ? "—" : String(Number(key.slice(8)));
           return (
-            <button
+            <SpanFrame
               key={key}
-              type="button"
+              clip={lead}
+              kicker={label}
+              story={spanStory(lead)}
+              era={key === "UNDATED" ? "UNDATED" : era?.name ?? `${MONTHS_SHORT[month - 1]} ${label}`}
               onClick={() => onDay(key)}
-              className="film-cell group relative w-[9.5rem] shrink-0 text-left md:w-44"
-            >
-              <div className="aspect-[3/4] overflow-hidden bg-ink shadow-frame">
-                <div className="film-perfs" aria-hidden />
-                <div
-                  className="absolute inset-0 opacity-70"
-                  style={{
-                    background: `radial-gradient(80% 70% at 30% 20%, hsl(${(Number(key.slice(8) || 1) * 23 + month * 17) % 360} 28% 28%), #10100e)`,
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-void/20" />
-                <div className="relative flex h-full flex-col justify-between p-3">
-                  <p className="font-mono text-[10px] tracking-[0.16em] text-dust">{era?.name ?? ""}</p>
-                  <div>
-                    <p className="font-display text-4xl leading-none text-paper">
-                      {key === "UNDATED" ? "—" : label}
-                    </p>
-                    <p className="mt-1 font-cond text-[11px] tracking-[0.14em] text-dust">
-                      {key === "UNDATED" ? "UNDATED" : `${MONTHS_SHORT[month - 1]} ${label}`}
-                    </p>
-                    <p className="mt-2 line-clamp-3 font-cond text-[12px] tracking-[0.08em] text-bone/80">
-                      {spanStory(lead)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </button>
+            />
           );
         })}
       </div>
@@ -657,6 +753,7 @@ function SpanFilm({
   populated,
   onYear,
   onPath,
+  onHover,
   reduced,
 }: {
   path: PathId;
@@ -664,6 +761,7 @@ function SpanFilm({
   populated: number[];
   onYear: (y: number) => void;
   onPath: (id: PathId) => void;
+  onHover?: (id: PathId | null) => void;
   reduced: boolean;
 }) {
   return (
@@ -675,11 +773,12 @@ function SpanFilm({
         return (
           <section key={decade.id}>
             <div className="border-b border-paper/15 pb-4">
-              <p className="font-cond text-[12px] tracking-[0.22em] text-leader">{decade.id}</p>
+              <p className="font-cond text-[12px] tracking-[0.12em] text-leader">{decade.id}</p>
               <h2 className="mt-2 max-w-[22ch] font-display text-4xl leading-none text-paper md:text-5xl">{decade.line}</h2>
               <ThroughLine
                 threads={threads}
                 onPath={onPath}
+                onHover={onHover}
                 className="mt-4 max-w-[42ch]"
                 label={`${decade.id} through`}
               />
@@ -690,30 +789,14 @@ function SpanFilm({
                 const lead = spanLead(list);
                 const era = getEra(lead?.era ?? "");
                 return (
-                  <button
+                  <SpanFrame
                     key={y}
-                    type="button"
+                    clip={lead}
+                    kicker={String(y)}
+                    story={spanStory(lead)}
+                    era={era?.name}
                     onClick={() => onYear(y)}
-                    className="film-cell group relative w-[9.5rem] shrink-0 text-left md:w-44"
-                  >
-                    <div className="aspect-[3/4] overflow-hidden bg-ink shadow-frame">
-                      <div className="film-perfs" aria-hidden />
-                      <div
-                        className="absolute inset-0 opacity-70"
-                        style={{ background: `radial-gradient(80% 70% at 30% 20%, hsl(${(y * 17) % 360} 28% 28%), #10100e)` }}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-void via-transparent to-void/20" />
-                      <div className="relative flex h-full flex-col justify-between p-3">
-                        <p className="font-mono text-[10px] tracking-[0.16em] text-dust">{era?.name ?? ""}</p>
-                        <div>
-                          <p className="font-display text-4xl leading-none text-paper">{y}</p>
-                          <p className="mt-2 line-clamp-3 font-cond text-[12px] tracking-[0.08em] text-bone/80">
-                            {spanStory(lead)}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </button>
+                  />
                 );
               })}
             </div>
@@ -761,7 +844,7 @@ function DayStage({
     <section className={`mt-10 ${reduced ? "" : "film-advance"}`} aria-label={undated ? `Undated film in ${year}` : `Film of ${MONTHS[month - 1]} ${dayNum} ${year}`}>
       <header className="max-w-3xl">
         {era?.name || undated ? (
-          <p className="font-cond text-[12px] tracking-[0.22em] text-leader">
+          <p className="font-cond text-[12px] tracking-[0.12em] text-leader">
             {era?.name ?? "UNDATED"}
           </p>
         ) : null}
@@ -802,7 +885,7 @@ function DayStage({
       </header>
 
       {!clips.length ? (
-        <p className="mt-10 font-mono text-[11px] tracking-[0.16em] text-dust">
+        <p className="mt-10 font-mono text-[12px] tracking-[0.1em] text-dust">
           {undated ? `NO UNDATED FRAMES IN ${year}` : "NO FRAMES THIS DAY"}
         </p>
       ) : (
@@ -813,7 +896,7 @@ function DayStage({
               <div className="flex flex-col gap-4">
                 {reels.map((tape) => (
                   <Link key={tape.id} href={`/tapes/${tape.id}`} className="group block border-y border-paper/15 py-3">
-                    <p className="font-mono text-[10px] tracking-[0.16em] text-dust group-hover:text-leader">{tape.code}</p>
+                    <p className="font-mono text-[12px] tracking-[0.08em] text-dust group-hover:text-leader">{tape.code}</p>
                     <p className="mt-2 font-display text-[22px] leading-tight text-paper group-hover:text-leader">
                       {tape.originalLabel}
                     </p>

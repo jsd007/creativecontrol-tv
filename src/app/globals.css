@@ -3,16 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --void: #070706;
-  --ink: #10100e;
-  --paper: #efe6d6;
-  --bone: #e6ddd0;
-  --dust: #b8b29f;
-  --leader: #d4b66a;
-  --signal: #b83a2f;
-  --chicago: #e8c36a;
+  --void: #080706;
+  --ink: #141210;
+  --paper: #f2ead9;
+  --bone: #d8cfb8;
+  --dust: #c2b68e;
+  --leader: #d4b05a;
+  --hold: #d05642;
+  --signal: #d05642;
+  --night: #7eaaa3;
+  --tungsten: #c17a42;
+  --chicago: #e2b85c;
   --tape: #2a2418;
-  --hairline: color-mix(in srgb, var(--paper) 28%, transparent);
+  --panel: #141210;
+  --hairline: color-mix(in srgb, var(--paper) 34%, transparent);
   --type-label: 12px;
   --type-meta: 12px;
   --type-nav: 13px;
@@ -45,13 +49,13 @@ body {
 .type-label {
   font-family: var(--font-cond), sans-serif;
   font-size: var(--type-label);
-  letter-spacing: 0.16em;
+  letter-spacing: 0.08em;
 }
 
 .type-nav {
   font-family: var(--font-cond), sans-serif;
   font-size: var(--type-nav);
-  letter-spacing: 0.2em;
+  letter-spacing: 0.1em;
 }
 
 .type-meta,
@@ -89,7 +93,7 @@ body {
 .lens-mobile-lens,
 .lens-rail a {
   font-size: var(--type-nav);
-  letter-spacing: 0.18em;
+  letter-spacing: 0.1em;
   color: var(--dust);
 }
 
@@ -158,7 +162,7 @@ body {
 }
 
 .tape-spine-code {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--paper);
 }
 
@@ -166,9 +170,17 @@ body {
   color: var(--leader);
 }
 
+.text-hold {
+  color: var(--hold);
+}
+
+.text-night {
+  color: var(--night);
+}
+
 ::selection {
-  background: #b83a2f;
-  color: #efe6d6;
+  background: var(--hold);
+  color: var(--paper);
 }
 
 a {
@@ -231,7 +243,7 @@ select {
 .opening-show:focus-visible,
 .opening-switcher-fold > summary:focus-visible,
 .archive-act:focus-visible {
-  color: #efe6d6;
+  color: var(--paper);
 }
 
 .lens-mobile .archive-act:focus-visible,
@@ -267,8 +279,8 @@ svg a:focus-visible .field-hit {
   top: 8px;
   z-index: 60;
   padding: 0.4rem 0.7rem;
-  background: #070706;
-  color: #efe6d6;
+  background: var(--void);
+  color: var(--paper);
   font-family: var(--font-cond), sans-serif;
   font-size: 12px;
   letter-spacing: 0.18em;
@@ -287,8 +299,8 @@ svg a:focus-visible .field-hit {
 /* Analog ident clue — title fringe. The house mark uses .house-mark-fringe. */
 .ident-fringe {
   text-shadow:
-    -0.03em 0 0 rgba(184, 58, 47, 0.32),
-    0.034em 0 0 rgba(62, 128, 186, 0.24);
+    -0.03em 0 0 color-mix(in srgb, var(--hold) 40%, transparent),
+    0.034em 0 0 color-mix(in srgb, var(--night) 28%, transparent);
 }
 
 /* James's official static mark in the film gate. Not a reconstructed coil. */
@@ -297,7 +309,7 @@ svg a:focus-visible .field-hit {
   width: min(68vw, 22rem);
   margin-inline: auto;
   padding: 1.5% 0 1%;
-  color: #efe6d6;
+  color: var(--paper);
 }
 
 .house-mark-stage,
@@ -356,7 +368,7 @@ svg a:focus-visible .field-hit {
   object-position: center 42%;
   opacity: 0.4;
   mix-blend-mode: screen;
-  filter: saturate(0.28) contrast(1.18) brightness(0.92);
+  filter: saturate(0.5) contrast(1.16) brightness(0.9);
   mask-image: radial-gradient(ellipse at 50% 42%, #000 18%, transparent 74%);
   -webkit-mask-image: radial-gradient(ellipse at 50% 42%, #000 18%, transparent 74%);
   pointer-events: none;
@@ -485,8 +497,8 @@ svg a:focus-visible .field-hit {
     z-index: 30;
     display: flex;
     flex-direction: column;
-    border-top: 1px solid rgba(239, 230, 214, 0.1);
-    background: rgba(7, 7, 6, 0.96);
+    border-top: 1px solid var(--hairline);
+    background: var(--void);
     padding: 0.15rem 0.85rem calc(0.35rem + env(safe-area-inset-bottom, 0px));
   }
 
@@ -520,7 +532,7 @@ svg a:focus-visible .field-hit {
 
   .lens-mobile-lens.is-on,
   .lens-mobile-lens[aria-current="page"] {
-    color: #efe6d6;
+    color: var(--paper);
   }
 
   .is-threshold .discover-field {
@@ -793,11 +805,11 @@ svg a:focus-visible .field-hit {
 }
 
 .house-wash-a {
-  background: radial-gradient(ellipse at 16% 40%, rgba(196, 160, 90, 0.15), transparent 52%);
+  background: radial-gradient(ellipse at 16% 40%, color-mix(in srgb, var(--leader) 18%, transparent), transparent 52%);
 }
 
 .house-wash-b {
-  background: radial-gradient(ellipse at 84% 46%, rgba(70, 88, 150, 0.11), transparent 54%);
+  background: radial-gradient(ellipse at 84% 46%, color-mix(in srgb, var(--night) 16%, transparent), transparent 54%);
 }
 
 .opening-field {
@@ -830,11 +842,11 @@ svg a:focus-visible .field-hit {
 }
 
 .opening-field.is-archive .opening-wash-a {
-  background: radial-gradient(ellipse at 16% 40%, rgba(196, 160, 90, 0.16), transparent 52%);
+  background: radial-gradient(ellipse at 16% 40%, color-mix(in srgb, var(--leader) 20%, transparent), transparent 52%);
 }
 
 .opening-field.is-archive .opening-wash-b {
-  background: radial-gradient(ellipse at 84% 46%, rgba(70, 88, 150, 0.11), transparent 54%);
+  background: radial-gradient(ellipse at 84% 46%, color-mix(in srgb, var(--night) 16%, transparent), transparent 54%);
 }
 
 .opening-field.is-history .opening-wash-a {
@@ -854,11 +866,11 @@ svg a:focus-visible .field-hit {
 }
 
 .opening-field.is-span .opening-wash-a {
-  background: radial-gradient(ellipse at 8% 50%, rgba(196, 160, 90, 0.1), transparent 46%);
+  background: radial-gradient(ellipse at 8% 50%, color-mix(in srgb, var(--leader) 14%, transparent), transparent 46%);
 }
 
 .opening-field.is-span .opening-wash-b {
-  background: radial-gradient(ellipse at 92% 48%, rgba(70, 88, 150, 0.16), transparent 50%);
+  background: radial-gradient(ellipse at 92% 48%, rgba(106, 143, 140, 0.22), transparent 50%);
 }
 
 .opening-plate {
@@ -870,7 +882,7 @@ svg a:focus-visible .field-hit {
 }
 
 .opening-field.is-archive .opening-plate {
-  background: radial-gradient(ellipse at 50% 50%, rgba(196, 160, 90, 0.1), transparent 68%);
+  background: radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--leader) 14%, transparent), transparent 68%);
 }
 
 .opening-field.is-history .opening-plate {
@@ -882,7 +894,7 @@ svg a:focus-visible .field-hit {
 }
 
 .opening-field.is-span .opening-plate {
-  background: radial-gradient(ellipse at 50% 50%, rgba(70, 88, 150, 0.1), transparent 70%);
+  background: radial-gradient(ellipse at 50% 50%, color-mix(in srgb, var(--night) 14%, transparent), transparent 70%);
 }
 
 .opening-leader {
@@ -1051,39 +1063,63 @@ svg a:focus-visible .field-hit {
 .opening-span-year {
   font-family: var(--font-cond), Impact, sans-serif;
   font-size: clamp(0.58rem, 0.95vw, 0.78rem);
-  letter-spacing: 0.1em;
-  color: rgba(216, 208, 194, 0.16);
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--dust) 55%, transparent);
 }
 
 .opening-span-year.is-beat {
   font-size: clamp(0.72rem, 1.25vw, 0.98rem);
   letter-spacing: 0.08em;
-  color: rgba(239, 230, 214, 0.4);
+  color: color-mix(in srgb, var(--paper) 82%, transparent);
 }
 
 .opening-span-year.is-edge {
   font-size: clamp(0.76rem, 1.35vw, 1.05rem);
   letter-spacing: 0.08em;
-  color: rgba(196, 160, 90, 0.55);
+  color: var(--leader);
 }
 
 .opening-floor {
   inset-inline: 0;
   bottom: 0;
-  height: 42%;
-  background: linear-gradient(to top, #070706, rgba(7, 7, 6, 0.75), transparent);
+  height: 58%;
+  background: linear-gradient(
+    to top,
+    var(--void) 0%,
+    var(--void) 36%,
+    color-mix(in srgb, var(--void) 86%, transparent) 68%,
+    transparent
+  );
 }
 
 .opening-room.is-history .opening-floor {
-  background: linear-gradient(to top, #040406, rgba(6, 6, 9, 0.9), transparent);
+  background: linear-gradient(
+    to top,
+    var(--void) 0%,
+    var(--void) 40%,
+    color-mix(in srgb, var(--void) 88%, transparent) 70%,
+    transparent
+  );
 }
 
 .opening-room.is-document .opening-floor {
-  background: linear-gradient(to top, #0c0a06, rgba(12, 10, 6, 0.72), transparent);
+  background: linear-gradient(
+    to top,
+    var(--void) 0%,
+    color-mix(in srgb, var(--tape) 70%, var(--void)) 28%,
+    color-mix(in srgb, var(--void) 82%, transparent) 68%,
+    transparent
+  );
 }
 
 .opening-room.is-span .opening-floor {
-  background: linear-gradient(to top, #07080a, rgba(7, 8, 10, 0.78), transparent);
+  background: linear-gradient(
+    to top,
+    var(--void) 0%,
+    color-mix(in srgb, var(--night) 12%, var(--void)) 32%,
+    color-mix(in srgb, var(--void) 84%, transparent) 70%,
+    transparent
+  );
 }
 
 /* Film-gate motion. Reduced-motion collapses all of this. */
@@ -1239,7 +1275,9 @@ svg a:focus-visible .field-hit {
   top: 4.25rem;
   right: 1rem;
   z-index: 20;
+  padding: 0.45rem 0.65rem 0.55rem;
   text-align: right;
+  background: var(--void);
 }
 
 @media (min-width: 768px) {
@@ -1252,8 +1290,8 @@ svg a:focus-visible .field-hit {
   cursor: pointer;
   list-style: none;
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 9px;
-  letter-spacing: 0.18em;
+  font-size: 12px;
+  letter-spacing: 0.12em;
   color: var(--dust);
 }
 
@@ -1269,8 +1307,8 @@ svg a:focus-visible .field-hit {
 
 .opening-switcher-label {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 9px;
-  letter-spacing: 0.18em;
+  font-size: 12px;
+  letter-spacing: 0.12em;
   color: var(--dust);
 }
 
@@ -1285,32 +1323,43 @@ svg a:focus-visible .field-hit {
 .opening-take,
 .opening-show {
   font-family: var(--font-cond), Impact, sans-serif;
-  font-size: 11px;
-  letter-spacing: 0.2em;
+  font-size: 12px;
+  letter-spacing: 0.1em;
   color: var(--dust);
 }
 
 .opening-take:hover,
 .opening-show:hover {
-  color: #d8d0c2;
+  color: var(--bone);
 }
 
 .opening-take.is-on {
-  color: #efe6d6;
+  color: var(--paper);
 }
 
 .opening-show {
   margin-top: 0.55rem;
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 9px;
-  letter-spacing: 0.18em;
+  font-size: 12px;
+  letter-spacing: 0.1em;
 }
 
 .opening-copy {
   position: relative;
-  width: min(100%, 64rem);
+  z-index: 2;
+  width: min(100%, 36rem);
   margin: 2.5rem auto 0;
+  padding: 1.05rem 1.35rem 1.2rem;
   text-align: center;
+}
+
+.opening-copy::before {
+  content: "";
+  position: absolute;
+  inset: -0.35rem -1.6rem -0.55rem;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 58%, var(--void) 0%, var(--void) 46%, transparent 74%);
 }
 
 @media (min-width: 768px) {
@@ -1323,7 +1372,7 @@ svg a:focus-visible .field-hit {
 .opening-credits {
   font-family: var(--font-cond), Impact, sans-serif;
   font-size: 12px;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.12em;
   color: var(--leader);
 }
 
@@ -1339,7 +1388,7 @@ svg a:focus-visible .field-hit {
   font-family: var(--font-display), Georgia, serif;
   font-size: 8.5vw;
   line-height: 0.92;
-  color: #efe6d6;
+  color: var(--paper);
 }
 
 @media (min-width: 768px) {
@@ -1352,7 +1401,7 @@ svg a:focus-visible .field-hit {
   width: 6rem;
   height: 1px;
   margin: 1rem auto 0;
-  background: rgba(196, 160, 90, 0.8);
+  background: color-mix(in srgb, var(--leader) 80%, transparent);
   transform-origin: center;
 }
 
@@ -1368,8 +1417,8 @@ svg a:focus-visible .field-hit {
 .opening-doors .enter-take {
   font-family: var(--font-cond), Impact, sans-serif;
   font-size: 18px;
-  letter-spacing: 0.28em;
-  color: #efe6d6;
+  letter-spacing: 0.12em;
+  color: var(--paper);
 }
 
 .opening-doors .enter-take:hover {
@@ -1379,12 +1428,12 @@ svg a:focus-visible .field-hit {
 .opening-world {
   font-family: var(--font-cond), Impact, sans-serif;
   font-size: 13px;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.12em;
   color: var(--dust);
 }
 
 .opening-world:hover {
-  color: #efe6d6;
+  color: var(--paper);
 }
 
 .opening-copy.is-history {
@@ -1396,7 +1445,7 @@ svg a:focus-visible .field-hit {
   font-family: var(--font-cond), Impact, sans-serif;
   font-size: clamp(1.05rem, 2.4vw, 1.55rem);
   line-height: 1.15;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.08em;
 }
 
 .opening-copy.is-document {
@@ -1408,13 +1457,13 @@ svg a:focus-visible .field-hit {
   font-family: var(--font-cond), Impact, sans-serif;
   font-size: clamp(1.2rem, 2.8vw, 1.85rem);
   line-height: 1.12;
-  letter-spacing: 0.22em;
-  color: #d4b44a;
+  letter-spacing: 0.08em;
+  color: var(--leader);
 }
 
 .opening-copy.is-document .opening-credits {
   margin-top: 0.85rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.1em;
   color: var(--dust);
 }
 
@@ -1435,7 +1484,7 @@ svg a:focus-visible .field-hit {
 
 .opening-doors.is-history .enter-take {
   font-size: 15px;
-  letter-spacing: 0.4em;
+  letter-spacing: 0.14em;
 }
 
 .opening-doors.is-document {
@@ -1444,12 +1493,12 @@ svg a:focus-visible .field-hit {
 }
 
 .opening-doors.is-document .enter-take {
-  color: #d4b44a;
-  letter-spacing: 0.32em;
+  color: var(--leader);
+  letter-spacing: 0.12em;
 }
 
 .opening-doors.is-document .enter-take:hover {
-  color: #efe6d6;
+  color: var(--paper);
 }
 
 .opening-doors.is-span {
@@ -1458,23 +1507,23 @@ svg a:focus-visible .field-hit {
 }
 
 .opening-doors.is-span .enter-take {
-  letter-spacing: 0.36em;
+  letter-spacing: 0.12em;
 }
 
 @media (max-width: 767px) {
   .opening-copy.is-history .opening-title {
     font-size: 1.2rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.06em;
   }
 
   .opening-copy.is-document .opening-title {
     font-size: 1.28rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.06em;
   }
 
   .opening-copy.is-document .opening-credits {
-    font-size: 10px;
-    letter-spacing: 0.12em;
+    font-size: 12px;
+    letter-spacing: 0.08em;
   }
 
   .opening-copy.is-span .opening-title {
@@ -1536,7 +1585,7 @@ svg a:focus-visible .field-hit {
   position: absolute;
   inset: 0;
   width: 100%;
-  background: rgba(7, 7, 6, 0.9);
+  background: var(--void);
 }
 
 .discover-offer {
@@ -1626,16 +1675,16 @@ svg a:focus-visible .field-hit {
 
 .discover-lens {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 9px;
-  letter-spacing: 0.2em;
+  font-size: 12px;
+  letter-spacing: 0.12em;
   color: var(--leader);
 }
 
 .discover-label {
   font-family: var(--font-cond), Impact, sans-serif;
   font-size: 1.15rem;
-  letter-spacing: 0.12em;
-  color: #efe6d6;
+  letter-spacing: 0.1em;
+  color: var(--paper);
 }
 
 .discover-sleeve.is-lead .discover-label {
@@ -1645,8 +1694,8 @@ svg a:focus-visible .field-hit {
 
 .discover-landing {
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.12em;
+  font-size: 12px;
+  letter-spacing: 0.08em;
   color: var(--dust);
 }
 
@@ -1733,7 +1782,17 @@ svg a:focus-visible .field-hit {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(184, 58, 47, 0.46),
+    rgba(208, 86, 66, 0.5),
+    rgba(239, 230, 214, 0.16),
+    transparent
+  );
+}
+
+.acquire-bar--house {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(106, 143, 140, 0.5),
     rgba(239, 230, 214, 0.16),
     transparent
   );
@@ -1747,6 +1806,41 @@ svg a:focus-visible .field-hit {
 
 .film-cell {
   position: relative;
+}
+
+.span-frame {
+  width: 14.5rem;
+}
+
+.span-thread {
+  display: flex;
+  margin-top: 0.35rem;
+}
+
+.span-thread-tick {
+  display: flex;
+  width: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  height: 0.7rem;
+}
+
+.span-thread-tick i {
+  display: block;
+  width: 4px;
+  height: 4px;
+  background: rgba(239, 230, 214, 0.14);
+}
+
+.span-thread-tick-on i {
+  background: var(--leader);
+}
+
+@media (min-width: 768px) {
+  .span-frame {
+    width: 16.5rem;
+  }
 }
 
 .film-perfs {
@@ -1854,7 +1948,7 @@ svg a:focus-visible .field-hit {
 .hand-name-type {
   font-family: var(--font-display), serif;
   line-height: 0.92;
-  color: #efe6d6;
+  color: var(--paper);
 }
 
 .hand-name-rule {
@@ -2014,11 +2108,15 @@ svg a:focus-visible .field-hit {
 }
 
 .guide-now--broadcast {
-  --guide-on: #b83a2f;
+  --guide-on: var(--signal);
 }
 
 .guide-now--chicago {
-  --guide-on: #e8c36a;
+  --guide-on: var(--chicago);
+}
+
+.guide-now--house {
+  --guide-on: var(--night);
 }
 
 .acquire-stamp {
@@ -2529,7 +2627,7 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
 
 .world-year::-webkit-slider-runnable-track {
   height: 1px;
-  background: rgba(196, 160, 90, 0.55);
+  background: color-mix(in srgb, var(--leader) 55%, transparent);
 }
 
 .world-year::-webkit-slider-thumb {
@@ -2538,12 +2636,12 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
   height: 9px;
   margin-top: -4px;
   border: 1px solid var(--leader);
-  background: #070706;
+  background: var(--void);
 }
 
 .world-year::-moz-range-track {
   height: 1px;
-  background: rgba(196, 160, 90, 0.55);
+  background: color-mix(in srgb, var(--leader) 55%, transparent);
   border: 0;
 }
 
@@ -2552,7 +2650,7 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
   height: 9px;
   border: 1px solid var(--leader);
   border-radius: 0;
-  background: #070706;
+  background: var(--void);
 }
 
 .world-cities {
@@ -2593,7 +2691,7 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
 }
 
 .world-city:focus-visible {
-  color: #efe6d6;
+  color: var(--paper);
 }
 
 .world-place:focus-visible {
@@ -2615,6 +2713,38 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
 
 .no-scrollbar {
   scrollbar-width: none;
+}
+
+.archive-mast {
+  background: var(--void);
+}
+
+.world-hud {
+  background: var(--void);
+  padding: 0.7rem 0.8rem 0.85rem;
+}
+
+.world-mark-label {
+  background: var(--void);
+  padding: 0.2rem 0.5rem 0.28rem 0.55rem;
+}
+
+.clip-file {
+  background: var(--void);
+  padding: 1.05rem 0 0.15rem;
+}
+
+.film-caption-top,
+.film-caption {
+  background: var(--ink);
+}
+
+.film-caption-top {
+  padding: 0.4rem 0.7rem 0.35rem;
+}
+
+.film-caption {
+  padding: 0.6rem 0.7rem 0.7rem;
 }
 
 /* Contrast floor last so 390 / later rules cannot drop labels back to 11px dust. */
@@ -2661,7 +2791,8 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
 }
 
 .tv-tuner-name {
-  font-size: 11px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
 }
 
 @media (max-width: 767px) {

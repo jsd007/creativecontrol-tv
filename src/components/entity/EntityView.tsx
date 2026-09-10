@@ -83,8 +83,9 @@ export function EntityView({
             ...(place ? [{ href: "/world", label: "THE WORLD" }] : []),
             ...(cityParent ? [{ href: `/places/${cityParent.slug}`, label: cityParent.name.toUpperCase() }] : []),
             ...(person?.id === "coodie" || person?.id === "chike" || person?.id === "ye"
-              ? [{ href: "/timeline", label: "TIMELINE PATH" }]
+              ? [{ href: `/timeline?through=${person.id}`, label: "TIMELINE PATH" }]
               : []),
+            ...(place?.id === "chicago" ? [{ href: "/timeline?through=chicago", label: "TIMELINE PATH" }] : []),
           ]}
         />
       </header>

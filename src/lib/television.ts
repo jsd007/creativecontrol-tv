@@ -227,6 +227,22 @@ export const FAT_YEAR_BOOK = 36;
 /** A letter this long is still a dump if opened as one rundown. Below the year bar so 2010 C (31) nests. */
 export const FAT_LETTER_BOOK = 24;
 
+/** Title window in GUIDE. Fat leftovers paginate — no more nest invention. */
+export const GUIDE_WINDOW = 10;
+
+export function guideWindow<T>(rows: T[], page: number, size = GUIDE_WINDOW) {
+  const pages = Math.max(1, Math.ceil(rows.length / size) || 1);
+  const safe = Math.min(Math.max(0, page), pages - 1);
+  const start = safe * size;
+  return {
+    rows: rows.slice(start, start + size),
+    page: safe,
+    pages,
+    hasPrev: safe > 0,
+    hasMore: safe < pages - 1,
+  };
+}
+
 export type YearChapter = {
   key: string;
   label: string;
@@ -383,29 +399,29 @@ export function letterPrefixChapters(letter: string, rows: ArchiveClip[]): YearC
 export function accentOnAir(accent: ChannelAccent) {
   if (accent === "broadcast") return "text-signal";
   if (accent === "zero" || accent === "chicago") return "text-chicago";
-  return "text-leader";
+  return "text-night";
 }
 
 export function accentNumber(accent: ChannelAccent) {
   if (accent === "broadcast") return "text-signal";
   if (accent === "zero" || accent === "chicago") return "text-chicago";
-  return "text-leader";
+  return "text-night";
 }
 
 export function accentHair(accent: ChannelAccent) {
   if (accent === "broadcast") return "bg-signal";
   if (accent === "zero" || accent === "chicago") return "bg-chicago";
-  return "bg-leader";
+  return "bg-night";
 }
 
 export function accentRule(accent: ChannelAccent) {
   if (accent === "broadcast") return "bg-signal/80";
   if (accent === "zero" || accent === "chicago") return "bg-chicago/80";
-  return "bg-leader/80";
+  return "bg-night/80";
 }
 
 export function guideNowClass(accent: ChannelAccent) {
   if (accent === "broadcast") return "guide-now guide-now--broadcast";
   if (accent === "zero" || accent === "chicago") return "guide-now guide-now--chicago";
-  return "guide-now";
+  return "guide-now guide-now--house";
 }

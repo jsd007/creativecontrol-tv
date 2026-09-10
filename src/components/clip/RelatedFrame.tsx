@@ -17,7 +17,7 @@ export function RelatedFrame({ from, clip }: { from: ArchiveClip; clip: ArchiveC
 
   return (
     <article>
-      <p className="font-cond text-[11px] tracking-[0.2em] text-leader">{relatedAxis(from, clip)}</p>
+      <p className="font-cond text-[12px] tracking-[0.1em] text-leader">{relatedAxis(from, clip)}</p>
       <Link href={`/clip/${clip.slug}`} className="mt-3 block">
         {closed ? (
           <HeldFrame clip={clip} className="aspect-[4/3]" />
@@ -32,7 +32,7 @@ export function RelatedFrame({ from, clip }: { from: ArchiveClip; clip: ArchiveC
           {title}
         </h3>
       </Link>
-      <p className="mt-2 font-mono text-[10px] tracking-[0.14em] text-dust">
+      <p className="mt-2 font-mono text-[12px] tracking-[0.08em] text-dust">
         {formatDate(clip)}
         {loc ? ` · ${loc.name.toUpperCase()}` : ""}
       </p>

@@ -35,7 +35,7 @@ export function ClipDossier({
 }) {
   return (
     <aside className="mt-16 max-w-3xl">
-      <p className="type-label tracking-[0.22em]">DOSSIER</p>
+      <p className="type-label tracking-[0.1em]">DOSSIER</p>
       <div className="mt-5 border-b border-paper/10">
         <Row label="PEOPLE">
           {people.length ? (
@@ -81,7 +81,7 @@ export function ClipDossier({
           </Row>
         ) : null}
         <Row label="RIGHTS">
-          <span className="font-mono text-[11px] tracking-[0.08em] text-bone/80">
+          <span className="font-mono text-[12px] tracking-[0.06em] text-bone">
             {visibilityLabel(clip.visibility)} · {clip.rightsStatus.replaceAll("_", " ")}
             {clip.sensitivityStatus !== "NONE" ? ` · ${clip.sensitivityStatus.replaceAll("_", " ")}` : ""}
           </span>

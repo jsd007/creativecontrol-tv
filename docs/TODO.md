@@ -43,7 +43,9 @@ Never print a working hour-count as fact. James gates stay listed below. Nothing
 
 1. **Tape zoom is still CSS** — `/tapes` is a vault aisle; opening a cassette is not an optical camera.
 2. **Unlisted / private still missing** — mute remainder after the public cut; not the missing file.
-3. **Fat leftover CH 07 letters** — opened prefixes and **2010 S / T** are still rundowns. Do not invent shows to nest them.
+3. **Television is easier, not extraordinary** — 2010 / 2011 are a letter rail + a window of 10, not a novel. Real show names still James-gated.
+
+`/timeline` is no longer the empty hue-poster wall (stills + bonds + shareable `?through=` / year drill). Still not extraordinary.
 
 **Goal incomplete.** Do not mark complete. Do not call the quality bar met.
 
@@ -66,7 +68,7 @@ Ask in the room (do not guess):
 - Is the live Framer splash the intended public face, or is this archive the door?
 - Approved stills or footage we may use — never scrape.
 
-Unblocked after the walk, still weak: tape zoom is CSS; fat leftover CH 07 letters; authored coasts; procedural sound; prototype media. Filmmaker quality bar **not** claimed.
+Unblocked after the walk, still weak: tape zoom is CSS; unlisted / private still missing; authored coasts; procedural sound; prototype media. Filmmaker quality bar **not** claimed.
 
 Do not chrome-tune rails, constellation density, or the show path unless a surface lies again.
 
@@ -99,10 +101,10 @@ Checked against the working tree and live hobby `https://creativecontrol-tv.verc
 - `/archive` is a finding-aid ledger (year groups; when · tape · type · title · place · people · hold). Official uploads are holdings (`year · official title · BROADCAST · place`) — unfiltered is a year through-line, not a card wall. Combo Ye+Chicago+2002+Studio = **1 RECORD** (Basement, OCT 12, CC-0217, STUDIO, paper MEMBERS ONLY). Unfiltered PUBLIC cut has no record-count inventory. `/archive?collection=` films the same public house cut as the collection reel.
 - `/tapes` is a vault aisle of facing spines: STORAGE / DIGITAL VAULT / PHONE / STUDIO / BROADCAST / UNOPENED (continuing mute aisle + GROWABLE empty). BROADCAST is year cassettes of official holdings, not a thumbnail wall. Opening a tape is still a CSS camera. The dossier sits outside the camera.
 - `/clip/[slug]` is a cassette beside a sprocketed gate. Official embed when `youtubeId`. Closed visibilities are sleeves.
-- `/tv` CH 07 airs the official `@cctelevisionchannel` PUBLIC blocks (ident, then playlist / Channel Zero / year books), then a mute NOT IN THIS MOCK remainder for unlisted / private. GUIDE is official blocks and year books you tune — not a 366-line list. Fat year books (**2010** / **2011**) nest an A–Z of official titles. A fat letter nests an official title prefix already on the file: **2011 C** is CREATIVE CONTROL (29) vs the rest of C (7); **2010 C** is CURREN$Y (18) vs the rest of C (13). Do not nest **2010 S** or **T** via THE or invented shows. Sibling channels stay house cuts. Playlist names exist; do not invent more. On ~390 the tuner is **00–08** on one row so CH 07 ident is usable.
+- `/tv` CH 07 airs the official `@cctelevisionchannel` PUBLIC blocks (ident, then playlist / Channel Zero / year books), then a mute NOT IN THIS MOCK remainder for unlisted / private. GUIDE is a compact strip of the **13** tunables — not a 366-line list. Fat years (**2010** / **2011**) open as a letter rail; fat letters still use the official prefix (2011 C → CREATIVE CONTROL; 2010 C → CURREN$Y); leftover lists window **10** + MORE. Do not nest **2010 S** or **T** via THE. Sibling channels stay house cuts. Playlist names exist; do not invent more. On ~390 the tuner is **00–08** on one row so CH 07 ident is usable.
 - `/collections` stays editorial. Classics is **19** house titles (Polaroid → Kendall's Cross), not 366 official uploads. Studio Nights is **0** public frames — leftover is held sleeves (HELD IN THE HOUSE FILE), not `{n} IN THE INDEX`.
 - `/constellation` desktop is a void of hairline spokes. ~390 is a phone pocket (`HandField`), not a list and not the 1440 field squashed. Still off the rail and the show.
-- `/timeline` paths are a through-line (`through` sentence), not ALL / COODIE / CHIKE tabs. Decade film is era time. Official titles can be the year through-line. Month / day film does not print `N FRAMES`. Year-only uploads are holdings, not `N UNDATED`.
+- `/timeline` paths are a through-line (`through` sentence + sprocket ticks), not ALL / COODIE / CHIKE tabs. Shareable: `?through=ye`, `?year=2002&month=10&day=12`. Decade film is era time. Year / month / day cells are proving stills with people · place under the frame — not HSL posters. Official titles can be the year through-line. Month / day film does not print `N FRAMES`. Year-only uploads are holdings, not `N UNDATED`.
 - Person / place / project are a file of bonds, not a profile clock.
 - SOUND **OFF** by default. Verbs: threshold / acquire / cut / tape. No session restore. Official embeds stay PLAY · MUTED.
 - Keyboard can walk the house: skip → mark → rails → DISCOVER → SOUND → the room. Space on SOUND toggles. `d` opens DISCOVER. Escape closes a tape, not the show.
@@ -115,8 +117,8 @@ Checked against the working tree and live hobby `https://creativecontrol-tv.verc
 
 - [x] Film-gate motion on threshold / world fly / TV acquire / CSS tape camera / sprocket / clip gate / constellation spokes / show hops (2026-09-09). GSAP lockup + View Transition cuts added the same day. Reduced motion collapses. Still not extraordinary; tape is still CSS.
 - [ ] Tape zoom is still CSS, not an optical / R3F camera through the aisle
-- [ ] `/tv` is a programmed network (live ident, Flip tuner, acquire stamp, GUIDE of official blocks / year books) but still not extraordinary. Most real CC Television show names remain unknown (James). CH 07 airs the official public uploads, then a mute NOT IN THIS MOCK remainder. Sibling channels stay house cuts. Playlist names exist; do not invent more. Unlisted / private still missing. Fat years (2010 / 2011) nest A–Z; fat letters nest official prefixes (2011 C → CREATIVE CONTROL; 2010 C → CURREN$Y). Do not nest 2010 S/T via THE. On ~390 the tuner is **00–08** on one row so CH 07 ident is usable. Remaining unblocked weakest on Television: fat leftover letters (opened prefixes, 2010 S/T) are still rundowns.
-- [ ] All four openings are rooms (ARCHIVE door, HISTORY screening, DOCUMENT leftover / mandate, SPAN horizon). DOCUMENT holds unused Channel Zero yellow after a leftover checker that leaves the frame; DOCUMENT EVERYTHING; WATCH → leftover clip; THE NETWORK → `/tv`. Desktop rooms unchanged in intent. On ~390 the lockup reads and SPAN years 1994 / 2026 stay visible. Still not extraordinary. Remaining unblocked weakest is elsewhere: tape zoom is still CSS; unlisted / private still missing; fat leftover letters.
+- [ ] `/tv` is a programmed network (live ident, Flip tuner, acquire stamp, GUIDE board of official blocks / year books) but still not extraordinary. Most real CC Television show names remain unknown (James). CH 07 airs the official public uploads, then a mute NOT IN THIS MOCK remainder. Sibling channels stay house cuts. Playlist names exist; do not invent more. Unlisted / private still missing. Fat years (2010 / 2011) open as a letter rail; leftover lists window **10**. Do not nest 2010 S/T via THE. On ~390 the tuner is **00–08** on one row so CH 07 ident is usable.
+- [ ] All four openings are rooms (ARCHIVE door, HISTORY screening, DOCUMENT leftover / mandate, SPAN horizon). DOCUMENT holds unused Channel Zero yellow after a leftover checker that leaves the frame; DOCUMENT EVERYTHING; WATCH → leftover clip; THE NETWORK → `/tv`. Desktop rooms unchanged in intent. On ~390 the lockup reads and SPAN years 1994 / 2026 stay visible. Still not extraordinary. Remaining unblocked weakest is elsewhere: tape zoom is still CSS; unlisted / private still missing.
 - [ ] World coasts are authored rings, not surveyed Earth. Desktop globe is back; cities are still mostly a pointer; Tab is a quiet proxy. MAP stays fallback only.
 - [ ] Constellation is a first quiet field (few spokes + a phone pocket). Person / place / project now read as a file of bonds. Still not on the rail. Still not in the show. Still not extraordinary.
 - [ ] Sound is four short verbs (procedural fallback; no WAVs on disk). Real recordings only if James provides them (no licensed music)

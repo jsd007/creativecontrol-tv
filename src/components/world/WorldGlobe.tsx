@@ -1,19 +1,20 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Html, Line, OrbitControls, Stars } from "@react-three/drei";
+import { Html, Line, OrbitControls } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
 import { catalog, cityLocations, getLocation } from "@/data";
 import type { Location } from "@/data/types";
-import { CONTINENTS, CUTS, paintLand, pathD } from "@/lib/geography";
+import { CONTINENTS, CUTS, paintLand, paintNight, pathD } from "@/lib/geography";
 import { gsap, houseGsap } from "@/lib/gsap";
 import { activateOnSpace, isTypingTarget } from "@/lib/keys";
 import { useIsNarrow, usePrefersReducedMotion } from "@/lib/motion";
 import {
+  AIR_FRAG,
   FILM_FRAG,
   FILM_VERT,
   GLOBE_FRAG,
@@ -23,6 +24,7 @@ import {
   SHELL_VERT,
   SUN,
   glowTexture,
+  starDisc,
 } from "@/components/world/globeLook";
 
 const GLOBE_R = 1.6;
@@ -77,18 +79,33 @@ function facingAmount(world: THREE.Vector3, camera: THREE.Camera) {
   return _n.copy(world).normalize().dot(_c.copy(camera.position).normalize());
 }
 
-function landTexture() {
+function canvasTexture(paint: (g: CanvasRenderingContext2D, w: number, h: number) => void) {
   const c = document.createElement("canvas");
   c.width = 2048;
   c.height = 1024;
   const g = c.getContext("2d");
   if (!g) return null;
-  paintLand(g, 2048, 1024);
+  paint(g, 2048, 1024);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 4;
   tex.needsUpdate = true;
   return tex;
+}
+
+function landTexture() {
+  return canvasTexture(paintLand);
+}
+
+function nightTexture(cities: Location[]) {
+  return canvasTexture((g, w, h) =>
+    paintNight(
+      g,
+      w,
+      h,
+      cities.map((c) => ({ lon: c.lon, lat: c.lat, glow: c.glow, chicago: c.city === "Chicago" })),
+    ),
+  );
 }
 
 function recordsToYear(location: Location, year: number) {
@@ -116,6 +133,13 @@ function cityPath(cities: Location[], selected: string, facing: string[], year: 
   add(cities.find((c) => c.city === "Chicago"));
   for (const id of facing) add(cities.find((c) => c.id === id));
   return out;
+}
+
+/** Re-read the landed camera into OrbitControls so resume doesn't snap back to idle. */
+function syncOrbit(ctrl: OrbitControlsImpl | null) {
+  if (!ctrl) return;
+  ctrl.target.copy(LOOK);
+  ctrl.update();
 }
 
 function FacingWatch({
@@ -157,26 +181,29 @@ function FacingWatch({
   return null;
 }
 
-function GlobeBody() {
+function GlobeBody({ cities }: { cities: Location[] }) {
   const tex = useMemo(() => landTexture(), []);
+  const night = useMemo(() => nightTexture(cities), [cities]);
   const mat = useMemo(() => {
     if (!tex) return null;
     return new THREE.ShaderMaterial({
       uniforms: {
         uMap: { value: tex },
+        uNight: { value: night },
         uSun: { value: SUN },
       },
       vertexShader: GLOBE_VERT,
       fragmentShader: GLOBE_FRAG,
       toneMapped: false,
     });
-  }, [tex]);
+  }, [tex, night]);
   useEffect(
     () => () => {
       tex?.dispose();
+      night?.dispose();
       mat?.dispose();
     },
-    [tex, mat],
+    [tex, night, mat],
   );
   if (!mat) {
     return (
@@ -197,9 +224,13 @@ function GlobeBody() {
 function AtmosphereShell({
   radius,
   frag,
+  side = THREE.BackSide,
+  additive = false,
 }: {
   radius: number;
   frag: string;
+  side?: THREE.Side;
+  additive?: boolean;
 }) {
   const mat = useMemo(
     () =>
@@ -207,12 +238,14 @@ function AtmosphereShell({
         uniforms: { uSun: { value: SUN } },
         transparent: true,
         depthWrite: false,
-        side: THREE.BackSide,
+        depthTest: true,
+        side,
+        blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending,
         toneMapped: false,
         vertexShader: SHELL_VERT,
         fragmentShader: frag,
       }),
-    [frag],
+    [frag, side, additive],
   );
   useEffect(() => () => mat.dispose(), [mat]);
   return (
@@ -223,16 +256,77 @@ function AtmosphereShell({
   );
 }
 
-function DriftStars({ reduced }: { reduced: boolean }) {
+function starField(count: number, radius: number, spread: number, goldBias: number) {
+  const pos = new Float32Array(count * 3);
+  const col = new Float32Array(count * 3);
+  for (let i = 0; i < count; i += 1) {
+    const id = i + goldBias * 17.13;
+    const u = Math.abs(Math.sin(id * 12.9898) * 43758.5453) % 1;
+    const v = Math.abs(Math.sin(id * 78.233) * 23421.631) % 1;
+    const w = Math.abs(Math.sin(id * 45.164) * 91827.13) % 1;
+    const theta = u * Math.PI * 2;
+    const phi = Math.acos(2 * v - 1);
+    const r = radius + w * spread;
+    pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    pos[i * 3 + 1] = r * Math.cos(phi);
+    pos[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+    const bright = Math.abs(Math.sin(id * 3.1) * 43758.5453) % 1;
+    if (bright > 0.984) {
+      col[i * 3] = 0.49;
+      col[i * 3 + 1] = 0.67;
+      col[i * 3 + 2] = 0.64;
+    } else if (bright > goldBias) {
+      col[i * 3] = 0.91;
+      col[i * 3 + 1] = 0.78;
+      col[i * 3 + 2] = 0.52;
+    } else {
+      const t = 0.62 + bright * 0.38;
+      col[i * 3] = 0.96 * t;
+      col[i * 3 + 1] = 0.92 * t;
+      col[i * 3 + 2] = 0.84 * t;
+    }
+  }
+  const geom = new THREE.BufferGeometry();
+  geom.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  geom.setAttribute("color", new THREE.BufferAttribute(col, 3));
+  return geom;
+}
+
+function FieldStars({ reduced }: { reduced: boolean }) {
   const ref = useRef<THREE.Group>(null);
+  const field = useMemo(() => starField(1480, 40, 30, 0.9), []);
+  const brights = useMemo(() => starField(70, 36, 22, 0.55), []);
+  const tex = useMemo(() => starDisc(), []);
   useFrame((_, dt) => {
     if (!ref.current || reduced) return;
-    ref.current.rotation.y += dt * 0.0036;
-    ref.current.rotation.x += dt * 0.0007;
+    ref.current.rotation.y += dt * 0.0032;
+    ref.current.rotation.x += dt * 0.00055;
   });
+  useEffect(
+    () => () => {
+      field.dispose();
+      brights.dispose();
+      tex?.dispose();
+    },
+    [field, brights, tex],
+  );
+  const mat = (size: number, opacity: number) => (
+    <pointsMaterial
+      size={size}
+      map={tex ?? undefined}
+      vertexColors
+      transparent
+      depthWrite={false}
+      blending={THREE.AdditiveBlending}
+      sizeAttenuation
+      opacity={opacity}
+      toneMapped={false}
+    />
+  );
   return (
     <group ref={ref}>
-      <Stars radius={56} depth={28} count={720} factor={2.05} fade={!reduced} speed={reduced ? 0 : 0.04} />
+      <points geometry={field}>{mat(0.48, 0.88)}</points>
+      <points geometry={brights}>{mat(0.95, 1)}</points>
     </group>
   );
 }
@@ -294,12 +388,12 @@ function CityMark({
   useFrame(({ camera, clock }) => {
     const face = facingAmount(pos, camera);
     const vis = face < 0.04 ? 0.1 : THREE.MathUtils.clamp(0.18 + face * 0.95, 0.18, 1);
-    if (markMat.current) markMat.current.opacity = vis;
+    if (markMat.current && !chicago) markMat.current.opacity = vis;
     if (wash.current) {
-      const pulse = chicago && !reduced ? 1 + Math.sin(clock.elapsedTime * 0.62) * 0.12 : 1;
-      wash.current.scale.setScalar(1.15 * pulse);
+      const pulse = chicago && !reduced ? 1 + Math.sin(clock.elapsedTime * 0.48) * 0.1 : 1;
+      wash.current.scale.setScalar(1.42 * pulse);
       const mat = wash.current.material;
-      if (!Array.isArray(mat)) mat.opacity = 0.55 * vis;
+      if (!Array.isArray(mat)) mat.opacity = 0.62 * vis;
     }
     const want = face > LABEL_FACE && hovered;
     if (want !== shown.current) {
@@ -314,25 +408,25 @@ function CityMark({
     <group position={pos}>
       {chicago && glow ? (
         <>
-          <sprite ref={wash} scale={1.15}>
+          <sprite ref={wash} scale={1.42}>
             <spriteMaterial
               map={glow}
-              color="#e8c36a"
+              color="#e2b85c"
               transparent
               depthWrite={false}
               blending={THREE.AdditiveBlending}
-              opacity={0.55}
+              opacity={0.62}
               toneMapped={false}
             />
           </sprite>
-          <sprite scale={0.32}>
+          <sprite scale={0.38}>
             <spriteMaterial
               map={glow}
               color="#efe6d6"
               transparent
               depthWrite={false}
               blending={THREE.AdditiveBlending}
-              opacity={0.7}
+              opacity={0.78}
               toneMapped={false}
             />
           </sprite>
@@ -353,25 +447,25 @@ function CityMark({
           document.body.style.cursor = "auto";
         }}
       >
-        <sphereGeometry args={[chicago ? 0.028 : selected || hovered ? 0.044 : 0.018 + intensity * 0.022, 12, 12]} />
+        <sphereGeometry args={[chicago ? 0.07 : selected || hovered ? 0.044 : 0.018 + intensity * 0.022, 12, 12]} />
         <meshBasicMaterial
           ref={markMat}
-          color={chicago ? "#e8c36a" : selected || hovered ? "#efe6d6" : "#c4a05a"}
+          color={chicago ? "#e2b85c" : selected || hovered ? "#f2ead9" : "#d4b05a"}
           transparent
-          opacity={1}
+          opacity={chicago ? 0 : 1}
           depthWrite={false}
         />
       </mesh>
       {labelOn ? (
         <Html distanceFactor={36} position={[0.09, 0.07, 0]} style={{ pointerEvents: selected ? "auto" : "none" }}>
-          <div className="whitespace-nowrap border-l border-leader/70 pl-2">
-            <p className="font-cond text-[12px] tracking-[0.2em] text-paper">{location.city.toUpperCase()}</p>
+          <div className="world-mark-label whitespace-nowrap border-l border-leader/70">
+            <p className="font-cond text-[12px] tracking-[0.1em] text-paper">{location.city.toUpperCase()}</p>
             {selected ? (
               <Link
                 href={`/places/${location.slug}`}
                 tabIndex={-1}
                 aria-hidden
-                className="mt-1 block font-cond text-[12px] tracking-[0.16em] text-leader hover:text-paper"
+                className="mt-1 block font-cond text-[12px] tracking-[0.1em] text-leader hover:text-paper"
               >
                 THE PLACE
               </Link>
@@ -407,6 +501,7 @@ function CameraRig({
   flying,
   chicago,
   reduced,
+  controls,
   onArrive,
 }: {
   lat: number;
@@ -414,6 +509,7 @@ function CameraRig({
   flying: boolean;
   chicago: boolean;
   reduced: boolean;
+  controls: RefObject<OrbitControlsImpl | null>;
   onArrive: () => void;
 }) {
   const { camera } = useThree();
@@ -439,6 +535,7 @@ function CameraRig({
         persp.fov = FOV;
         persp.updateProjectionMatrix();
       }
+      syncOrbit(controls.current);
     };
 
     if (!flying) return;
@@ -497,7 +594,7 @@ function CameraRig({
       tween.current?.kill();
       tween.current = null;
     };
-  }, [flying, destKey, reduced, chicago, camera, dest, onArrive]);
+  }, [flying, destKey, reduced, chicago, camera, dest, onArrive, controls]);
 
   useFrame(() => {
     if (flying) return;
@@ -627,8 +724,7 @@ export function WorldGlobe() {
     setSettling(true);
     const ctrl = controls.current;
     if (!ctrl) return;
-    ctrl.target.copy(LOOK);
-    ctrl.update();
+    syncOrbit(ctrl);
   }, []);
 
   const choose = useCallback((id: string) => {
@@ -687,14 +783,15 @@ export function WorldGlobe() {
               }
             }}
           >
-            <color attach="background" args={["#070706"]} />
+            <color attach="background" args={["#0a0908"]} />
             <ambientLight intensity={0.1} />
             <Sun reduced={reduced} />
             <pointLight position={[-2.2, -0.6, -2.8]} intensity={0.12} color="#c4a05a" />
-            <DriftStars reduced={reduced} />
-            <GlobeBody />
-            <AtmosphereShell radius={1.78} frag={LIMB_FRAG} />
-            <AtmosphereShell radius={1.96} frag={HAZE_FRAG} />
+            <FieldStars reduced={reduced} />
+            <GlobeBody cities={cities} />
+            <AtmosphereShell radius={1.66} frag={AIR_FRAG} side={THREE.FrontSide} additive />
+            <AtmosphereShell radius={1.82} frag={LIMB_FRAG} />
+            <AtmosphereShell radius={2.08} frag={HAZE_FRAG} additive />
             <Arcs year={year} />
             <FacingWatch cities={marks} onFacing={setFacing} />
             {cities.map((city) => (
@@ -716,18 +813,20 @@ export function WorldGlobe() {
                 flying={flying}
                 chicago={loc.city === "Chicago"}
                 reduced={reduced}
+                controls={controls}
                 onArrive={arrive}
               />
             ) : null}
             <FilmGrade />
             <OrbitControls
               ref={controls}
+              enabled={!flying}
               enablePan={false}
               enableRotate={!flying}
               enableZoom={!flying}
               minDistance={2.68}
               maxDistance={6.5}
-              enableDamping={!reduced}
+              enableDamping={!reduced && !flying}
               autoRotate={!flying && !reduced && !settling}
               autoRotateSpeed={0.1}
               target={[0, 0.04, 0]}
@@ -744,8 +843,8 @@ export function WorldGlobe() {
 
       <div className="world-dock pointer-events-none relative z-10 flex min-h-[calc(100svh-3.5rem)] flex-col justify-end px-4 pb-8 pt-6 md:px-6">
         <h1 className="sr-only">The World</h1>
-        <div className="pointer-events-auto w-full max-w-[14rem]">
-          <p className={`font-mono text-[12px] tracking-[0.28em] text-leader ${reduced ? "" : "year-register"}`}>
+        <div className="world-hud pointer-events-auto w-full max-w-[14rem]">
+          <p className={`font-mono text-[12px] tracking-[0.12em] text-leader ${reduced ? "" : "year-register"}`}>
             {useMap ? `YEAR ${year} · MAP` : year}
           </p>
           <input
@@ -803,14 +902,14 @@ export function WorldGlobe() {
               <button
                 type="button"
                 onClick={() => travel(-1)}
-                className="font-cond text-[12px] tracking-[0.16em] text-dust hover:text-paper"
+                className="font-cond text-[12px] tracking-[0.1em] text-dust hover:text-paper"
               >
                 PREV
               </button>
               <button
                 type="button"
                 onClick={() => travel(1)}
-                className="font-cond text-[12px] tracking-[0.16em] text-dust hover:text-paper"
+                className="font-cond text-[12px] tracking-[0.1em] text-dust hover:text-paper"
               >
                 NEXT
               </button>

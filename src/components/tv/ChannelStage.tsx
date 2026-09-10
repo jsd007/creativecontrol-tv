@@ -77,11 +77,16 @@ export function ChannelStage({
         </div>
       </div>
       <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-        {now ? (
-          <Link href={`/clip/${now.slug}`} className="font-cond text-[13px] tracking-[0.18em] text-paper underline underline-offset-4">
-            OPEN CLIP
-          </Link>
-        ) : null}
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+          {now ? (
+            <Link href={`/clip/${now.slug}`} className="font-cond text-[13px] tracking-[0.14em] text-paper underline underline-offset-4">
+              OPEN CLIP
+            </Link>
+          ) : null}
+          <a href="#guide" className="font-cond text-[13px] tracking-[0.14em] text-dust hover:text-paper">
+            GUIDE
+          </a>
+        </div>
         {next && nextTitle ? (
           <button type="button" onClick={onSurf} className="tv-surf font-cond text-[13px] tracking-[0.18em] text-leader">
             SURF → {nextTitle}

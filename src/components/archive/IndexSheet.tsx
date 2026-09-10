@@ -109,8 +109,8 @@ function IndexRow({ clip }: { clip: ArchiveClip }) {
         </p>
         <p className="type-label">{subjects || "—"}</p>
         <p
-          className={`font-mono text-[10px] tracking-[0.14em] md:text-right ${
-            paperHold ? "text-paper" : stamp ? "text-leader" : "text-transparent"
+          className={`font-mono text-[12px] tracking-[0.08em] md:text-right ${
+            paperHold ? "text-hold" : stamp ? "text-leader" : "text-transparent"
           }`}
         >
           {stamp || "\u00a0"}

@@ -1,13 +1,37 @@
-/* CSS vault aisle. Transform + opacity only. No blur. */
+/* CSS vault aisle. Transform + opacity only. No blur. Tokens inherited. */
 
 .aisle-field {
   position: relative;
   overflow-x: clip;
   overflow-y: visible;
   max-width: 100%;
-  padding: 0 0 5rem;
+  padding: 0 0 5.5rem;
   isolation: isolate;
-  transition: perspective-origin 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: perspective-origin 0.82s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.aisle-formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem 1.15rem;
+  padding-top: 1rem;
+}
+
+.aisle-formats button {
+  font-family: var(--font-sans), Helvetica Neue, sans-serif;
+  font-size: var(--type-label);
+  letter-spacing: 0.04em;
+  word-spacing: 0.08em;
+  color: var(--dust);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.aisle-formats button[aria-pressed="true"],
+.aisle-formats button:hover {
+  color: var(--paper);
 }
 
 .aisle-sheet {
@@ -18,26 +42,34 @@
 }
 
 .aisle-sheet-panel {
-  background: var(--void);
+  background: var(--ink);
   color: var(--paper);
   border: 1px solid var(--hairline);
   padding: 1.15rem 1.25rem 1.3rem;
 }
 
 .aisle-sheet-hold {
-  font-family: var(--font-cond), sans-serif;
-  font-size: var(--type-label);
-  letter-spacing: 0.08em;
-  word-spacing: 0.45em;
+  font-family: var(--font-sans), Helvetica Neue, sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  word-spacing: 0.12em;
+  color: var(--dust);
+}
+
+.aisle-sheet-hold .is-logged {
   color: var(--leader);
+}
+
+.aisle-sheet-hold .is-broadcast {
+  color: var(--night);
 }
 
 .aisle-sheet-meta {
   margin-top: 0.7rem;
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: var(--type-meta);
-  letter-spacing: 0.06em;
-  word-spacing: 0.2em;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  word-spacing: 0.12em;
   color: var(--bone);
 }
 
@@ -45,9 +77,9 @@
   display: inline-block;
   margin-top: 1.15rem;
   font-family: var(--font-sans), Helvetica Neue, sans-serif;
-  font-size: 13px;
-  letter-spacing: 0.04em;
-  word-spacing: 0.28em;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  word-spacing: 0.08em;
   color: var(--paper);
   text-decoration: underline;
   text-underline-offset: 5px;
@@ -84,20 +116,31 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(180deg, rgba(7, 7, 6, 0) 18%, rgba(7, 7, 6, 0.28) 100%);
+  background:
+    linear-gradient(180deg, transparent 12%, color-mix(in srgb, var(--void) 42%, transparent) 100%),
+    radial-gradient(ellipse at 50% 118%, color-mix(in srgb, var(--void) 70%, transparent) 0%, transparent 58%);
 }
 
 .aisle-bay {
   position: relative;
+  width: min(920px, 100%);
+  margin-inline: auto;
   transform-style: preserve-3d;
 }
 
 .aisle-lintel {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0 0.35rem 0.55rem;
+  padding: 0.2rem 0.15rem 0.45rem;
+  background: var(--void);
+}
+
+.aisle-lintel p {
+  font-family: var(--font-sans), Helvetica Neue, sans-serif;
+  font-size: var(--type-label);
+  letter-spacing: 0.08em;
+  word-spacing: 0.1em;
+  color: var(--dust);
 }
 
 .aisle-corridor {
@@ -109,33 +152,36 @@
 }
 
 .aisle-upright {
-  width: 8px;
+  width: 7px;
   align-self: stretch;
-  min-height: 184px;
-  background: linear-gradient(90deg, #090807, #2a2418 46%, #0c0b09);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.55);
+  min-height: 200px;
+  background: linear-gradient(90deg, var(--void), var(--tape) 48%, var(--void));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--void) 70%, black);
 }
 
 .aisle-wall {
   display: flex;
   align-items: flex-end;
-  gap: 3px;
-  padding: 0 4px;
+  gap: 2px;
+  min-width: clamp(168px, 22vw, 280px);
+  min-height: 200px;
+  padding: 0 6px 0;
   transform-style: preserve-3d;
-  background: linear-gradient(180deg, #14110c 0%, #0a0908 100%);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.45);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--ink) 88%, var(--tape)) 0%, var(--void) 100%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--paper) 8%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--void) 80%, black);
 }
 
 .aisle-wall-l {
   justify-content: flex-end;
-  transform: rotateY(8deg);
+  transform: rotateY(17deg) translateZ(-6px);
   transform-origin: right center;
 }
 
 .aisle-wall-l .tape-spine-code,
 .aisle-wall-l .tape-spine-year,
-.aisle-wall-l .tape-spine-fmt,
-.aisle-wall-l .tape-spine-den,
 .aisle-wall-l .tape-spine-note {
   transform: none;
   writing-mode: vertical-lr;
@@ -143,47 +189,36 @@
 
 .aisle-wall-r {
   justify-content: flex-start;
-  transform: rotateY(-8deg);
+  transform: rotateY(-17deg) translateZ(-6px);
   transform-origin: left center;
 }
 
 .aisle-well {
   position: relative;
   flex: 0 0 auto;
-  width: clamp(88px, 16vw, 200px);
+  width: clamp(52px, 7vw, 84px);
   align-self: stretch;
-  min-height: 184px;
+  min-height: 200px;
   transform-style: preserve-3d;
+  background: radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--tape) 55%, transparent), transparent 74%);
 }
 
 .aisle-floor {
   position: absolute;
   inset: auto 0 0;
-  height: 92px;
+  height: 118px;
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.58) 0%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.58) 100%),
-    repeating-linear-gradient(90deg, rgba(239, 230, 214, 0.035) 0 1px, transparent 1px 26px),
-    linear-gradient(#1a1610, #0b0a08);
-  transform: rotateX(74deg);
+    linear-gradient(90deg, color-mix(in srgb, var(--void) 78%, black) 0%, color-mix(in srgb, var(--leader) 10%, transparent) 50%, color-mix(in srgb, var(--void) 78%, black) 100%),
+    repeating-linear-gradient(90deg, color-mix(in srgb, var(--paper) 7%, transparent) 0 1px, transparent 1px 22px),
+    linear-gradient(color-mix(in srgb, var(--tape) 80%, var(--leader)), var(--void));
+  transform: rotateX(76deg);
   transform-origin: top center;
-}
-
-.aisle-placard {
-  position: absolute;
-  left: 50%;
-  top: 30%;
-  transform: translateX(-50%);
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 8px;
-  letter-spacing: 0.2em;
-  color: rgba(138, 132, 120, 0.42);
-  white-space: nowrap;
 }
 
 .aisle-lip {
   position: relative;
-  height: 10px;
-  background: linear-gradient(to bottom, #4a3d28, #2a2418 55%, #14110c);
+  height: 9px;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--tape) 70%, var(--leader)) 0%, var(--tape) 42%, var(--void) 100%);
 }
 
 .aisle-lip::before {
@@ -191,7 +226,7 @@
   position: absolute;
   inset: 0 0 auto;
   height: 1px;
-  background: rgba(239, 230, 214, 0.2);
+  background: color-mix(in srgb, var(--paper) 18%, transparent);
 }
 
 .aisle-lip::after {
@@ -199,22 +234,44 @@
   position: absolute;
   inset: auto 0 0;
   height: 1px;
-  background: rgba(0, 0, 0, 0.7);
+  background: color-mix(in srgb, var(--void) 80%, black);
 }
 
 .aisle-lip-depth {
-  height: 12px;
-  background: #0c0b09;
-  transform: rotateX(68deg);
+  height: 14px;
+  background: var(--void);
+  transform: rotateX(70deg);
   transform-origin: top center;
 }
 
 .tape-slot {
   position: relative;
-  width: 22px;
-  height: 184px;
+  display: flex;
+  align-items: flex-end;
+  width: 24px;
+  height: 200px;
   flex-shrink: 0;
   transform-style: preserve-3d;
+}
+
+.tape-slot-vhs {
+  width: 32px;
+}
+
+.tape-slot-minidv {
+  width: 24px;
+}
+
+.tape-slot-hi8 {
+  width: 22px;
+}
+
+.tape-slot-phone {
+  width: 18px;
+}
+
+.tape-slot-digital {
+  width: 24px;
 }
 
 .tape-slot.is-lit {
@@ -222,17 +279,17 @@
 }
 
 .aisle.is-open .tape-slot:not(.is-lit) {
-  opacity: 0.5;
+  opacity: 0.42;
 }
 
 .aisle.is-open .aisle-bay.is-recede {
-  opacity: 0.4;
+  opacity: 0.32;
 }
 
 .tape-hit {
   display: block;
   width: 100%;
-  height: 100%;
+  height: auto;
   padding: 0;
   border: 0;
   background: transparent;
@@ -241,9 +298,15 @@
   touch-action: manipulation;
 }
 
+.tape-hit:focus-visible {
+  outline: 1px solid var(--leader);
+  outline-offset: 2px;
+}
+
 .tape-pulled {
   position: absolute;
-  top: 0;
+  top: auto;
+  bottom: 0;
   width: 138px;
   z-index: 2;
   transform-style: preserve-3d;
@@ -269,29 +332,41 @@
 .tape-spine {
   position: relative;
   display: flex;
-  height: 184px;
-  width: 18px;
+  height: 176px;
+  width: 20px;
   flex-direction: column;
   align-items: center;
   overflow: hidden;
-  padding: 8px 0 6px;
-  color: rgba(239, 230, 214, 0.82);
+  padding: 7px 0 6px;
+  color: color-mix(in srgb, var(--paper) 88%, transparent);
+  box-shadow:
+    inset 1px 0 0 color-mix(in srgb, var(--paper) 16%, transparent),
+    inset -2px 0 0 color-mix(in srgb, var(--void) 70%, black),
+    1px 0 0 color-mix(in srgb, var(--void) 55%, black);
+}
+
+.tape-spine::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--void) 28%, transparent) 72%, transparent 100%);
 }
 
 .tape-spine-tab {
-  height: 14px;
-  width: 12px;
+  height: 13px;
+  width: 11px;
   flex-shrink: 0;
-  background: #d7b56a;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  background: var(--leader);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--void) 45%, black);
 }
 
 .tape-spine-muted .tape-spine-tab {
-  background: rgba(215, 181, 106, 0.28);
+  background: color-mix(in srgb, var(--leader) 28%, var(--void));
 }
 
 .tape-spine-lit .tape-spine-tab {
-  box-shadow: 0 0 16px rgba(196, 160, 90, 0.45);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--leader) 50%, transparent);
 }
 
 .tape-spine-code {
@@ -299,31 +374,22 @@
   writing-mode: vertical-rl;
   transform: rotate(180deg);
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 9px;
-  letter-spacing: 0.16em;
+  font-size: var(--type-label);
+  letter-spacing: 0.05em;
+  word-spacing: 0.08em;
   line-height: 1;
 }
 
 .tape-spine-year,
-.tape-spine-fmt,
-.tape-spine-den,
 .tape-spine-note {
   margin-top: auto;
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 7px;
-  letter-spacing: 0.08em;
-  color: rgba(138, 132, 120, 0.9);
+  font-size: var(--type-label);
+  letter-spacing: 0.05em;
+  word-spacing: 0.08em;
+  color: var(--dust);
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-}
-
-.tape-spine-fmt {
-  margin-top: 6px;
-}
-
-.tape-spine-den {
-  margin-top: 6px;
-  color: rgba(196, 160, 90, 0.72);
 }
 
 .tape-spine-note {
@@ -331,54 +397,63 @@
 }
 
 .tape-spine-minidv {
-  background: linear-gradient(90deg, #2c2416, #12100c);
+  width: 20px;
+  height: 176px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--tape) 80%, var(--tungsten)), var(--void));
 }
 
 .tape-spine-hi8 {
-  background: linear-gradient(90deg, #3a1f14, #140e0c);
+  width: 18px;
+  height: 168px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--hold) 22%, var(--void)), var(--void));
 }
 
 .tape-spine-vhs {
-  background: linear-gradient(90deg, #1c2230, #0c0d10);
+  width: 28px;
+  height: 198px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--night) 18%, var(--void)), var(--void));
 }
 
 .tape-spine-phone {
-  background: linear-gradient(90deg, #1a1a1a, #0a0a0a);
+  width: 15px;
+  height: 142px;
+  background: linear-gradient(90deg, #1a1a1a, var(--void));
 }
 
 .tape-spine-digital {
-  background: linear-gradient(90deg, #243028, #0c100e);
+  width: 20px;
+  height: 170px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--night) 14%, var(--tape)), var(--void));
 }
 
 .tape-spine-muted {
-  opacity: 0.42;
+  opacity: 0.62;
 }
 
 .tape-spine-held {
-  outline: 1px solid rgba(196, 160, 90, 0.18);
+  outline: 1px solid color-mix(in srgb, var(--leader) 22%, transparent);
   outline-offset: -1px;
 }
 
 .tape-empty {
-  width: 18px;
-  height: 176px;
+  width: 16px;
+  height: 168px;
   flex-shrink: 0;
-  background: linear-gradient(90deg, #080807, #14120e 40%, #080807);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
-  opacity: 0.45;
+  background: linear-gradient(90deg, var(--void), color-mix(in srgb, var(--ink) 70%, var(--tape)) 42%, var(--void));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--void) 70%, black);
 }
 
 .aisle-rail {
   display: flex;
   align-items: flex-end;
-  gap: 4px;
+  gap: 3px;
   max-width: 100%;
   overflow-x: auto;
   padding: 0 2px 2px;
 }
 
 .aisle-rail .tape-slot {
-  width: 22px;
+  height: 200px;
 }
 
 .aisle-rail .tape-slot.is-lit {
@@ -400,7 +475,7 @@
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .aisle:not(.is-open) .tape-hit:hover .tape-spine {
-    transform: translate3d(0, -5px, 8px);
+    transform: translate3d(0, -6px, 10px);
   }
 }
 

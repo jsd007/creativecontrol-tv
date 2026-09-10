@@ -7,18 +7,18 @@ export function ClipSleeve({ clip }: { clip: ArchiveClip }) {
   const hold = holdFor(clip);
   const paper = clip.visibility === "MEMBERS_ONLY";
   const ink = paper ? "text-void" : "text-paper";
-  const quiet = paper ? "text-void/45" : "text-paper/50";
-  const body = paper ? "text-void/65" : "text-bone/70";
+  const quiet = paper ? "text-void/65" : "text-bone";
+  const body = paper ? "text-void/75" : "text-bone";
 
   return (
-    <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#100e0b]">
+    <div className="relative aspect-[4/3] w-full overflow-hidden bg-ink">
       <SleeveField visibility={clip.visibility} />
       <div className="grain-held" />
 
       <div className={`relative z-10 flex h-full flex-col justify-between ${paper ? "p-[14%]" : "p-5 md:p-7"}`}>
         <div className="flex items-start justify-between gap-4">
-          <span className={`font-mono text-[9px] tracking-[0.2em] ${quiet}`}>HELD SLEEVE</span>
-          <span className={`font-mono text-[9px] tracking-[0.16em] ${quiet}`}>{clip.formatHint}</span>
+          <span className={`font-mono text-[12px] tracking-[0.08em] ${quiet}`}>HELD SLEEVE</span>
+          <span className={`font-mono text-[12px] tracking-[0.08em] ${quiet}`}>{clip.formatHint}</span>
         </div>
 
         <div className="max-w-[22ch]">
@@ -26,14 +26,14 @@ export function ClipSleeve({ clip }: { clip: ArchiveClip }) {
             {hold.status}
           </p>
           <p className={`mt-4 max-w-[34ch] text-[15px] leading-relaxed ${body}`}>{hold.line}</p>
-          <p className={`mt-4 font-mono text-[10px] tracking-[0.14em] ${quiet}`}>
+          <p className={`mt-4 font-mono text-[12px] tracking-[0.08em] ${quiet}`}>
             {clip.rightsStatus.replaceAll("_", " ")}
           </p>
         </div>
 
         <div className="flex items-end justify-between">
-          <span className={`font-mono text-[9px] tracking-[0.12em] ${quiet}`}>{clip.startTimecode}</span>
-          <span className={`font-mono text-[9px] tracking-[0.12em] ${quiet}`}>{formatDuration(clip.duration)}</span>
+          <span className={`font-mono text-[12px] tracking-[0.08em] ${quiet}`}>{clip.startTimecode}</span>
+          <span className={`font-mono text-[12px] tracking-[0.08em] ${quiet}`}>{formatDuration(clip.duration)}</span>
         </div>
       </div>
     </div>

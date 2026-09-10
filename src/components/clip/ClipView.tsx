@@ -76,7 +76,7 @@ export function ClipView({ clip, activeSegmentId }: { clip: ArchiveClip; activeS
         }
         file={
           <div>
-            <p className="font-cond text-[12px] tracking-[0.22em] text-leader">
+            <p className="font-cond text-[12px] tracking-[0.1em] text-leader">
               {closed ? hold?.status : unlogged ? "UNLOGGED" : broadcast ? "PUBLIC BROADCAST" : "LOGGED FRAME"}
             </p>
             <h1
@@ -92,10 +92,10 @@ export function ClipView({ clip, activeSegmentId }: { clip: ArchiveClip; activeS
               </p>
             )}
             {unlogged ? null : (
-              <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-bone/80">{clip.description}</p>
+              <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-bone">{clip.description}</p>
             )}
             {hold ? (
-              <p className="mt-4 max-w-xl font-mono text-[11px] tracking-[0.12em] text-dust">{hold.line}</p>
+              <p className="mt-4 max-w-xl font-mono text-[12px] tracking-[0.08em] text-dust">{hold.line}</p>
             ) : null}
             {(related.before || related.after) && (
               <div className="mt-6 flex flex-wrap gap-x-8 gap-y-2 font-cond text-[12px] tracking-[0.16em]">
@@ -125,7 +125,7 @@ export function ClipView({ clip, activeSegmentId }: { clip: ArchiveClip; activeS
 
       {onTape.length && !(tape && isBroadcastShelf(tape.id)) ? (
         <section className="relative mt-16">
-          <p className="font-cond text-[12px] tracking-[0.22em] text-dust">ON THIS CASSETTE · {tape?.code}</p>
+          <p className="font-cond text-[12px] tracking-[0.1em] text-dust">ON THIS CASSETTE · {tape?.code}</p>
           <div className="story-reel mt-5">
             <div className="film-perfs hidden md:block" aria-hidden />
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -155,7 +155,7 @@ export function ClipView({ clip, activeSegmentId }: { clip: ArchiveClip; activeS
 
       {relatedCut.length ? (
         <section className="mt-20">
-          <p className="font-cond text-[12px] tracking-[0.22em] text-dust">RELATED</p>
+          <p className="font-cond text-[12px] tracking-[0.1em] text-dust">RELATED</p>
           <RelatedReveal>
             {relatedCut.map((c) => (
               <RelatedFrame key={c.id} from={clip} clip={c} />

@@ -317,7 +317,7 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
               ))}
             </div>
           ) : (
-            <p className="mt-3 font-mono text-[10px] tracking-[0.14em] text-dust/70">ERA OR DECADE, THEN A YEAR</p>
+            <p className="mt-3 font-mono text-[12px] tracking-[0.08em] text-dust">ERA OR DECADE, THEN A YEAR</p>
           )}
         </div>
 
@@ -392,7 +392,7 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
       />
 
       {!results.length ? (
-        <p className="mt-16 font-mono text-[11px] tracking-[0.18em] text-dust">NO RECORDS</p>
+        <p className="mt-16 font-mono text-[12px] tracking-[0.1em] text-dust">NO RECORDS</p>
       ) : null}
     </div>
   );

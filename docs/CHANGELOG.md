@@ -1,5 +1,38 @@
 # Changelog
 
+## 2026-09-09 — `/timeline` is a through-line, not a hue poster wall
+
+- Live span was empty HSL year cards (rainbow dashboard) plus text-only `through` names. Drill lived only in React state — `/timeline` could not open 2002 or YE.
+- Year / month / day cells are now proving stills (quiet prototype field, paper hold if closed) with the file stamp under the frame: era, date, title, people · place. No YouTube remount. No `N FRAMES`.
+- Shareable time: `?through=ye`, `?year=2002`, `?month=10`, `?day=12`. Hover or follow a name lights that thread on the sprocket (ticks, not a histogram). Ye / Coodie / Chike / Chicago doors land on the path.
+- Combo **1 RECORD**. Beat 4 leftover. CH 07 PLAY · MUTED. SOUND off. `/world` / `/tapes` / TV year books not touched.
+- Redeployed hobby `creativecontrol-tv`: https://creativecontrol-tv.vercel.app/timeline
+- No commit. Archive goal is **not complete**. Tape camera is still CSS.
+
+## 2026-09-09 — Tapes aisle is holdings, not a dashboard
+
+- `/tapes` aisle restored after the overlay cut: spines read as physical holdings (code + year; MiniDV / HI8 / VHS / phone / digital as bodies). Format strip is quiet type. Lintel is the bay name only — no CAMERA ORIGINALS inventory notes, no well placard, no 1·5 density stamp, no invented CC-···· codes.
+- Optical CSS aisle deepened (wall angle, well, floor, bay Z without scale pinch). Desktop camera is width-only (`useIsNarrow`); reduced-motion stays `transform: none`. No second R3F canvas.
+- Walk: arrows step the rack; click the same; Escape closes; Enter on the file opens `/tapes/[id]`. Open dossier is still one opaque void file: 1 LOGGED · 5 UNLOGGED, CC-0217 · CHICAGO · 2002-10-12, OPEN THE FILE. No contact sheet in the aisle. Combo basement stays on the tape file.
+- UNOPENED is a longer mute rack + fading empty lip. SOUND off. No commit.
+- Archive goal is **not complete**. Tape camera is still CSS.
+
+## 2026-09-09 — House palette + contrast
+
+- Small palette that earns its keep: void `#080706`, ink `#141210`, paper `#f2ead9`, bone `#d8cfb8`, dust `#c2b68e`, leader `#d4b05a`, hold/signal `#d05642`, night `#7eaaa3`, tungsten `#c17a42` (fields only), chicago `#e2b85c`.
+- Contrast: opaque plates under type on `/` (copy over the living field), `/world` HUD + city names, archive mast, tape lintel / open file, timeline film captions, clip file. 12px floor. Tracking no longer smashes OPEN THE FILE, LOGGED · UNLOGGED, SOUND OFF, ENTER / THE WORLD.
+- `/tapes?open=t-0217` stays one opaque file — not a contact sheet. Combo **1**. SOUND off. No globe.gl. No second R3F canvas. World stays the sculpture, not MAP.
+- TV GUIDE interaction, year-book nesting, and tuner UX left to the sibling. Shared tokens only (`night` house accent already on house channels).
+- Redeployed hobby `creativecontrol-tv`: https://creativecontrol-tv.vercel.app
+- No commit. Archive goal is **not complete**.
+
+## 2026-09-09 — `/tv` GUIDE is a board you tune
+
+- 2010 / 2011 were stacked A–Z menus that opened into title novels (and leftover prefix rundowns). James: too busy, too long, hard to use.
+- CH 07 GUIDE is now one compact strip of the **13** tunables. A fat year opens as a short letter rail. A fat letter still uses the official prefix already on the file (2011 C → CREATIVE CONTROL; 2010 C → CURREN$Y). No new nests. No 2010 S/T via THE.
+- Any leftover list windows **10** titles + MORE / PREV. House 00–06 / 08 window the day the same way. Ident first on CH 07. PLAY · MUTED. STAGE keeps a GUIDE jump. Digits and arrows still work.
+- Color tokens already landed stay. No second canvas. No commit. Archive goal is **not complete**.
+
 ## 2026-09-09 — Tape open is a file, not a contact sheet
 
 - `/tapes` open dossier was an opaque box still dumping six PROTOTYPE / UNLOGGED cells plus the MEMBERS ONLY basement card. Type (OPEN THE FILE, 1 LOGGED · 5 UNLOGGED) smashed under condensed tracking.
@@ -12,7 +45,10 @@
 - globe.gl / three-globe / react-globe.gl stay out. They own a second Three renderer, scene, camera, and loop. Tone is data-viz (arcs, hexbins, pins). Worse for this archive. One R3F canvas remains.
 - Desktop `/world` keeps idle mid-Atlantic orbit, authored coasts, Chicago-weighted fly-to (r≈4.52 / 4.85), year as `2004`. MAP is still fallback only (narrow / reduced-motion / failed WebGL).
 - Shipped on the existing sculpture: night-side terminator, gold limb + haze, Chicago as a glow in the dark (not a pin), GSAP fly-to, in-canvas grain/vignette. No postprocessing composer. No second canvas. `/tapes` not touched.
-- Combo Ye+Chicago+2002+Studio stays **1 RECORD**. SOUND off. Presentation beat 2 = `/world`, beat 3 = Chicago fly. Archive goal is **not complete**.
+- Combo Ye+Chicago+2002+Studio stays **1 RECORD**. SOUND off. Presentation beat 2 = `/world`, beat 3 = Chicago fly.
+- Local 1440: idle + Chicago fly measured ~100fps (rAF, one canvas). Reduced-motion and ~390 stay **YEAR · MAP**.
+- Redeployed hobby `creativecontrol-tv`: https://creativecontrol-tv.vercel.app/world
+- Archive goal is **not complete**. Coasts stay authored. No commit.
 
 ## 2026-09-09 — Share-path smoke after mark / film / globe / contrast
 

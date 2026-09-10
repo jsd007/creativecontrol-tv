@@ -74,10 +74,10 @@ export function TapeObject({
           hero ? "inset-x-6 top-10 h-16 -rotate-2" : "inset-x-4 top-7 h-11 -rotate-[1.5deg]",
         )}
       >
-        <p className={classNames("font-mono tracking-[0.12em] text-void", hero ? "pt-2 text-[13px]" : "pt-1 text-[10px]")}>
+        <p className={classNames("font-mono tracking-[0.08em] text-void", hero ? "pt-2 text-[13px]" : "pt-1 text-[12px]")}>
           {tape.code}
         </p>
-        <p className={classNames("font-cond tracking-[0.08em] text-void", hero ? "text-[15px]" : "text-[11px]")}>
+        <p className={classNames("font-cond tracking-[0.06em] text-void", hero ? "text-[15px]" : "text-[12px]")}>
           {tape.format}
         </p>
       </div>
@@ -89,17 +89,24 @@ export function TapeObject({
       ) : null}
 
       <div className={classNames("absolute inset-x-0 bottom-0", hero ? "p-5" : "p-3")}>
-        <p className="font-mono text-[9px] tracking-[0.12em] text-paper/70">{tape.year}</p>
+        <p className="font-mono text-[12px] tracking-[0.08em] text-paper">{tape.year}</p>
         <p className={classNames("mt-1 font-display leading-tight text-paper", hero ? "text-[28px]" : "line-clamp-3 text-[18px]")}>
           {tape.originalLabel}
         </p>
-        <p className="mt-2 font-mono text-[9px] tracking-[0.08em] text-dust">
-          {tape.camera}
-          {density ? ` · ${density}` : ""}
-        </p>
         {hero ? (
-          <p className="mt-3 font-mono text-[9px] leading-relaxed tracking-[0.08em] text-dust">{tape.provenance}</p>
-        ) : null}
+          <>
+            <p className="mt-2 font-mono text-[12px] tracking-[0.06em] text-dust">
+              {tape.camera}
+              {density ? ` · ${density}` : ""}
+            </p>
+            <p className="mt-3 font-mono text-[12px] leading-relaxed tracking-[0.06em] text-dust">{tape.provenance}</p>
+          </>
+        ) : onShelf ? null : (
+          <p className="mt-2 font-mono text-[12px] tracking-[0.06em] text-dust">
+            {tape.camera}
+            {density ? ` · ${density}` : ""}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -109,24 +116,19 @@ export function TapeSpine({
   format,
   code,
   year,
-  density,
   note,
   muted = false,
   lit = false,
   held = false,
 }: {
   format: TapeFormat;
-  code: string;
+  code?: string;
   year?: number | string;
-  density?: string;
   note?: string;
   muted?: boolean;
   lit?: boolean;
   held?: boolean;
 }) {
-  const short =
-    format === "MINIDV" ? "DV" : format === "DIGITAL" ? "DIG" : format === "PHONE" ? "PH" : format;
-
   return (
     <div
       className={classNames(
@@ -138,10 +140,8 @@ export function TapeSpine({
       )}
     >
       <div className="tape-spine-tab" />
-      <p className="tape-spine-code">{code}</p>
+      {code ? <p className="tape-spine-code">{code}</p> : null}
       {year != null ? <p className="tape-spine-year">{year}</p> : null}
-      <p className="tape-spine-fmt">{short}</p>
-      {density ? <p className="tape-spine-den">{density}</p> : null}
       {note ? <p className="tape-spine-note">{note}</p> : null}
     </div>
   );
@@ -150,12 +150,12 @@ export function TapeSpine({
 export function UnopenedShell({ format, label }: { format: TapeFormat; label: string }) {
   const held = label === "HELD";
   return (
-    <div className="tape-slot" aria-hidden>
-      <TapeSpine format={format} code="CC-····" note={held ? "HELD" : label} muted held={held} />
+    <div className={`tape-slot tape-slot-${format.toLowerCase()}`} aria-hidden>
+      <TapeSpine format={format} note={label} muted held={held} />
     </div>
   );
 }
 
 export function EmptySlot({ fade = 1 }: { fade?: number }) {
-  return <div className="tape-empty" style={{ opacity: 0.5 * fade }} aria-hidden />;
+  return <div className="tape-empty" style={{ opacity: 0.42 * fade }} aria-hidden />;
 }

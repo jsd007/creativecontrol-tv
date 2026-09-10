@@ -5,14 +5,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        void: "#070706",
-        ink: "#10100e",
-        paper: "#efe6d6",
-        bone: "#e6ddd0",
-        dust: "#b8b29f",
-        leader: "#d4b66a",
-        signal: "#b83a2f",
-        chicago: "#e8c36a",
+        void: "#080706",
+        ink: "#141210",
+        paper: "#f2ead9",
+        bone: "#d8cfb8",
+        dust: "#c2b68e",
+        leader: "#d4b05a",
+        signal: "#d05642",
+        hold: "#d05642",
+        night: "#7eaaa3",
+        tungsten: "#c17a42",
+        chicago: "#e2b85c",
         tape: "#2a2418",
       },
       fontFamily: {

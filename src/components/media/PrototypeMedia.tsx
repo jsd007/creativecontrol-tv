@@ -10,6 +10,30 @@ type Props = {
   large?: boolean;
 };
 
+/** Quiet proving field — no PROTOTYPE MEDIA stamp. For year / month / day cells. */
+export function PrototypeField({
+  clip,
+  className = "",
+}: {
+  clip: VoiceClip & Pick<ArchiveClip, "id" | "tags">;
+  className?: string;
+}) {
+  const mute = isUnlogged(clip);
+  const voice = mute ? "default" : resolveMediaVoice(clip);
+  return (
+    <div className={`relative overflow-hidden bg-ink ${className}`}>
+      {mute ? <UnloggedField /> : <Field clip={clip} voice={voice} />}
+      {!mute && clip.mediaKind === "LEADER" && voice === "default" ? (
+        <div className="leader-bars absolute inset-0 opacity-90" />
+      ) : null}
+      {!mute && voice !== "default" && clip.mediaKind === "LEADER" ? (
+        <div className="leader-bars absolute inset-x-0 top-0 h-2 opacity-80" />
+      ) : null}
+      <div className="scan absolute inset-0" />
+    </div>
+  );
+}
+
 export function PrototypeMedia({ clip, className = "", large = false }: Props) {
   const mute = isUnlogged(clip);
   const voice = mute ? "default" : resolveMediaVoice(clip);

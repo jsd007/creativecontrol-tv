@@ -27,19 +27,19 @@ export function TapeFrame({
       ) : (
         <PrototypeMedia clip={clip} className="aspect-[4/3] w-full" />
       )}
-      <p className="mt-2 font-mono text-[9px] tracking-[0.12em] text-dust">
+      <p className="mt-2 font-mono text-[12px] tracking-[0.08em] text-dust">
         {clip.startTimecode}
         {unlogged ? ` · ${formatDuration(clip.duration)}` : ""}
       </p>
       {unlogged ? (
-        <p className="font-mono text-[10px] tracking-[0.16em] text-dust/70">
+        <p className="font-mono text-[12px] tracking-[0.08em] text-dust/70">
           {closed ? visibilityLabel(clip.visibility) : "UNLOGGED"}
         </p>
       ) : (
         <>
           <p className="font-display text-[20px] leading-tight text-paper group-hover:text-leader">{clipHeading(clip)}</p>
           {closed ? (
-            <p className="mt-1 font-mono text-[9px] tracking-[0.14em] text-dust">{visibilityLabel(clip.visibility)}</p>
+            <p className="mt-1 font-mono text-[12px] tracking-[0.08em] text-dust">{visibilityLabel(clip.visibility)}</p>
           ) : null}
         </>
       )}

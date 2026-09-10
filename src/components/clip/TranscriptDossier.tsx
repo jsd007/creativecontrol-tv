@@ -13,8 +13,8 @@ export function TranscriptDossier({
 }) {
   return (
     <section className="mt-16 max-w-3xl">
-      <p className="font-cond text-[12px] tracking-[0.22em] text-leader">PROTOTYPE TRANSCRIPT</p>
-      <p className="mt-1 font-mono text-[10px] tracking-[0.16em] text-dust">
+      <p className="font-cond text-[12px] tracking-[0.1em] text-leader">PROTOTYPE TRANSCRIPT</p>
+      <p className="mt-1 font-mono text-[12px] tracking-[0.08em] text-dust">
         EDITORIAL INFERENCE · NOT A RECORDING
       </p>
       {transcript.note ? (
@@ -32,7 +32,7 @@ export function TranscriptDossier({
                   active ? "border-leader text-leader" : "border-paper/15 text-paper"
                 }`}
               >
-                <p className="font-mono text-[10px] tracking-[0.14em] text-dust">
+                <p className="font-mono text-[12px] tracking-[0.08em] text-dust">
                   {tc}
                   {seg.speaker ? ` · ${seg.speaker}` : ""}
                 </p>

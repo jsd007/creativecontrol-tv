@@ -272,55 +272,129 @@ function traceRing(g: CanvasRenderingContext2D, ring: LonLat[], w: number, h: nu
   g.closePath();
 }
 
+/** Authored land tones — paper masses, not a GIS atlas. */
+const LAND_TONE = [
+  "#6a5842",
+  "#5c5648",
+  "#534632",
+  "#5a4e3e",
+  "#584c3c",
+  "#564a3a",
+  "#5a5246",
+  "#6b5638",
+  "#5c4c36",
+  "#5a4c3c",
+  "#584a3a",
+  "#5a4c3a",
+  "#564838",
+  "#544636",
+  "#504636",
+  "#524634",
+  "#504434",
+  "#4e4434",
+  "#645840",
+  "#5c5440",
+  "#5a5040",
+  "#585040",
+  "#5c4c38",
+  "#5a4a36",
+  "#5a4c3c",
+  "#584838",
+  "#4a4640",
+];
+
+/** Soft interior washes. Sculptural weight, not elevation data. */
+const MASSES: { lon: number; lat: number; r: number; color: string }[] = [
+  { lon: -110, lat: 44, r: 0.078, color: "rgba(38,30,20,0.3)" },
+  { lon: -96, lat: 40, r: 0.05, color: "rgba(78,60,38,0.16)" },
+  { lon: -62, lat: -8, r: 0.09, color: "rgba(32,26,16,0.34)" },
+  { lon: 14, lat: 24, r: 0.11, color: "rgba(122,94,52,0.24)" },
+  { lon: 22, lat: 2, r: 0.072, color: "rgba(36,28,18,0.3)" },
+  { lon: 88, lat: 32, r: 0.062, color: "rgba(34,28,20,0.32)" },
+  { lon: 108, lat: 58, r: 0.11, color: "rgba(46,44,38,0.24)" },
+  { lon: 134, lat: -25, r: 0.086, color: "rgba(92,70,40,0.22)" },
+  { lon: 18, lat: 50, r: 0.048, color: "rgba(54,46,36,0.18)" },
+];
+
+export type NightMark = { lon: number; lat: number; glow: number; chicago?: boolean };
+
+function clipLand(g: CanvasRenderingContext2D, w: number, h: number) {
+  g.beginPath();
+  for (const ring of CONTINENTS) traceRing(g, ring, w, h);
+  for (const ring of CUTS) traceRing(g, ring, w, h);
+  g.clip("evenodd");
+}
+
+function hash01(i: number, a: number, b: number, mod: number) {
+  return (((i * a + b) % mod) + mod) % mod / mod;
+}
+
 export function paintLand(g: CanvasRenderingContext2D, w: number, h: number) {
   g.fillStyle = "#080706";
   g.fillRect(0, 0, w, h);
 
   const ocean = g.createLinearGradient(0, 0, 0, h);
-  ocean.addColorStop(0, "#0c0b09");
-  ocean.addColorStop(0.55, "#090807");
-  ocean.addColorStop(1, "#060504");
+  ocean.addColorStop(0, "#0d0c0a");
+  ocean.addColorStop(0.42, "#0a0908");
+  ocean.addColorStop(0.72, "#080706");
+  ocean.addColorStop(1, "#050403");
   g.fillStyle = ocean;
   g.fillRect(0, 0, w, h);
 
-  g.fillStyle = "#5c503c";
-  g.beginPath();
-  for (const ring of CONTINENTS) traceRing(g, ring, w, h);
-  g.fill();
+  CONTINENTS.forEach((ring, i) => {
+    g.fillStyle = LAND_TONE[i] ?? "#5a4e3e";
+    g.beginPath();
+    traceRing(g, ring, w, h);
+    g.fill();
+  });
 
   g.fillStyle = "#080706";
   g.beginPath();
   for (const ring of CUTS) traceRing(g, ring, w, h);
   g.fill();
 
-  g.strokeStyle = "rgba(18, 14, 10, 0.55)";
-  g.lineWidth = Math.max(1.6, w / 720);
+  g.save();
+  clipLand(g, w, h);
+  for (const mass of MASSES) {
+    const [x, y] = lonLatToXY(mass.lon, mass.lat, w, h);
+    const rad = w * mass.r;
+    const wash = g.createRadialGradient(x, y, rad * 0.08, x, y, rad);
+    wash.addColorStop(0, mass.color);
+    wash.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = wash;
+    g.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+  }
+  for (let i = 0; i < 4200; i += 1) {
+    const x = hash01(i, 127, 19, 997) * w;
+    const y = hash01(i, 311, 7, 991) * h;
+    const ink = hash01(i, 53, 11, 983);
+    g.fillStyle = ink > 0.62 ? `rgba(18,14,10,${0.04 + ink * 0.05})` : `rgba(239,230,214,${0.028 + ink * 0.04})`;
+    g.fillRect(x, y, 1.15 + ink * 1.1, 1.15);
+  }
+  g.restore();
+
+  g.strokeStyle = "rgba(16, 12, 8, 0.62)";
+  g.lineWidth = Math.max(1.8, w / 680);
   g.beginPath();
   for (const ring of CONTINENTS) traceRing(g, ring, w, h);
   g.stroke();
 
-  g.strokeStyle = "rgba(196,160,90,0.34)";
-  g.lineWidth = Math.max(0.65, w / 1280);
+  g.strokeStyle = "rgba(196,160,90,0.3)";
+  g.lineWidth = Math.max(0.7, w / 1280);
   g.beginPath();
   for (const ring of CONTINENTS) traceRing(g, ring, w, h);
   g.stroke();
 
   const [cx, cy] = lonLatToXY(CHICAGO[0], CHICAGO[1], w, h);
-  const glow = g.createRadialGradient(cx, cy, 2, cx, cy, w * 0.09);
-  glow.addColorStop(0, "rgba(232,195,106,0.5)");
-  glow.addColorStop(0.35, "rgba(196,160,90,0.16)");
+  const glow = g.createRadialGradient(cx, cy, 1.4, cx, cy, w * 0.1);
+  glow.addColorStop(0, "rgba(226,184,92,0.58)");
+  glow.addColorStop(0.22, "rgba(193,122,66,0.22)");
+  glow.addColorStop(0.55, "rgba(196,160,90,0.08)");
   glow.addColorStop(1, "rgba(196,160,90,0)");
   g.fillStyle = glow;
   g.fillRect(cx - w * 0.12, cy - w * 0.12, w * 0.24, w * 0.24);
 
-  g.fillStyle = "rgba(239,230,214,0.035)";
-  for (let i = 0; i < 1800; i += 1) {
-    const x = (((i * 127 + 19) % 997) / 997) * w;
-    const y = (((i * 311 + 7) % 991) / 991) * h;
-    g.fillRect(x, y, 1.2, 1.2);
-  }
-
-  g.strokeStyle = "rgba(196,160,90,0.05)";
+  g.strokeStyle = "rgba(196,160,90,0.045)";
   g.lineWidth = 1;
   for (let i = 1; i < 12; i += 1) {
     g.beginPath();
@@ -328,4 +402,61 @@ export function paintLand(g: CanvasRenderingContext2D, w: number, h: number) {
     g.lineTo(w, (i * h) / 12);
     g.stroke();
   }
+}
+
+/** Analog night grain + catalog marks. No invented cities. */
+export function paintNight(g: CanvasRenderingContext2D, w: number, h: number, marks: NightMark[]) {
+  g.fillStyle = "#000000";
+  g.fillRect(0, 0, w, h);
+
+  g.save();
+  clipLand(g, w, h);
+  g.globalCompositeOperation = "lighter";
+
+  for (let i = 0; i < 1600; i += 1) {
+    const x = hash01(i, 419, 23, 1009) * w;
+    const y = hash01(i, 271, 41, 1009) * h;
+    const lat = 90 - (y / h) * 180;
+    if (Math.abs(lat) > 68) continue;
+    const n = hash01(i, 67, 13, 983);
+    if (n < 0.55) continue;
+    const a = 0.025 + n * 0.055;
+    g.fillStyle = n > 0.9 ? `rgba(226,184,92,${a})` : `rgba(193,122,66,${a * 0.85})`;
+    g.fillRect(x, y, n > 0.93 ? 1.45 : 1.05, 1.05);
+  }
+
+  for (const mark of marks) {
+    if (mark.chicago) continue;
+    const [x, y] = lonLatToXY(mark.lon, mark.lat, w, h);
+    const rad = w * (0.012 + mark.glow * 0.018);
+    const cluster = g.createRadialGradient(x, y, 0, x, y, rad);
+    cluster.addColorStop(0, `rgba(226,184,92,${0.22 + mark.glow * 0.28})`);
+    cluster.addColorStop(0.4, `rgba(193,122,66,${0.08 + mark.glow * 0.1})`);
+    cluster.addColorStop(1, "rgba(193,122,66,0)");
+    g.fillStyle = cluster;
+    g.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+    for (let i = 0; i < 10 + Math.round(mark.glow * 8); i += 1) {
+      const ox = (hash01(i, 17, mark.lon * 10, 97) - 0.5) * rad * 1.1;
+      const oy = (hash01(i, 29, mark.lat * 10, 97) - 0.5) * rad * 0.7;
+      g.fillStyle = `rgba(239,230,214,${0.12 + mark.glow * 0.12})`;
+      g.fillRect(x + ox, y + oy, 1.3, 1.2);
+    }
+  }
+
+  const [cx, cy] = lonLatToXY(CHICAGO[0], CHICAGO[1], w, h);
+  const bloom = g.createRadialGradient(cx, cy, 1, cx, cy, w * 0.085);
+  bloom.addColorStop(0, "rgba(239,230,214,0.72)");
+  bloom.addColorStop(0.12, "rgba(226,184,92,0.48)");
+  bloom.addColorStop(0.38, "rgba(193,122,66,0.16)");
+  bloom.addColorStop(1, "rgba(193,122,66,0)");
+  g.fillStyle = bloom;
+  g.fillRect(cx - w * 0.1, cy - w * 0.1, w * 0.2, w * 0.2);
+  for (let i = 0; i < 28; i += 1) {
+    const ox = (hash01(i, 13, 7, 89) - 0.5) * w * 0.028;
+    const oy = (hash01(i, 31, 3, 89) - 0.5) * w * 0.016;
+    g.fillStyle = `rgba(239,230,214,${0.18 + hash01(i, 5, 2, 17) * 0.22})`;
+    g.fillRect(cx + ox, cy + oy, 1.5, 1.3);
+  }
+
+  g.restore();
 }

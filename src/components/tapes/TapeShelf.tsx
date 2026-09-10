@@ -28,7 +28,7 @@ export function splitRack<T>(items: T[]): { left: T[]; right: T[] } {
   return { left: items.slice(0, mid), right: items.slice(mid) };
 }
 
-export function emptyFill(have: number, min = 4) {
+export function emptyFill(have: number, min = 0) {
   return Math.max(0, min - have);
 }
 
@@ -39,7 +39,7 @@ export function TapeShelf({
   approach = false,
   reduced = false,
   compact = false,
-  depth: _depth = 0,
+  depth = 0,
   left,
   right,
   children,
@@ -56,18 +56,19 @@ export function TapeShelf({
   children?: ReactNode;
 }) {
   const rail = compact || reduced || !right;
+  const rest = Math.max(-depth * 34, -136);
 
   return (
     <motion.section
-      aria-label={label}
+      aria-label={note ? `${label}, ${note}` : label}
       className={recede ? "aisle-bay is-recede" : "aisle-bay"}
       initial={false}
       animate={
         reduced || compact
           ? { z: 0, y: 0, rotateX: 0, scale: 1 }
           : {
-              z: recede ? -72 : approach ? 20 : 0,
-              y: recede ? 8 : 0,
+              z: recede ? -88 : approach ? 16 : rest,
+              y: recede ? 10 : 0,
               rotateX: 0,
               scale: 1,
             }
@@ -76,8 +77,7 @@ export function TapeShelf({
       transition={{ duration: 0.82, ease: [0.4, 0, 0.2, 1] }}
     >
       <div className="aisle-lintel">
-        <p className="font-cond text-[12px] tracking-[0.22em] text-dust">{label}</p>
-        {note ? <p className="font-mono text-[9px] tracking-[0.16em] text-dust/55">{note}</p> : null}
+        <p>{label}</p>
       </div>
 
       {rail ? (
@@ -88,7 +88,6 @@ export function TapeShelf({
           <div className="aisle-wall aisle-wall-l">{left}</div>
           <div className="aisle-well" aria-hidden>
             <div className="aisle-floor" />
-            <p className="aisle-placard">{label}</p>
           </div>
           <div className="aisle-wall aisle-wall-r">{right}</div>
           <div className="aisle-upright" aria-hidden />

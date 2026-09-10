@@ -20,7 +20,7 @@ export function TapeDossier({ tape }: { tape: SourceTape }) {
 
   return (
     <div className="px-4 pb-24 md:px-6">
-      <p className="pt-4 font-mono text-[11px] tracking-[0.18em] text-dust">
+      <p className="pt-4 font-mono text-[12px] tracking-[0.1em] text-dust">
         <Link href="/tapes" className="hover:text-paper">
           THE TAPES
         </Link>{" "}
@@ -35,26 +35,26 @@ export function TapeDossier({ tape }: { tape: SourceTape }) {
             logged={broadcast ? undefined : logged}
             unlogged={broadcast ? undefined : unlogged}
           />
-          <p className="mt-4 font-mono text-[10px] tracking-[0.14em] text-dust">
+          <p className="mt-4 font-mono text-[12px] tracking-[0.08em] text-dust">
             {broadcast
               ? `PUBLIC BROADCAST · ${tape.format} · YOUTUBE`
               : `CAMERA ORIGINAL · ${tape.format} · ${tape.digitizationStatus}`}
           </p>
         </div>
         <div className="bg-paper px-6 py-7 text-void md:px-8">
-          <p className="font-mono text-[10px] tracking-[0.18em] text-void/55">
+          <p className="font-mono text-[12px] tracking-[0.1em] text-void/70">
             {tape.code} · {tape.format} · {tape.digitizationStatus}
           </p>
           <h1 className="mt-3 font-display text-4xl leading-none md:text-5xl">{tape.originalLabel}</h1>
           {hold ? (
-            <p className="mt-4 font-cond text-[13px] tracking-[0.18em] text-void/55">
+            <p className="mt-4 font-cond text-[13px] tracking-[0.1em] text-hold">
               {hold.status}
               {hold.all ? " · THIS CASSETTE" : " ON THIS CASSETTE"}
             </p>
           ) : null}
           {tape.notes ? <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-void/70">{tape.notes}</p> : null}
 
-          <dl className="mt-8 grid gap-4 border-t border-void/15 pt-6 font-mono text-[11px] tracking-[0.08em] sm:grid-cols-2">
+          <dl className="mt-8 grid gap-4 border-t border-void/15 pt-6 font-mono text-[12px] tracking-[0.06em] sm:grid-cols-2">
             <div>
               <dt className="text-void/45">RECORDED</dt>
               <dd>{tape.recordedApproximate ?? tape.recordedDate}</dd>
@@ -85,7 +85,7 @@ export function TapeDossier({ tape }: { tape: SourceTape }) {
 
       {broadcast ? (
         <section className="mt-14">
-          <p className="font-cond text-[12px] tracking-[0.22em] text-dust">HOLDINGS</p>
+          <p className="font-cond text-[12px] tracking-[0.1em] text-dust">HOLDINGS</p>
           {years.map((group) => (
             <div key={group.year} className="mt-10 first:mt-6">
               <h2 className="font-display text-4xl leading-none text-paper">{group.year}</h2>
@@ -101,7 +101,7 @@ export function TapeDossier({ tape }: { tape: SourceTape }) {
         </section>
       ) : (
         <section className="mt-14">
-          <p className="font-cond text-[12px] tracking-[0.22em] text-dust">
+          <p className="font-cond text-[12px] tracking-[0.1em] text-dust">
             CONTACT SHEET · {logged} LOGGED · {unlogged} UNLOGGED
             {hold ? ` · ${hold.count} HELD` : ""}
           </p>

@@ -54,6 +54,8 @@ footage or stills we may use
 Ten beats: door → Earth → Chicago → leftover → combo 1 → Ye → official air → Studio → CC-0217 → span
 ```
 
+Stills to attach: `docs/coodie-proof/` (README + twelve desktop PNGs from live Vercel). How to send and the ask-him list live in that README. Goal is not complete.
+
 Inspect: [deployment](https://vercel.com/james-dombros-projects/creativecontrol-tv/2miTkGLvsuQz3VZjSLH5ZjM2WREd).
 
 Walked live desktop 9 Sep 2026 after the official-mark deploy. **Ten beats match `present.ts`.** The door is James’s static logo, not a coil we drew. Space stayed on the last beat. SOUND stayed OFF. DISCOVER stayed hidden. No constellation on the path. Beat 4 is the PUBLIC leftover (`/clip/channel-zero-never-aired`), not the basement sleeve. Combo Ye + Chicago + 2002 + Studio is **1 RECORD** (Basement, October 2002 · MEMBERS ONLY). Four openings exist in development (ARCHIVE / HISTORY / DOCUMENT / SPAN); `/?present=1` starts on default ARCHIVE `/`. Beat 7 is CH 07 ident (`/tv?ch=7`) — ident first, then the programmed official network, PLAY · MUTED. Not a 366-row dump. Not a YouTube tour. Beat 8 is Studio (`/tv?ch=3`). Archive goal is not complete.

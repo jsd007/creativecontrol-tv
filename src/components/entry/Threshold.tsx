@@ -170,8 +170,8 @@ function OpeningCopy({
         <>
           <motion.h1
             key={`${opening.id}-title`}
-            initial={reduced ? false : { opacity: 0, letterSpacing: "0.42em" }}
-            animate={{ opacity: 1, letterSpacing: "0.22em" }}
+            initial={reduced ? false : { opacity: 0, letterSpacing: "0.18em" }}
+            animate={{ opacity: 1, letterSpacing: "0.08em" }}
             transition={{ duration: reduced ? 0 : MOTION.register, ease: EASE_GATE, delay: reduced ? 0 : 0.82 }}
             className="opening-title"
           >
@@ -186,8 +186,8 @@ function OpeningCopy({
           {opening.kicker ? (
             <motion.p
               key={`${opening.id}-kicker`}
-              initial={reduced ? false : { opacity: 0, letterSpacing: "0.42em" }}
-              animate={{ opacity: 1, letterSpacing: "0.28em" }}
+              initial={reduced ? false : { opacity: 0, letterSpacing: "0.18em" }}
+              animate={{ opacity: 1, letterSpacing: "0.12em" }}
               transition={{ duration: reduced ? 0 : MOTION.register, ease: EASE_GATE, delay: reduced ? 0 : 0.72 }}
               className="opening-kicker"
             >
@@ -196,8 +196,8 @@ function OpeningCopy({
           ) : null}
           <motion.h1
             key={`${opening.id}-title`}
-            initial={reduced ? false : { opacity: 0, y: opening.id === "history" ? 0 : 8, letterSpacing: opening.id === "history" ? "0.38em" : undefined }}
-            animate={{ opacity: 1, y: 0, letterSpacing: opening.id === "history" ? "0.16em" : undefined }}
+            initial={reduced ? false : { opacity: 0, y: opening.id === "history" ? 0 : 8, letterSpacing: opening.id === "history" ? "0.16em" : undefined }}
+            animate={{ opacity: 1, y: 0, letterSpacing: opening.id === "history" ? "0.08em" : undefined }}
             transition={{ duration: reduced ? 0 : MOTION.register, ease: EASE_GATE, delay: reduced ? 0 : 0.82 }}
             className="opening-title"
           >

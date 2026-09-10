@@ -2,16 +2,16 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { catalog, clipsOnTape, getLocation, getTape } from "@/data";
 import type { SourceTape, TapeFormat } from "@/data/types";
 import { isUnlogged } from "@/lib/clipDisplay";
 import { broadcastYearKey, broadcastYears, broadcastYearTape, parseBroadcastYearKey } from "@/lib/holdings";
-import { densityStamp, EmptySlot, TapeObject, TapeSpine, UnopenedShell } from "./TapeObject";
-import { emptyFill, shelfBays, shelfOf, splitRack, TapeShelf, type ShelfKey } from "./TapeShelf";
-import { isTypingTarget } from "@/lib/keys";
-import { EASE_GATE, useIsCompact, usePrefersReducedMotion } from "@/lib/motion";
+import { EmptySlot, TapeObject, TapeSpine, UnopenedShell } from "./TapeObject";
+import { shelfBays, shelfOf, splitRack, TapeShelf, type ShelfKey } from "./TapeShelf";
+import { isActionTarget, isTypingTarget } from "@/lib/keys";
+import { EASE_GATE, useIsNarrow, usePrefersReducedMotion } from "@/lib/motion";
 import { playEngage } from "@/lib/sound";
 import "./aisle.css";
 
@@ -22,7 +22,7 @@ const MUTE_FORMATS: TapeFormat[] = ["MINIDV", "HI8", "VHS", "DIGITAL", "PHONE"];
 
 function muteShells(format: TapeFormat | "ALL") {
   const formats = format === "ALL" ? MUTE_FORMATS : [format];
-  const count = format === "ALL" ? 12 : 6;
+  const count = format === "ALL" ? 22 : 10;
   return Array.from({ length: count }, (_, i) => ({
     format: formats[i % formats.length],
     label: MUTE_WORDS[i % MUTE_WORDS.length],
@@ -47,10 +47,15 @@ function density(tapeId: string) {
   return { logged: frames.length - unlogged, unlogged };
 }
 
+function fileHref(id: string) {
+  return parseBroadcastYearKey(id) != null ? "/tapes/t-broadcast" : `/tapes/${id}`;
+}
+
 export function TapeMosaic() {
   const search = useSearchParams();
+  const router = useRouter();
   const [format, setFormat] = useState<(typeof FORMATS)[number]>("ALL");
-  const [openId, setOpenId] = useState<string | null>(() => requestedOpenId(search.get("open")));
+  const openId = requestedOpenId(search.get("open"));
   const [sheet, setSheet] = useState<Sheet | null>(null);
   const [cam, setCam] = useState<Cam>({ x: 50, y: 40 });
   const [walking, setWalking] = useState(false);
@@ -58,7 +63,7 @@ export function TapeMosaic() {
   const mosaicRef = useRef<HTMLDivElement>(null);
   const fieldRef = useRef<HTMLDivElement>(null);
   const reduced = usePrefersReducedMotion();
-  const compact = useIsCompact();
+  const narrow = useIsNarrow();
   const years = useMemo(() => broadcastYears(), []);
   const tapes = useMemo(() => {
     const list = catalog.tapes.filter((t) => format === "ALL" || t.format === format);
@@ -76,7 +81,7 @@ export function TapeMosaic() {
   const openShelf: ShelfKey | null = openYear != null ? "broadcast" : open ? shelfOf(open) : null;
   const broadcastOpen = openYear != null;
   const ghosts = useMemo(() => muteShells(format), [format]);
-  const flat = compact || reduced;
+  const flat = narrow || reduced;
 
   const bays = useMemo(() => {
     return shelfBays()
@@ -96,6 +101,19 @@ export function TapeMosaic() {
       .filter((bay) => bay.tapes.length > 0);
   }, [tapes, format, years]);
 
+  const walkIds = useMemo(() => {
+    const ids: string[] = [];
+    for (const bay of bays) {
+      if (flat) {
+        ids.push(...bay.tapes.map((tape) => tape.id));
+        continue;
+      }
+      const walls = splitRack(bay.tapes);
+      ids.push(...walls.left.map((tape) => tape.id), ...walls.right.map((tape) => tape.id));
+    }
+    return ids;
+  }, [bays, flat]);
+
   function measureCam(id: string) {
     const mosaic = mosaicRef.current;
     const cell = document.getElementById(`tape-cell-${id}`);
@@ -114,7 +132,7 @@ export function TapeMosaic() {
     const target = cell.querySelector(".tape-pulled, .tape-object-face") ?? cell;
     const fr = field.getBoundingClientRect();
     const cr = target.getBoundingClientRect();
-    if (compact) {
+    if (narrow) {
       setSheet({ left: 0, top: Math.max(0, cr.bottom - fr.top + 14), width: fr.width });
       return;
     }
@@ -123,21 +141,38 @@ export function TapeMosaic() {
     setSheet({ left, top: Math.max(12, cr.bottom - fr.top + 16), width });
   }
 
+  const walked = useRef(false);
+
+  function writeOpen(id: string | null) {
+    const next = new URLSearchParams(search.toString());
+    if (id) next.set("open", id);
+    else next.delete("open");
+    const q = next.toString();
+    router.replace(q ? `/tapes?${q}` : "/tapes", { scroll: false });
+  }
+
   function openTape(id: string) {
-    setOpenId(id);
+    writeOpen(id);
     playEngage();
   }
 
-  useEffect(() => {
-    const id = search.get("open");
-    if (!id) return;
-    if (id === "t-broadcast") {
-      const year = getTape("t-broadcast")?.year ?? years[0]?.year;
-      if (year) setOpenId(`broadcast-${year}`);
-      return;
-    }
-    setOpenId(id);
-  }, [search, years]);
+  function closeTape() {
+    writeOpen(null);
+  }
+
+  function walk(step: number) {
+    if (!walkIds.length) return;
+    const here = openId ? walkIds.indexOf(openId) : -1;
+    const next =
+      here === -1
+        ? step > 0
+          ? walkIds[0]
+          : walkIds[walkIds.length - 1]
+        : walkIds[(here + step + walkIds.length) % walkIds.length];
+    if (!next) return;
+    walked.current = true;
+    openTape(next);
+  }
 
   useEffect(() => {
     if (!openId) {
@@ -145,17 +180,17 @@ export function TapeMosaic() {
       setArrived(false);
       return;
     }
-    const instant = reduced || compact;
+    const instant = reduced || narrow;
     setWalking(!instant);
     setArrived(instant);
     if (instant) return;
-    const walk = window.setTimeout(() => setWalking(false), 820);
+    const walkTimer = window.setTimeout(() => setWalking(false), 820);
     const lock = window.setTimeout(() => setArrived(true), 560);
     return () => {
-      window.clearTimeout(walk);
+      window.clearTimeout(walkTimer);
       window.clearTimeout(lock);
     };
-  }, [openId, reduced, compact]);
+  }, [openId, reduced, narrow]);
 
   useLayoutEffect(() => {
     if (!openId) {
@@ -163,26 +198,41 @@ export function TapeMosaic() {
       return;
     }
     measureCam(openId);
-    if (!(arrived || compact || reduced)) return;
+    if (!(arrived || narrow || reduced)) return;
     measureSheet(openId);
     const lock = window.setTimeout(() => measureSheet(openId), 240);
     return () => {
       window.clearTimeout(lock);
     };
-  }, [openId, compact, format, arrived, reduced]);
+  }, [openId, narrow, format, arrived, reduced]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (isTypingTarget(e.target)) return;
-      if (e.key !== "Escape" || !openId) return;
-      if (e.shiftKey) return;
-      e.preventDefault();
-      e.stopPropagation();
-      setOpenId(null);
+      if (e.key === "Escape" && openId && !e.shiftKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeTape();
+        return;
+      }
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        walk(1);
+        return;
+      }
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        walk(-1);
+        return;
+      }
+      if (e.key === "Enter" && openId && !isActionTarget(e.target)) {
+        e.preventDefault();
+        router.push(fileHref(openId));
+      }
     };
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
-  }, [openId]);
+  });
 
   useEffect(() => {
     if (!openId) return;
@@ -190,8 +240,11 @@ export function TapeMosaic() {
     if (!node) return;
     const r = node.getBoundingClientRect();
     const inView = r.top >= 72 && r.bottom <= window.innerHeight - 48;
-    if (inView) return;
-    node.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+    if (!inView) node.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+    if (!walked.current) return;
+    walked.current = false;
+    const hit = node.querySelector<HTMLButtonElement>(".tape-hit");
+    hit?.focus({ preventScroll: true });
   }, [openId, reduced]);
 
   const ghostSplit = splitRack(ghosts);
@@ -199,18 +252,16 @@ export function TapeMosaic() {
   return (
     <div className="px-4 pb-24 md:px-6">
       <h1 className="sr-only">The Tapes</h1>
-      <div className="hand-strip flex flex-wrap gap-4 pt-4" role="tablist" aria-label="Tape format">
+      <div className="aisle-formats" role="group" aria-label="Tape format">
         {FORMATS.map((f) => (
           <button
             key={f}
             type="button"
-            role="tab"
-            aria-selected={format === f}
+            aria-pressed={format === f}
             onClick={() => {
               setFormat(f);
-              setOpenId(null);
+              closeTape();
             }}
-            className={`font-cond text-[13px] tracking-[0.18em] ${format === f ? "text-paper" : "text-dust hover:text-paper"}`}
           >
             {f}
           </button>
@@ -220,26 +271,29 @@ export function TapeMosaic() {
       <div
         ref={fieldRef}
         className={`aisle-field relative mt-8 ${reduced ? "is-still" : ""}${openId ? " is-open" : ""}`}
-        style={{ perspective: reduced || compact ? undefined : 1480, perspectiveOrigin: reduced || compact ? undefined : openId ? `${cam.x}% ${cam.y}%` : "50% 28%" }}
+        style={{
+          perspective: reduced || narrow ? undefined : 1680,
+          perspectiveOrigin: reduced || narrow ? undefined : openId ? `${cam.x}% ${cam.y}%` : "50% 22%",
+        }}
       >
         <motion.div
           ref={mosaicRef}
-          className={`aisle-cam aisle relative space-y-10${openId ? " is-open" : ""}${compact ? " is-compact" : ""}${walking ? " is-walking" : ""}`}
+          className={`aisle-cam aisle relative space-y-12${openId ? " is-open" : ""}${narrow ? " is-compact" : ""}${walking ? " is-walking" : ""}`}
           initial={false}
           animate={
-            reduced || compact
+            reduced || narrow
               ? { rotateX: 0, rotateY: 0, x: 0, y: 0, z: 0, scale: 1 }
               : {
-                  rotateX: openId ? 2.4 : 0,
-                  rotateY: openId ? (50 - cam.x) * 0.035 : 0,
-                  x: openId ? (50 - cam.x) * 1.15 : 0,
-                  y: openId ? (38 - cam.y) * 0.7 : 0,
-                  z: openId ? 64 : 0,
+                  rotateX: openId ? 3 : 1.4,
+                  rotateY: openId ? (50 - cam.x) * 0.032 : 0,
+                  x: openId ? (50 - cam.x) * 0.95 : 0,
+                  y: openId ? (34 - cam.y) * 0.5 : 0,
+                  z: openId ? 52 : 0,
                   scale: 1,
                 }
           }
           style={
-            reduced || compact
+            reduced || narrow
               ? { transform: "none" }
               : { transformOrigin: `${cam.x}% ${cam.y}%`, transformStyle: "preserve-3d", willChange: walking ? "transform" : undefined }
           }
@@ -249,7 +303,7 @@ export function TapeMosaic() {
             <div
               className="aisle-veil"
               style={{
-                background: `radial-gradient(ellipse at ${cam.x}% ${cam.y}%, rgba(7,7,6,0) 18%, rgba(7,7,6,0.2) 54%, rgba(7,7,6,0.56) 100%)`,
+                background: `radial-gradient(ellipse at ${cam.x}% ${cam.y}%, transparent 16%, color-mix(in srgb, var(--void) 28%, transparent) 52%, color-mix(in srgb, var(--void) 62%, transparent) 100%)`,
               }}
             />
           ) : null}
@@ -266,7 +320,7 @@ export function TapeMosaic() {
                 recede={recede}
                 approach={Boolean(openId && openShelf === bay.key)}
                 reduced={reduced}
-                compact={compact}
+                compact={narrow}
                 depth={i}
                 left={
                   flat
@@ -276,50 +330,40 @@ export function TapeMosaic() {
                           tape={tape}
                           openId={openId}
                           reduced={reduced}
-                          compact={compact}
+                          compact={narrow}
                           wall="left"
                           onOpen={() => openTape(tape.id)}
-                          onClose={() => setOpenId(null)}
+                          onClose={closeTape}
                         />
                       ))
-                    : [
-                        ...walls.left.map((tape) => (
-                          <ShelfCassette
-                            key={tape.id}
-                            tape={tape}
-                            openId={openId}
-                            reduced={reduced}
-                            compact={compact}
-                            wall="left"
-                            onOpen={() => openTape(tape.id)}
-                            onClose={() => setOpenId(null)}
-                          />
-                        )),
-                        ...Array.from({ length: emptyFill(walls.left.length) }, (_, n) => (
-                          <EmptySlot key={`${bay.key}-el-${n}`} />
-                        )),
-                      ]
+                    : walls.left.map((tape) => (
+                        <ShelfCassette
+                          key={tape.id}
+                          tape={tape}
+                          openId={openId}
+                          reduced={reduced}
+                          compact={narrow}
+                          wall="left"
+                          onOpen={() => openTape(tape.id)}
+                          onClose={closeTape}
+                        />
+                      ))
                 }
                 right={
                   flat
                     ? undefined
-                    : [
-                        ...walls.right.map((tape) => (
-                          <ShelfCassette
-                            key={tape.id}
-                            tape={tape}
-                            openId={openId}
-                            reduced={reduced}
-                            compact={compact}
-                            wall="right"
-                            onOpen={() => openTape(tape.id)}
-                            onClose={() => setOpenId(null)}
-                          />
-                        )),
-                        ...Array.from({ length: emptyFill(walls.right.length) }, (_, n) => (
-                          <EmptySlot key={`${bay.key}-er-${n}`} />
-                        )),
-                      ]
+                    : walls.right.map((tape) => (
+                        <ShelfCassette
+                          key={tape.id}
+                          tape={tape}
+                          openId={openId}
+                          reduced={reduced}
+                          compact={narrow}
+                          wall="right"
+                          onOpen={() => openTape(tape.id)}
+                          onClose={closeTape}
+                        />
+                      ))
                 }
               />
             );
@@ -331,18 +375,19 @@ export function TapeMosaic() {
               note="NOT IN THIS MOCK"
               recede={Boolean(openId)}
               reduced={reduced}
-              compact={compact}
+              compact={narrow}
               depth={bays.length}
               left={
                 flat
-                  ? ghosts.map((ghost, i) => <UnopenedShell key={`ghost-${i}`} format={ghost.format} label={ghost.label} />)
+                  ? [
+                      ...ghosts.map((ghost, i) => <UnopenedShell key={`ghost-${i}`} format={ghost.format} label={ghost.label} />),
+                      ...Array.from({ length: 6 }, (_, n) => <EmptySlot key={`ghost-ef-${n}`} fade={1 - n / 6} />),
+                    ]
                   : [
                       ...ghostSplit.left.map((ghost, i) => (
                         <UnopenedShell key={`ghost-l-${i}`} format={ghost.format} label={ghost.label} />
                       )),
-                      ...Array.from({ length: emptyFill(ghostSplit.left.length) }, (_, n) => (
-                        <EmptySlot key={`ghost-el-${n}`} />
-                      )),
+                      ...Array.from({ length: 5 }, (_, n) => <EmptySlot key={`ghost-el-${n}`} fade={1 - n / 5} />),
                     ]
               }
               right={
@@ -352,14 +397,11 @@ export function TapeMosaic() {
                       ...ghostSplit.right.map((ghost, i) => (
                         <UnopenedShell key={`ghost-r-${i}`} format={ghost.format} label={ghost.label} />
                       )),
-                      ...Array.from({ length: emptyFill(ghostSplit.right.length) }, (_, n) => (
-                        <EmptySlot key={`ghost-er-${n}`} />
-                      )),
+                      ...Array.from({ length: 5 }, (_, n) => <EmptySlot key={`ghost-er-${n}`} fade={1 - n / 5} />),
                     ]
               }
             />
           ) : null}
-
         </motion.div>
 
         <AnimatePresence>
@@ -375,19 +417,18 @@ export function TapeMosaic() {
             >
               <div className="aisle-sheet-panel">
                 {broadcastOpen ? (
-                  <p className="aisle-sheet-hold">PUBLIC BROADCAST</p>
+                  <p className="aisle-sheet-hold is-broadcast">PUBLIC BROADCAST</p>
                 ) : hold ? (
                   <p className="aisle-sheet-hold">
-                    {hold.logged} LOGGED · {hold.unlogged} UNLOGGED
+                    <span className="is-logged">{hold.logged} LOGGED</span>
+                    {" · "}
+                    {hold.unlogged} UNLOGGED
                   </p>
                 ) : null}
                 <p className="aisle-sheet-meta">
                   {open.code} · {loc?.name?.toUpperCase()} · {open.recordedApproximate ?? open.recordedDate}
                 </p>
-                <Link
-                  href={broadcastOpen ? "/tapes/t-broadcast" : `/tapes/${open.id}`}
-                  className="aisle-sheet-open"
-                >
+                <Link href={broadcastOpen ? "/tapes/t-broadcast" : `/tapes/${open.id}`} className="aisle-sheet-open">
                   OPEN THE FILE
                 </Link>
               </div>
@@ -419,29 +460,26 @@ function ShelfCassette({
   const active = openId === tape.id;
   const yearCassette = parseBroadcastYearKey(tape.id) != null;
   const counts = yearCassette ? { logged: undefined as number | undefined, unlogged: undefined as number | undefined } : density(tape.id);
-  const stamp = yearCassette ? "" : densityStamp(counts.logged, counts.unlogged);
   const flat = compact || reduced;
+  const slot = `tape-slot-${tape.format.toLowerCase()}`;
 
   return (
     <div
       id={`tape-cell-${tape.id}`}
-      className={`tape-slot ${wall === "right" ? "tape-slot-right" : "tape-slot-left"}${active ? " is-lit" : ""} scroll-mt-28`}
+      className={`tape-slot ${slot} ${wall === "right" ? "tape-slot-right" : "tape-slot-left"}${active ? " is-lit" : ""} scroll-mt-28`}
     >
       <button
         type="button"
         onClick={active ? onClose : onOpen}
         className="tape-hit"
         aria-expanded={active}
-        aria-label={
-          yearCassette ? `${tape.code}, ${tape.year}` : `${tape.code}, ${tape.originalLabel}`
-        }
+        aria-label={yearCassette ? `${tape.year}` : `${tape.code}, ${tape.originalLabel}`}
       >
         <div className={flat ? "tape-flat" : undefined}>
           <TapeSpine
             format={tape.format}
-            code={tape.code}
-            year={tape.year}
-            density={stamp}
+            code={yearCassette ? String(tape.year) : tape.code}
+            year={yearCassette ? undefined : tape.year}
             lit={active}
           />
           {active ? (

@@ -16,9 +16,9 @@ type Props = {
 export function HeldFrame({ clip, className = "", large = false }: Props) {
   const hold = holdFor(clip);
   const onPaper = clip.visibility === "MEMBERS_ONLY";
-  const ink = onPaper ? "text-void/80" : "text-paper";
-  const quiet = onPaper ? "text-void/45" : "text-paper/55";
-  const body = onPaper ? "text-void/60" : "text-bone/70";
+  const ink = onPaper ? "text-void" : "text-paper";
+  const quiet = onPaper ? "text-void/65" : "text-bone";
+  const body = onPaper ? "text-void/75" : "text-bone";
 
   return (
     <div className={`viewfinder viewfinder-br relative overflow-hidden bg-ink ${className}`}>
@@ -28,8 +28,8 @@ export function HeldFrame({ clip, className = "", large = false }: Props) {
 
       <div className="relative z-10 flex h-full flex-col justify-between p-3">
         <div className="flex items-start justify-between gap-3">
-          <span className={`font-mono text-[9px] tracking-[0.16em] ${quiet}`}>HELD</span>
-          <span className={`font-mono text-[9px] tracking-[0.16em] ${quiet}`}>{clip.formatHint}</span>
+          <span className={`font-mono text-[12px] tracking-[0.08em] ${quiet}`}>HELD</span>
+          <span className={`font-mono text-[12px] tracking-[0.08em] ${quiet}`}>{clip.formatHint}</span>
         </div>
 
         <div className={large ? "max-w-[22ch] px-[8%]" : ""}>
@@ -43,15 +43,15 @@ export function HeldFrame({ clip, className = "", large = false }: Props) {
           {large ? (
             <p className={`mt-3 max-w-[36ch] text-[14px] leading-relaxed ${body}`}>{hold.line}</p>
           ) : (
-            <p className={`mt-1 font-mono text-[8px] tracking-[0.12em] ${quiet}`}>
+            <p className={`mt-1 font-mono text-[12px] tracking-[0.08em] ${quiet}`}>
               {clip.rightsStatus.replaceAll("_", " ")}
             </p>
           )}
         </div>
 
         <div className="flex items-end justify-between">
-          <span className={`font-mono text-[9px] tracking-[0.12em] ${quiet}`}>{clip.startTimecode}</span>
-          <span className={`font-mono text-[9px] tracking-[0.12em] ${quiet}`}>{formatDuration(clip.duration)}</span>
+          <span className={`font-mono text-[12px] tracking-[0.08em] ${quiet}`}>{clip.startTimecode}</span>
+          <span className={`font-mono text-[12px] tracking-[0.08em] ${quiet}`}>{formatDuration(clip.duration)}</span>
         </div>
       </div>
     </div>
