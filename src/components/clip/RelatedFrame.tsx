@@ -22,7 +22,7 @@ export function RelatedFrame({ from, clip }: { from: ArchiveClip; clip: ArchiveC
         {closed ? (
           <HeldFrame clip={clip} className="aspect-[4/3]" />
         ) : (
-          <PrototypeMedia clip={clip} className="aspect-[4/3]" />
+          <PrototypeMedia clip={clip} chrome="stamp" className="aspect-[4/3]" />
         )}
         <h3
           className={`mt-3 leading-none text-paper hover:text-leader ${

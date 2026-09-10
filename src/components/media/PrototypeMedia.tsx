@@ -42,8 +42,9 @@ export function PrototypeMedia({ clip, className = "", large = false, chrome = "
   const minidv = clip.formatHint === "MINIDV" || clip.formatHint === "HI8" || clip.formatHint === "VHS";
   const stamp = chrome === "stamp";
 
+  // No viewfinder corners: at thumbnail size the brackets collide with the stamp and read as wallpaper.
   return (
-    <div className={`viewfinder viewfinder-br relative overflow-hidden bg-ink ${className}`}>
+    <div className={`relative overflow-hidden bg-ink ${className}`}>
       {mute ? <UnloggedField /> : <Field clip={clip} voice={voice} />}
       {!mute && clip.mediaKind === "LEADER" && voice === "default" ? (
         <div className="leader-bars absolute inset-0 opacity-90" />

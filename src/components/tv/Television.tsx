@@ -25,9 +25,14 @@ function clockLabel() {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}:${String(d.getSeconds()).padStart(2, "0")}`;
 }
 
+/** CH 07 is the channel with the content. The house cuts are siblings, not the front door. */
+const DEFAULT_CH = CHANNELS.findIndex((c) => c.id === "broadcast");
+
 function channelFromSearch(search: { get: (key: string) => string | null }) {
-  const n = Number(search.get("ch"));
-  return Number.isFinite(n) && n >= 0 && n <= 8 ? n : 0;
+  const raw = search.get("ch");
+  if (raw == null) return DEFAULT_CH;
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 0 && n <= 8 ? n : DEFAULT_CH;
 }
 
 export function Television() {

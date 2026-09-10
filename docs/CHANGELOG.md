@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-09-10 — One list, one caption, one cassette, one scope
+
+James, on the previous redesign: *"I tried to ask you to better present the content in channel 7 and now I lost all the list of content I added, the page opens to channel zero… there should be one single easy to navigate list of the content below that when you scroll, not a broken guide."* He was right on all counts. Four fixes, all his.
+
+- **`/tv` opens on CH 07.** `channelFromSearch` fell back to `0` when no `?ch=` was given, so the front door was a house cut holding four titles while the 366 ingested embeds sat two clicks away. The fallback is now the `broadcast` channel index, resolved from `CHANNELS` rather than hardcoded.
+- **GUIDE is one list.** The shelves / `BY YEAR` rail / letter / prefix / MORE structure is gone. Every title on the channel now renders in one continuous scroll in air order, with the block name as a sticky marker that rides the scroll so you always know where you are. Measured live: CH 07 shows **366** rows and 13 markers with zero clicks; CH 00/01/06/08 show their entire 4 / 8 / 12 / 4-title lineups. A `FIND A TITLE` field filters in place and states `24 OF 366`. Nothing on a channel is behind a door.
+- **Prototype frames stopped saying the same two facts four times.** `TapeFrame` printed timecode + duration *below* the frame while `PrototypeMedia` printed timecode + camera + duration *inside* it — two facts, four places, on every contact sheet. The five surfaces that carry their own caption (tape frames, related frames, bond stills, both collection surfaces) now pass `chrome="stamp"`. The clip gate keeps full chrome; it is the only caption there.
+- **Dropped the viewfinder corners from `PrototypeMedia`.** `.viewfinder::before` sat at `8px/8px` and the `PROTOTYPE MEDIA` stamp at `p-3`; they overlapped at every thumbnail size. Four brackets on a 4:3 cell were wallpaper, not a label — the rule the design language already states.
+- **The tape card reads as a cassette.** The MiniDV / Hi8 window was `bg-black/55` under a left-to-right gradient — an unexplainable dark smear in the middle of the object. It is now a drawn spool window: two hubs, the left wound fuller than the right, tape pack between them.
+- **`/timeline` says what each rail is.** Three stacked sprockets looked identical and the only thing that oriented you — the `SPAN / 2011 / SEPTEMBER / 14` breadcrumb — was 12px dust between two other blocks. The breadcrumb is now a 14px scope bar on a hairline with a `← BACK` control (Escape already popped), and each rail states its own scope: `EVERY YEAR · 1994 — 2026 · 7 YEARS HOLD FRAMES`, `MONTHS IN 2011`, `DAYS IN SEPTEMBER 2011`.
+- Gates: `tsc` clean, `next lint` clean (pre-existing `no-img-element`), `next build` clean.
+
 ## 2026-09-10 — A relationship you can stumble into, and docs that match the code
 
 - Audited the objective's named artifacts against the tree. All eleven `docs/*.md` exist; all six lens routes plus `/`, clip, collections, entities and constellation resolve; the opening switcher is real and gated to `NODE_ENV === "development"` or `?opening=` / `?lens=`, and never says "Concept".

@@ -30,7 +30,7 @@ function EmptyAperture() {
 
 function BondStill({ clip }: { clip: ArchiveClip }) {
   if (isClosed(clip)) return <HeldFrame clip={clip} className="aspect-[4/3] w-full" />;
-  return <PrototypeMedia clip={clip} className="aspect-[4/3] w-full" />;
+  return <PrototypeMedia clip={clip} chrome="stamp" className="aspect-[4/3] w-full" />;
 }
 
 function Bond({

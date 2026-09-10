@@ -46,7 +46,7 @@ export function CollectionIndex() {
                 </div>
                 {lead ? (
                   <Link href={href} className={flip ? "md:order-1" : undefined}>
-                    <PrototypeMedia clip={lead} className="aspect-[4/3] w-full" />
+                    <PrototypeMedia clip={lead} chrome="stamp" className="aspect-[4/3] w-full" />
                   </Link>
                 ) : null}
               </article>

@@ -315,42 +315,67 @@ export function TimelineView() {
       ) : null}
 
       {year ? (
-        <nav className="mt-8 flex flex-wrap items-center gap-2 font-cond text-[12px] tracking-[0.18em] text-dust" aria-label="Time drill">
-          <button type="button" onClick={resetDrill} className="hover:text-paper">
+        <nav
+          className="timeline-scope mt-8 flex flex-wrap items-center gap-x-3 gap-y-2 font-cond text-[14px] tracking-[0.16em]"
+          aria-label="Time drill"
+        >
+          <button type="button" onClick={resetDrill} className="text-dust hover:text-paper">
             SPAN
           </button>
-          <span aria-hidden>/</span>
+          <span className="text-leader/50" aria-hidden>
+            /
+          </span>
           <button
             type="button"
             onClick={() => write({ month: null, day: null })}
-            className={!month ? "text-paper" : "hover:text-paper"}
+            className={!month ? "text-paper" : "text-dust hover:text-paper"}
           >
             {year}
           </button>
           {month && month > 0 ? (
             <>
-              <span aria-hidden>/</span>
-              <button type="button" onClick={() => write({ day: null })} className={!day ? "text-paper" : "hover:text-paper"}>
+              <span className="text-leader/50" aria-hidden>
+                /
+              </span>
+              <button
+                type="button"
+                onClick={() => write({ day: null })}
+                className={!day ? "text-paper" : "text-dust hover:text-paper"}
+              >
                 {MONTHS[month - 1]}
               </button>
             </>
           ) : null}
           {month === 0 ? (
             <>
-              <span aria-hidden>/</span>
+              <span className="text-leader/50" aria-hidden>
+                /
+              </span>
               <span className="text-paper">UNDATED</span>
             </>
           ) : null}
           {day && month !== 0 ? (
             <>
-              <span aria-hidden>/</span>
+              <span className="text-leader/50" aria-hidden>
+                /
+              </span>
               <span className="text-paper">{day === "UNDATED" ? "UNDATED" : day.slice(8)}</span>
             </>
           ) : null}
+          <button
+            type="button"
+            onClick={pop}
+            className="ml-1 font-mono text-[11px] tracking-[0.14em] text-leader hover:text-paper"
+          >
+            ← BACK
+          </button>
         </nav>
       ) : null}
 
-      <div className="mt-8 overflow-x-auto no-scrollbar">
+      <p className="timeline-rail-mark mt-8">
+        EVERY YEAR · 1994 — 2026 · {populated.length} {populated.length === 1 ? "YEAR HOLDS" : "YEARS HOLD"} FRAMES
+      </p>
+      <div className="mt-2 overflow-x-auto no-scrollbar">
         <div className="relative min-w-[720px] pb-2 md:min-w-[1100px]">
           <div className="type-label mb-2 flex justify-between tracking-[0.18em]">
             <span>1990s</span>
@@ -417,6 +442,7 @@ export function TimelineView() {
               <p className="font-cond text-[12px] tracking-[0.16em] text-dust">{getEra(yearClips[0]?.era ?? "")?.name ?? ""}</p>
             </div>
           ) : null}
+          <p className="timeline-rail-mark mt-6">MONTHS IN {year}</p>
           <MonthSprocket byMonth={byMonth} selected={month && month > 0 ? month : null} onMonth={chooseMonth} />
           {month === null ? (
             <>
@@ -443,6 +469,9 @@ export function TimelineView() {
               {MONTHS[month - 1]} {year}
             </h2>
           ) : null}
+          <p className="timeline-rail-mark mt-6">
+            DAYS IN {MONTHS[month - 1]} {year}
+          </p>
           <DaySprocket year={year} month={month} byDay={byDay} selected={day} onDay={(key) => write({ day: key })} />
           {!day ? (
             <DayFilm

@@ -31,6 +31,23 @@ export function densityStamp(logged?: number, unlogged?: number) {
   return `${logged}·${unlogged}`;
 }
 
+/** The spool window. Two hubs, one wound fuller than the other — it should read as a cassette. */
+function TapeWindow() {
+  return (
+    <div className="absolute left-1/2 top-[40%] w-[46%] -translate-x-1/2" aria-hidden>
+      <svg viewBox="0 0 92 34" className="w-full">
+        <rect x="0.5" y="0.5" width="91" height="33" fill="#0a0907" stroke="rgba(239,230,214,0.20)" />
+        <rect x="26" y="10" width="40" height="14" fill="#191409" />
+        <circle cx="27" cy="17" r="11" fill="#171208" stroke="rgba(239,230,214,0.14)" />
+        <circle cx="65" cy="17" r="7.5" fill="#171208" stroke="rgba(239,230,214,0.14)" />
+        <circle cx="27" cy="17" r="3.4" fill="#2e2616" stroke="rgba(212,176,90,0.55)" />
+        <circle cx="65" cy="17" r="3.4" fill="#2e2616" stroke="rgba(212,176,90,0.55)" />
+        <path d="M27 6 H65" stroke="rgba(239,230,214,0.10)" strokeWidth="0.7" />
+      </svg>
+    </div>
+  );
+}
+
 export function TapeObject({
   tape,
   size = "mosaic",
@@ -82,11 +99,7 @@ export function TapeObject({
         </p>
       </div>
 
-      {tape.format === "MINIDV" || tape.format === "HI8" ? (
-        <div className="absolute left-1/2 top-[42%] h-9 w-[42%] -translate-x-1/2 border border-paper/15 bg-black/55">
-          <div className="h-full w-full bg-gradient-to-r from-leader/25 via-transparent to-paper/10" />
-        </div>
-      ) : null}
+      {tape.format === "MINIDV" || tape.format === "HI8" ? <TapeWindow /> : null}
 
       <div className={classNames("absolute inset-x-0 bottom-0", hero ? "p-5" : "p-3")}>
         <p className="font-mono text-[12px] tracking-[0.08em] text-paper">{tape.year}</p>

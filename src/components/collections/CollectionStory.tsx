@@ -111,7 +111,7 @@ function StoryBeat({ clip, open, flip }: { clip: ArchiveClip; open: boolean; fli
   return (
     <article className="grid items-center gap-8 py-12 md:grid-cols-2 md:gap-12 lg:gap-16 md:py-14">
       <Link href={`/clip/${clip.slug}`} className={`${open ? "frame-in-gate " : ""}block ${flip ? "md:order-2" : ""}`}>
-        <PrototypeMedia clip={clip} className="aspect-[4/3] w-full" />
+        <PrototypeMedia clip={clip} chrome="stamp" className="aspect-[4/3] w-full" />
       </Link>
       <div className={flip ? "md:order-1" : undefined}>
         <h2 className="max-w-[16ch] font-display text-3xl leading-none text-paper md:text-5xl">

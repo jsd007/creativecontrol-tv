@@ -25,7 +25,7 @@ export function TapeFrame({
       {closed ? (
         <HeldFrame clip={clip} className="aspect-[4/3] w-full" />
       ) : (
-        <PrototypeMedia clip={clip} className="aspect-[4/3] w-full" />
+        <PrototypeMedia clip={clip} chrome="stamp" className="aspect-[4/3] w-full" />
       )}
       <p className="mt-2 font-mono text-[12px] tracking-[0.08em] text-dust">
         {clip.startTimecode}

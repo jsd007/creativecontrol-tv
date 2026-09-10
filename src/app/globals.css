@@ -2737,6 +2737,48 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
   padding: 0.2rem 0.5rem 0.28rem 0.55rem;
 }
 
+/* Three stacked sprockets look identical. Each one says its own scope. */
+.timeline-rail-mark {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--dust);
+}
+
+.timeline-scope {
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--hairline);
+}
+
+/* The block marker rides the scroll so a long list always says where you are. */
+.tv-guide-mark {
+  position: sticky;
+  top: 3.5rem;
+  z-index: 4;
+  margin-top: 1.5rem;
+  padding: 0.55rem 0 0.4rem;
+  background: var(--void);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.tv-guide-find {
+  width: 11rem;
+  padding: 0.25rem 0;
+  color: var(--paper);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.tv-guide-find::placeholder {
+  color: var(--dust);
+}
+
+.tv-guide-find:focus {
+  outline: none;
+  border-bottom-color: var(--leader);
+}
+
 .tv-third {
   background: color-mix(in srgb, var(--void) 94%, transparent);
 }
