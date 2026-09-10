@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-10 — A bond states what holds it up
+
+- The north star asks for relationships between people / places / moments to be **visible**. They were not. `/people/ye` named Chike and Coodie under a machine axis (`PROJECT · PERSON`) and never said how Ye relates to either — the endpoints were on screen, the relationship was not.
+- `buildEntityGraph` already counted the frames two nodes share and then discarded the number. `StarNode` now carries `weight` (frames + first / last year), computed from the same `clipsForNode` pass that picks the proving frame.
+- Entity bonds read `12 FRAMES · 1998 — 2012` then FIRST HELD BY the frame that proves the edge. Ye · Coodie (12 frames from 1998) now visibly outweighs Ye · Chike (5 from 2003) instead of looking identical.
+- Constellation spoke ink ramps with the count (measured 0.27 for the heaviest against ~0.10) so density reads at a glance without becoming a weighted graph. Hover puts the count and the proving frame in the credit: Coodie · Chike is **391 FRAMES · 2003 — 2025**, the spine of the whole catalog.
+- Fixed a real defect: `.hand-strip` only lays out inside the narrow media query, so on desktop the constellation spine rendered as `COODIECHIKEYEALIDONDA` with no gaps. It is a flex row at ≥768px now.
+- Counts are catalog truth, not a score — no percentages, no strength bars, no invented edges. A frame carries no span, so clip nodes stay unweighted.
+- Archive goal is **not complete**.
+
 ## 2026-09-10 — GUIDE shows the programming instead of guarding it
 
 - Everything on `/tv` was behind doors. Every house channel's **whole** lineup is 1–12 titles, and you still had to click a daypart to see one of them (CH 03 held a single title behind a click). CH 07 opened as 13 identical doors, so its four named shows sat at the same depth as a 188-title year — channel → year → letter → prefix → title before a video.

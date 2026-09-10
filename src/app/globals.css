@@ -2017,6 +2017,14 @@ svg a:focus-visible .field-hit {
 }
 
 @media (min-width: 768px) {
+  /* .hand-strip only lays out inside the narrow query, so the spine has no gap here. */
+  .constellation-spine {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.15rem 1.1rem;
+  }
+
   .constellation-head {
     pointer-events: none;
     position: absolute;

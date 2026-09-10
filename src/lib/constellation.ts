@@ -17,6 +17,13 @@ export type StarVia = {
   year?: number;
 };
 
+/** How much of the archive actually holds this edge up. The bond, not the endpoints. */
+export type StarWeight = {
+  frames: number;
+  firstYear: number;
+  lastYear: number;
+};
+
 export type StarNode = {
   id: string;
   kind: StarKind;
@@ -25,6 +32,7 @@ export type StarNode = {
   axis: StarAxis;
   year?: number;
   via?: StarVia;
+  weight?: StarWeight;
 };
 
 export type Constellation = {
@@ -271,15 +279,34 @@ function clipsForNode(node: StarNode, mine: ArchiveClip[]) {
   return [];
 }
 
-function attachVia(field: Constellation, mine: ArchiveClip[]): Constellation {
+function weightFromClips(clips: ArchiveClip[]): StarWeight | undefined {
+  if (!clips.length) return;
+  const years = clips.map((c) => c.year).sort((a, b) => a - b);
+  return { frames: clips.length, firstYear: years[0], lastYear: years[years.length - 1] };
+}
+
+/** A frame is one frame — it carries no span. Every other bond states what holds it up. */
+function attachEvidence(field: Constellation, mine: ArchiveClip[]): Constellation {
   return {
     ...field,
     nodes: field.nodes.map((node) => {
       if (node.kind === "clip") return node;
-      const via = viaFromClips(clipsForNode(node, mine));
-      return via ? { ...node, via } : node;
+      const shared = clipsForNode(node, mine);
+      const via = viaFromClips(shared);
+      const weight = weightFromClips(shared);
+      if (!via && !weight) return node;
+      return { ...node, ...(via ? { via } : {}), ...(weight ? { weight } : {}) };
     }),
   };
+}
+
+/** The evidence line both relationship surfaces print. Never a score, never a percentage. */
+export function weightLine(weight: StarWeight) {
+  const span =
+    weight.firstYear === weight.lastYear
+      ? String(weight.firstYear)
+      : `${weight.firstYear} — ${weight.lastYear}`;
+  return `${weight.frames} ${weight.frames === 1 ? "FRAME" : "FRAMES"} · ${span}`;
 }
 
 function finish(center: Constellation["center"], nodes: StarNode[]): Constellation {
@@ -380,11 +407,11 @@ export function buildField(kind: GraphKind, id: string): Constellation | null {
   return buildProjectField(id);
 }
 
-/** Same spokes as the field, with the authored frame that proves each edge. */
+/** Same spokes as the field, with the frames that prove each edge and the span they cover. */
 export function buildEntityGraph(kind: GraphKind, id: string): Constellation | null {
   const field = buildField(kind, id);
   if (!field) return null;
-  return attachVia(field, mineFor(kind, id).filter((c) => allowRelated(kind, id, c)));
+  return attachEvidence(field, mineFor(kind, id).filter((c) => allowRelated(kind, id, c)));
 }
 
 export function constellationHref(kind: GraphKind, id: string) {

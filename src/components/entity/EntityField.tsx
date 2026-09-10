@@ -7,7 +7,7 @@ import { getClip } from "@/data";
 import type { ArchiveClip } from "@/data/types";
 import { HeldFrame } from "@/components/media/HeldFrame";
 import { PrototypeMedia } from "@/components/media/PrototypeMedia";
-import { STAR_KIND_LABEL, type Constellation, type StarNode } from "@/lib/constellation";
+import { STAR_KIND_LABEL, weightLine, type Constellation, type StarNode } from "@/lib/constellation";
 import { activateOnSpace } from "@/lib/keys";
 import { houseGsap } from "@/lib/gsap";
 import { GATE_EASE, usePrefersReducedMotion } from "@/lib/motion";
@@ -67,10 +67,16 @@ function Bond({
             {node.label}
           </p>
         </Link>
+        {node.weight ? (
+          <p className="mt-3 font-mono text-[11px] tracking-[0.16em] text-leader">{weightLine(node.weight)}</p>
+        ) : null}
         {via ? (
           <Link href={via.href} className="mt-4 block max-w-md" onKeyDown={activateOnSpace}>
-            <p className="font-cond text-[16px] tracking-[0.06em] text-bone/80 hover:text-paper">{via.label}</p>
-            {via.year ? <p className="mt-2 font-mono text-[10px] tracking-[0.16em] text-dust">{via.year}</p> : null}
+            <p className="font-mono text-[10px] tracking-[0.2em] text-dust">FIRST HELD BY</p>
+            <p className="mt-2 font-cond text-[16px] tracking-[0.06em] text-bone/80 hover:text-paper">{via.label}</p>
+            {via.year && !node.weight ? (
+              <p className="mt-2 font-mono text-[10px] tracking-[0.16em] text-dust">{via.year}</p>
+            ) : null}
           </Link>
         ) : node.year ? (
           <p className="mt-4 font-mono text-[10px] tracking-[0.16em] text-dust">{node.year}</p>

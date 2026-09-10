@@ -111,6 +111,12 @@ function isOn(hover: StarNode | null, node: StarNode) {
   return !!hover && hover.kind === node.kind && hover.id === node.id;
 }
 
+/** Denser bonds sit brighter on the same hairline — a ramp the eye reads, not a chart it measures. */
+function spokeInk(node: StarNode, heaviest: number) {
+  if (!node.weight || heaviest <= 1) return 0.16;
+  return 0.1 + Math.min(1, node.weight.frames / heaviest) * 0.17;
+}
+
 export function DeepField({
   field,
   reduced,
@@ -124,6 +130,10 @@ export function DeepField({
 }) {
   const root = useRef<SVGSVGElement>(null);
   const placed = useMemo(() => placeField(field.nodes), [field.nodes]);
+  const heaviest = useMemo(
+    () => field.nodes.reduce((max, node) => Math.max(max, node.weight?.frames ?? 0), 0),
+    [field.nodes],
+  );
   const size = centerSize(field.center.shortName);
   const underline = Math.min(112, Math.max(36, field.center.shortName.length * size * 0.18));
 
@@ -171,6 +181,7 @@ export function DeepField({
       {placed.map(({ node, x, y }) => {
         const on = isOn(hover, node);
         const dim = !!hover && !on;
+        const ink = spokeInk(node, heaviest);
         return (
           <g key={`spoke-${node.kind}-${node.id}`}>
             <line
@@ -181,7 +192,7 @@ export function DeepField({
               x2={x}
               y2={y}
               stroke={on ? "#c4a05a" : "#efe6d6"}
-              strokeOpacity={on ? 0.72 : dim ? 0.05 : 0.16}
+              strokeOpacity={on ? 0.72 : dim ? 0.05 : ink}
               strokeWidth={on ? 1.15 : 1}
               vectorEffect="non-scaling-stroke"
             />
@@ -190,7 +201,7 @@ export function DeepField({
               cy={y}
               r={on ? 2.4 : 1.7}
               fill={on ? "#c4a05a" : "#efe6d6"}
-              fillOpacity={on ? 0.9 : dim ? 0.12 : 0.38}
+              fillOpacity={on ? 0.9 : dim ? 0.12 : 0.24 + ink}
             />
           </g>
         );

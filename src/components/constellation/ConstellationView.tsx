@@ -12,6 +12,7 @@ import {
   constellationHref,
   constellationSpine,
   resolveConstellationCenter,
+  weightLine,
   type StarNode,
 } from "@/lib/constellation";
 
@@ -54,6 +55,9 @@ export function ConstellationView() {
               ? `${STAR_KIND_LABEL[credit.kind]} · ${credit.axis}`
               : `${STAR_KIND_LABEL[field.center.kind]} · ${field.center.shortName.toUpperCase()}`}
           </p>
+          {credit?.weight ? (
+            <p className="mt-1 font-mono text-[10px] tracking-[0.16em] text-leader">{weightLine(credit.weight)}</p>
+          ) : null}
           {credit?.via ? (
             <p className="constellation-credit mt-1 font-cond text-[13px] tracking-[0.08em] text-paper/80">
               {credit.via.label}
