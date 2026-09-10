@@ -1,0 +1,10 @@
+node_modules
+.next
+.next-*
+out
+.DS_Store
+*.log
+.env*
+*.tsbuildinfo
+.vercel
+creative control reel.mp4
