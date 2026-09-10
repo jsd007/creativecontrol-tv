@@ -159,29 +159,60 @@ export function PresentProvider({ children }: { children: React.ReactNode }) {
   return (
     <PresentContext.Provider value={value}>
       {children}
-      {active && !compact ? <PresentMarks index={index} reduced={reduced} /> : null}
+      {active && !compact ? (
+        <PresentMarks index={index} reduced={reduced} onNext={next} onPrev={prev} onExit={exit} />
+      ) : null}
     </PresentContext.Provider>
   );
 }
 
-function PresentMarks({ index, reduced }: { index: number; reduced: boolean }) {
+function PresentMarks({
+  index,
+  reduced,
+  onNext,
+  onPrev,
+  onExit,
+}: {
+  index: number;
+  reduced: boolean;
+  onNext: () => void;
+  onPrev: () => void;
+  onExit: () => void;
+}) {
+  const atStart = index === 0;
+  const atEnd = index === PRESENT_BEATS.length - 1;
+  const beat = PRESENT_BEATS[index];
+
   return (
     <>
       {reduced ? null : <div key={index} className="present-line" aria-hidden />}
-      <div className="pointer-events-none fixed bottom-3 right-4 z-40 hidden items-center gap-1.5 md:flex" aria-hidden>
+      <nav className="present-controls hidden md:flex" aria-label="Presentation controls">
         <BrandStill decorative className="present-mark-still" />
-        {PRESENT_BEATS.map((beat, i) => (
-          <span
-            key={beat.id}
-            className="present-mark"
-            style={{
-              width: i === index ? 18 : 9,
-              background: i === index ? "var(--leader)" : "var(--dust)",
-              opacity: reduced ? 0.55 : i === index ? 1 : 0.58,
-            }}
-          />
-        ))}
-      </div>
+        <button type="button" onClick={onPrev} disabled={atStart} aria-label="Previous scene">
+          BACK
+        </button>
+        <div className="present-progress" aria-live="polite">
+          <p>
+            {String(index + 1).padStart(2, "0")} / {String(PRESENT_BEATS.length).padStart(2, "0")} · {beat.label.toUpperCase()}
+          </p>
+          <div className="present-marks" aria-hidden>
+            {PRESENT_BEATS.map((item, i) => (
+              <span
+                key={item.id}
+                className="present-mark"
+                style={{
+                  width: i === index ? 18 : 9,
+                  background: i === index ? "var(--leader)" : "var(--dust)",
+                  opacity: reduced ? 0.55 : i === index ? 1 : 0.58,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+        <button type="button" onClick={atEnd ? onExit : onNext} aria-label={atEnd ? "Exit presentation" : "Next scene"}>
+          {atEnd ? "EXPLORE" : "NEXT"}
+        </button>
+      </nav>
     </>
   );
 }

@@ -118,7 +118,10 @@ function ArchiveChrome({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className={`relative z-10 min-h-screen ${isEntry ? "is-threshold" : "is-lenses"}`}>
+    <div
+      className={`relative z-10 min-h-screen ${isEntry ? "is-threshold" : "is-lenses"}${presenting ? " is-presenting" : ""}`}
+      data-presenting={presenting ? "true" : undefined}
+    >
       <a href="#main" className="skip-to-content" tabIndex={open ? -1 : undefined}>
         Skip to content
       </a>

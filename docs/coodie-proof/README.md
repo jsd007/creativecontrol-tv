@@ -1,20 +1,20 @@
-# Coodie proof — stills to attach
+# Coodie proof — share package
 
-Desktop stills from live Vercel, 9 Sep 2026. 1440×900. SOUND is **OFF** in every frame. These are pictures of the prototype, not the tapes.
+The live presentation is the proof. The PNGs in this folder are the earlier twelve-screen capture from 9 Sep 2026 and are kept only as a visual record; do **not** attach them to the first email. Re-capture the seven scenes after the polished branch is deployed if stills are useful later.
 
 James sends. Do not mark the archive goal complete after he walks it. Pause the goal yourself — this package cannot.
 
 ## How to send
 
-1. Attach this folder (or the twelve PNGs).
-2. Paste the show URL. Desktop. Space walks it.
+1. Paste the show URL.
+2. Open on desktop. Click **NEXT** or press Space to walk it.
 
 ```
 Desktop:
 
 https://creativecontrol-tv.vercel.app/?present=1
 
-It's an archive — not the reel on the live site. The door is their YouTube mark, not a logo we drew. Hit Space to walk it. SOUND is off. The frames say PROTOTYPE MEDIA. They aren't the tapes. One hop is the official channel on air — still not the vault.
+It's an archive — not the reel on the live site. The door is your YouTube mark, not a logo I drew. Click NEXT or hit Space to walk it. SOUND is off. The frames say PROTOTYPE MEDIA. They aren't the tapes. One scene is the official channel on air — still not the vault.
 
 I won't put a number on the hours. That's yours.
 
@@ -34,37 +34,26 @@ This is a prototype of the archive itself — not the Framer reel on creativecon
 | Show | https://creativecontrol-tv.vercel.app/?present=1 |
 | House | https://creativecontrol-tv.vercel.app |
 | Chicago fly | https://creativecontrol-tv.vercel.app/world?city=chicago&fly=1 |
-| Leftover | https://creativecontrol-tv.vercel.app/clip/channel-zero-never-aired |
-| Combo 1 | https://creativecontrol-tv.vercel.app/archive?person=ye&location=chicago&year=2002&type=Studio |
-| Ye | https://creativecontrol-tv.vercel.app/archive?person=ye |
+| One record | https://creativecontrol-tv.vercel.app/archive?person=ye&location=chicago&year=2002&type=Studio |
 | CH 07 | https://creativecontrol-tv.vercel.app/tv?ch=7 |
-| CH 03 | https://creativecontrol-tv.vercel.app/tv?ch=3 |
-| Aisle | https://creativecontrol-tv.vercel.app/tapes |
 | CC-0217 | https://creativecontrol-tv.vercel.app/tapes?open=t-0217 |
 | Span | https://creativecontrol-tv.vercel.app/timeline |
 
 Official air is **CH 07**, not the vault. 366 is the official YouTube listing wired into the mock — not the catalog.
 
-## What each still is
+## Seven-scene walk
 
-One idea per image.
+One idea per scene. The presentation deliberately leaves the empty leftover clip, redundant person-filter pass, Studio-channel variation, and empty timeline cards outside the walk.
 
-| File | Beat | What it is |
+| Scene | Beat | What it proves |
 | --- | --- | --- |
-| `01-home-archive-door.png` | Door | House `/`. Official YouTube mark. DISCOVER is house chrome here. |
-| `02-world-globe.png` | Earth | R3F sculpture. Not MAP. Not globe.gl. |
-| `03-world-chicago-fly.png` | City | After `?city=chicago&fly=1`. Chicago as the facing point. |
-| `04-leftover-clip.png` | Footage | `/clip/channel-zero-never-aired`. PUBLIC leftover. **PROTOTYPE MEDIA.** Not the basement sleeve. |
-| `05-archive-combo-1-record.png` | Index | Ye + Chicago + 2002 + Studio → **1 RECORD** (Basement, October 2002 · CC-0217 · MEMBERS ONLY). |
-| `06-archive-ye-throughline.png` | Person | `/archive?person=ye`. The field is Ye (12 records), not the combo. |
-| `07-tv-ch07-ident.png` | Official air | `/tv?ch=7`. CC-TV **07 BROADCAST**. Ident, then the programmed official network. PLAY · MUTED. Still not the vault. |
-| `08-tv-ch03-studio.png` | Channel | `/tv?ch=3`. Studio. Prototype frame, not the YouTube hop. |
-| `09-tapes-aisle.png` | Vault | Facing spines. STORAGE / DIGITAL VAULT / PHONE. |
-| `10-tapes-open-cc0217.png` | Cassette | `/tapes?open=t-0217`. One cassette (CC-0217). Not a contact sheet. |
-| `11-timeline-span.png` | Span | `1994 — 2026`. The years, not a poster wall. |
-| `12-present-first-frame.png` | Show start | `/?present=1`. Same door. DISCOVER hidden. Hairline marks. ENTER only. |
-
-`12` is what Coodie opens. `01` is the same door with house chrome (DISCOVER, THE WORLD).
+| 01 | Door | Creative Control already has an entrance, not a generic homepage. |
+| 02 | Earth | The archive can be understood at world scale. |
+| 03 | Chicago | Place is a real way into the material, with the selected city named in the interface. |
+| 04 | One record | Ye + Chicago + 2002 + Studio resolves to one legible record instead of a wall of filters. |
+| 05 | Official air | Creative Control can broadcast through a focused television surface. |
+| 06 | CC-0217 | Every story can lead back to a physical source. |
+| 07 | Span | The archive stretches from 1994 through 2026 without pretending every year is already complete. |
 
 ## Ask him — do not guess
 

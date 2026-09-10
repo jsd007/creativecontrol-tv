@@ -109,7 +109,8 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
   );
 
   const matches = useMemo(() => filterClips(filters), [filters]);
-  const querying = activeFilterCount(filters) > 0;
+  const filterCount = activeFilterCount(filters);
+  const querying = filterCount > 0;
   const authored = useMemo(() => matches.filter(isAuthored), [matches]);
   const sheet = useMemo(() => authored.filter(isDiscoverable), [authored]);
   /** Search may hit prototype transcript density. A year / rail asks for authored holdings, not UNLOGGED as a title. */
@@ -247,11 +248,11 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
   }
 
   return (
-    <div className="px-4 pb-24 md:px-6">
+    <div className="archive-index px-4 pb-24 md:px-6">
       <h1 className="sr-only">The Index</h1>
       <form
         role="search"
-        className="mt-8 border-b border-paper/15 pb-3"
+        className="archive-index-search mt-8 border-b border-paper/15 pb-3"
         onSubmit={(e) => {
           e.preventDefault();
           bindSearch(q);
@@ -267,13 +268,20 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
         />
       </form>
 
-      <div className="mt-8 max-w-5xl">
-        <Rail
-          label="ERA"
-          value={filters.era}
-          onChange={chooseEra}
-          options={catalog.eras.map((e) => ({ value: e.id, label: e.name }))}
-        />
+      <details className="archive-refine mt-6 max-w-5xl">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-y border-paper/10 py-3 font-cond text-[13px] tracking-[0.14em] text-dust hover:text-paper">
+          <span>REFINE THE INDEX</span>
+          <span className={filterCount ? "text-leader" : "text-dust"}>
+            {filterCount ? `${filterCount} SET` : "ERA · YEAR · PLACE · PERSON · TYPE"}
+          </span>
+        </summary>
+        <div className="archive-refine-body pt-3">
+          <Rail
+            label="ERA"
+            value={filters.era}
+            onChange={chooseEra}
+            options={catalog.eras.map((e) => ({ value: e.id, label: e.name }))}
+          />
 
         <div className="border-t border-paper/10 py-3">
           <p className="type-label">SPAN</p>
@@ -321,41 +329,45 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
           )}
         </div>
 
-        <Rail label="PLACE" value={filters.location} onChange={(v) => setFilter("location", v)} options={placeOptions} />
-        <Rail label="PERSON" value={filters.person} onChange={(v) => setFilter("person", v)} options={personOptions} />
-        <Rail
-          label="TYPE"
-          value={filters.type}
-          onChange={(v) => setFilter("type", v)}
-          options={withSelected(
-            SPINE_TYPES.map((t) => ({ value: t, label: t })),
-            filters.type,
-            filters.type ? { value: filters.type, label: filters.type } : undefined,
-          )}
-        />
-        <Rail
-          label="COLLECTION"
-          href="/collections"
-          value={filters.collection}
-          onChange={(v) => setFilter("collection", v)}
-          options={withSelected(
-            SPINE_COLLECTIONS.map((c) => ({ value: c.id, label: c.label })),
-            filters.collection,
-            filters.collection
-              ? {
-                  value: filters.collection,
-                  label:
-                    SPINE_COLLECTIONS.find((c) => c.id === filters.collection)?.label ??
-                    getCollection(filters.collection)?.name ??
-                    filters.collection,
-                }
-              : undefined,
-          )}
-        />
-      </div>
+          <Rail label="PLACE" value={filters.location} onChange={(v) => setFilter("location", v)} options={placeOptions} />
+          <Rail label="PERSON" value={filters.person} onChange={(v) => setFilter("person", v)} options={personOptions} />
+          <Rail
+            label="TYPE"
+            value={filters.type}
+            onChange={(v) => setFilter("type", v)}
+            options={withSelected(
+              SPINE_TYPES.map((t) => ({ value: t, label: t })),
+              filters.type,
+              filters.type ? { value: filters.type, label: filters.type } : undefined,
+            )}
+          />
+          <Rail
+            label="COLLECTION"
+            href="/collections"
+            value={filters.collection}
+            onChange={(v) => setFilter("collection", v)}
+            options={withSelected(
+              SPINE_COLLECTIONS.map((c) => ({ value: c.id, label: c.label })),
+              filters.collection,
+              filters.collection
+                ? {
+                    value: filters.collection,
+                    label:
+                      SPINE_COLLECTIONS.find((c) => c.id === filters.collection)?.label ??
+                      getCollection(filters.collection)?.name ??
+                      filters.collection,
+                  }
+                : undefined,
+            )}
+          />
+        </div>
+      </details>
 
-      <div className="mt-10 flex flex-wrap items-end justify-between gap-4 border-y border-paper/10 py-4">
-        <p className="max-w-3xl font-cond text-[16px] tracking-[0.08em] text-paper">{sentence}</p>
+      <div className="archive-index-query mt-8 flex flex-wrap items-end justify-between gap-4 border-y border-paper/10 py-4">
+        <div>
+          <p className="type-label">CURRENT QUERY</p>
+          <p className="mt-2 max-w-3xl font-cond text-[16px] tracking-[0.08em] text-paper">{sentence}</p>
+        </div>
         <div className="flex flex-wrap items-center gap-4">
           {filters.person && getPerson(filters.person) ? (
             <Link href={`/people/${getPerson(filters.person)!.slug}`} className="font-cond text-[12px] tracking-[0.16em] text-dust hover:text-paper">

@@ -33,7 +33,7 @@ export function BroadcastPlayer({ youtubeId, title, className = "", large = fals
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-cond text-[13px] tracking-[0.22em] text-paper">
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-void/90 px-3 py-2 font-cond text-[13px] tracking-[0.22em] text-paper">
             PLAY · MUTED
           </span>
         </button>

@@ -2,7 +2,7 @@
 
 Operational. Not a pitch. Desktop. SOUND stays **OFF**.
 
-The ten beats walk the north-star answer (one archive, many lenses — after jeen-yuhs.com, the place the stories were kept). The written answer is `docs/NORTH_STAR.md`. Surfaces: `docs/CONCEPTS.md`.
+The seven scenes walk the north-star answer: one archive, many lenses — after jeen-yuhs.com, the place the stories were kept. The written answer is `docs/NORTH_STAR.md`. Surfaces: `docs/CONCEPTS.md`.
 
 ## Share
 
@@ -29,7 +29,7 @@ James
 James, in the room. The paste above is what Coodie already has. Desktop. Space. Not a pitch. Goal is not complete.
 
 ```
-Desktop. Space walks it.
+Desktop. Click NEXT or use Space.
 
 https://creativecontrol-tv.vercel.app/?present=1
 
@@ -37,7 +37,7 @@ This is a prototype of the archive itself — not the Framer reel on the live si
 
 SOUND stays OFF.
 The frames say PROTOTYPE MEDIA. They aren't the tapes.
-Official air is beat 7 (CH 07). Still not the vault.
+Official air is scene 5 (CH 07). Still not the vault.
 
 I won't print hours. I won't say this vault is finished.
 
@@ -51,14 +51,14 @@ show names we can use
 what's public vs never shown
 footage or stills we may use
 
-Ten beats: door → Earth → Chicago → leftover → combo 1 → Ye → official air → Studio → CC-0217 → span
+Seven scenes: door → Earth → Chicago → combo 1 → official air → CC-0217 → span
 ```
 
 Stills to attach: `docs/coodie-proof/` (README + twelve desktop PNGs from live Vercel). How to send and the ask-him list live in that README. Goal is not complete.
 
 Inspect: [deployment](https://vercel.com/james-dombros-projects/creativecontrol-tv/2miTkGLvsuQz3VZjSLH5ZjM2WREd).
 
-Walked live desktop 9 Sep 2026 after the official-mark deploy. **Ten beats match `present.ts`.** The door is James’s static logo, not a coil we drew. Space stayed on the last beat. SOUND stayed OFF. DISCOVER stayed hidden. No constellation on the path. Beat 4 is the PUBLIC leftover (`/clip/channel-zero-never-aired`), not the basement sleeve. Combo Ye + Chicago + 2002 + Studio is **1 RECORD** (Basement, October 2002 · MEMBERS ONLY). Four openings exist in development (ARCHIVE / HISTORY / DOCUMENT / SPAN); `/?present=1` starts on default ARCHIVE `/`. Beat 7 is CH 07 ident (`/tv?ch=7`) — ident first, then the programmed official network, PLAY · MUTED. Not a 366-row dump. Not a YouTube tour. Beat 8 is Studio (`/tv?ch=3`). Archive goal is not complete.
+The polished share path is intentionally shorter than the first prototype. It removes the empty leftover frame, the redundant person-filter pass, and the duplicate Studio channel from the presentation while leaving those routes available to explore afterward. Combo Ye + Chicago + 2002 + Studio is **1 RECORD** (Basement, October 2002 · MEMBERS ONLY). CH 07 is the one TV proof in the walk: ident first, then the programmed official network, PLAY · MUTED. Archive goal is not complete.
 
 ## Start locally
 
@@ -71,7 +71,7 @@ Open [http://localhost:3000/?present=1](http://localhost:3000/?present=1).
 
 In development only: four openings on `/` (ARCHIVE / HISTORY / DOCUMENT / SPAN). The show still starts on default ARCHIVE `/` — same as live `/?present=1`.
 
-The first URL sets the show. After that, hops stay clean. Ten hairline marks, desktop only — no “Concept 1.” DISCOVER is hidden while showing.
+The first URL sets the show. After that, hops stay clean. A small desktop controller names the current scene and supports BACK / NEXT / EXPLORE. DISCOVER is hidden while showing.
 
 ## Keys
 
@@ -84,24 +84,21 @@ The first URL sets the show. After that, hops stay clean. Ten hairline marks, de
 
 Do not type in a field and hit Space — Space stays in the field. Space or Enter on a focused door, rail, or SOUND stays with that control. Space on SOUND toggles and does not hop. Tab order is skip → mark → rails → DISCOVER → SOUND → the room. Show marks stay desktop only; the mobile dock is house chrome, not a beat.
 
-## Ten beats
+## Seven scenes
 
 Same catalog. No slides. One argument, not a feature tour:
 
-The house has a door. The archive sits on Earth. The city is Chicago. A leftover Channel Zero frame is public. Ask Ye + Chicago + 2002 + Studio and the index returns one. Open Ye and the field is the person, not the combo. They broadcast. Studio is Channel 03. The cassette is CC-0217. The span is the timeline.
+The house has a door. The archive sits on Earth. The city is Chicago. Ask Ye + Chicago + 2002 + Studio and the index returns one. Creative Control broadcasts. The record has a physical source: CC-0217. The span is the timeline.
 
 1. Threshold `/` — the door
-2. World — Earth
-3. Chicago (fly-to) — the city
-4. Footage — Channel Zero, never aired (`/clip/channel-zero-never-aired`, PUBLIC leftover)
-5. Index — Ye + Chicago + 2002 + Studio (**1** record)
-6. Person — Ye (`/archive?person=ye`)
-7. Television — CH 07 ident (`/tv?ch=7`), then the programmed official network, PLAY · MUTED
-8. Channel 03 Studio (`/tv?ch=3`)
-9. Tape CC-0217 in the aisle (`/tapes?open=t-0217`)
-10. Timeline span
+2. World — Earth at archive scale
+3. Chicago (fly-to) — the city named in the interface
+4. Index — Ye + Chicago + 2002 + Studio (**1** record), with refinement controls out of the way
+5. Television — CH 07 ident (`/tv?ch=7`), then the programmed official network, PLAY · MUTED
+6. Tape CC-0217 in the aisle (`/tapes?open=t-0217`)
+7. Timeline — the complete 1994–2026 span
 
-Cross-lens hops are the house Cut. Chicago fly, Studio acquire, and the CC-0217 camera keep their own motion. Combo → Ye is a Cut (same lens, new question). Space during a Cut takes the next beat when the gate opens — it does not drop.
+Cross-lens hops are the house Cut. Chicago fly and the CC-0217 camera keep their own motion. Space during a Cut takes the next scene when the gate opens — it does not drop.
 
 ENTER on the threshold advances. After the last beat, stay put — do not invent an eleventh.
 
@@ -110,7 +107,7 @@ ENTER on the threshold advances. After the last beat, stay put — do not invent
 - **SOUND** — leave OFF. House textures only if someone turns it on (threshold / acquire / cut / tape). No WAVs on disk; procedural fallback. No licensed music. No voice.
 - **Mobile dock** — DISCOVER + SOUND + five lenses below `md`. Not in the show.
 - **DISCOVER** (`d`) — after you exit. Public doors only. Hidden during the show.
-- **CH 07 GUIDE** — after you exit, or stay on beat 7 and open a book. Official blocks and year books (fat years nest A–Z), not a 366-line list. Not a YouTube tour. Beat 7 already signed on ident first.
+- **CH 07 GUIDE** — after you exit the show. Official blocks and year books (fat years nest A–Z), not a 366-line list. Not a YouTube tour. Scene 5 already signed on ident first.
 - **CONSTELLATION** — from a person / place / project page (`THE FIELD`). A few true spokes. Not on the lens rail. Not a show beat.
 
 ## Do not claim
