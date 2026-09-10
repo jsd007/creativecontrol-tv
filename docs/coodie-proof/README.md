@@ -1,6 +1,8 @@
 # Coodie proof — share package
 
-The live presentation is the proof — send the URL, not the pictures. The seven PNGs here are the walk itself, captured from live at 1440 × 900 on 10 Sep 2026 by pressing Space through `/?present=1`. Each filename is its scene. Use them only if Coodie cannot open the link; re-capture after any visible change so the stills never promise something the live show does not do.
+The live presentation is the proof — send the URL, not the pictures. The seven numbered PNGs are the walk itself, captured from live production at 1440 × 900 on 10 Sep 2026 by pressing Space through `/?present=1`. Each filename is its scene. Use them only if Coodie cannot open the link; re-capture after any visible change so the stills never promise something the live show does not do.
+
+`08-the-guide.png` is **not part of the walk** — the show hides GUIDE so each scene carries one idea. It is here because the CH 07 listing is the thing to point at if the question is *what's actually in there*: 366 official titles in one scroll, no menus.
 
 James sends. Do not mark the archive goal complete after he walks it. Pause the goal yourself — this package cannot.
 
@@ -35,11 +37,11 @@ This is a prototype of the archive itself — not the Framer reel on creativecon
 | House | https://creativecontrol-tv.vercel.app |
 | Chicago fly | https://creativecontrol-tv.vercel.app/world?city=chicago&fly=1 |
 | One record | https://creativecontrol-tv.vercel.app/archive?person=ye&location=chicago&year=2002&type=Studio |
-| CH 07 | https://creativecontrol-tv.vercel.app/tv?ch=7 |
+| CH 07 (`/tv` opens here) | https://creativecontrol-tv.vercel.app/tv |
 | CC-0217 | https://creativecontrol-tv.vercel.app/tapes?open=t-0217 |
 | Span | https://creativecontrol-tv.vercel.app/timeline |
 
-Official air is **CH 07**, not the vault. 366 is the official YouTube listing wired into the mock — not the catalog.
+Official air is **CH 07**, not the vault — `/tv` opens on it, and its GUIDE is one scroll of all **366** titles with no menus. 366 is the official YouTube listing wired into the mock — not the catalog.
 
 ## Seven-scene walk
 
@@ -54,6 +56,8 @@ One idea per scene. The presentation deliberately leaves the empty leftover clip
 | 05 | Official air | `05-official-air.png` | Creative Control can broadcast through a focused television surface. |
 | 06 | CC-0217 | `06-cc-0217.png` | Every story can lead back to a physical source. |
 | 07 | Span | `07-span.png` | The archive stretches from 1994 through 2026 without pretending every year is already complete. |
+
+Outside the walk: `08-the-guide.png` — CH 07's listing, 366 titles in one scroll, for the *what's in there* question.
 
 ## Ask him — do not guess
 
