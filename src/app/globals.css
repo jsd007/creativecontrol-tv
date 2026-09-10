@@ -2957,21 +2957,20 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
 }
 
 .is-presenting .archive-index-query > div:first-child > p:last-child {
-  max-width: 28ch;
-  font-family: var(--font-display), Georgia, serif;
-  font-size: clamp(2.2rem, 5vw, 5rem);
-  line-height: 0.98;
-  letter-spacing: -0.025em;
-  word-spacing: 0.08em;
+  max-width: 42rem;
+  font-family: var(--font-cond), "Arial Narrow", sans-serif;
+  font-size: clamp(1.15rem, 2.1vw, 1.65rem);
+  line-height: 1.2;
+  letter-spacing: 0.06em;
 }
 
 .is-presenting .archive-index > section[aria-label="Index"] {
   max-width: 72rem;
-  margin-top: clamp(2rem, 5vh, 4rem);
+  margin-top: clamp(1.5rem, 4vh, 3rem);
 }
 
 .is-presenting .archive-index > section[aria-label="Index"] h2 {
-  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  font-size: clamp(2rem, 4vw, 3.4rem);
 }
 
 .is-presenting .archive-index .index-row {

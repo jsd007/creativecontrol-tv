@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-10 — Coodie stills: later year, the actual index, the span with frames
+
+James, on the email stills: move time forward on the world; 4 looks like crap; 7 needs more detail; 8 needs more variety.
+
+- `/world` now opens on **2012**, not 2004 — the Chicago fly lights New York, Dallas, Atlanta and the rest of the network-era map instead of three early dots. `03-chicago` recaptured there.
+- `04-one-record` is the finding aid: search, refine (Chicago / Ye / Studio / 2002), **1 RECORD**, Basement October 2002. The present crop that blew the query to 5rem display type and hid everything else is no longer the still. Present typography for that scene was also walked back so the live walk does not do the same thing.
+- `07-span` is the year rail plus the 1990s stills (Channel Zero 1995–97, Twista 1998) — not four sentences with the frames hidden.
+- `08-the-guide` is the 2010 listing (2-Cent through BluRoc), not four Channel Zero titles and six TEAR UPs.
+- Email 16:9 JPEGs rewritten in `docs/coodie-share/`, including `08-television-guide.jpg`.
+
 ## 2026-09-10 — One list, one caption, one cassette, one scope
 
 James, on the previous redesign: *"I tried to ask you to better present the content in channel 7 and now I lost all the list of content I added, the page opens to channel zero… there should be one single easy to navigate list of the content below that when you scroll, not a broken guide."* He was right on all counts. Four fixes, all his.

@@ -674,7 +674,7 @@ export function WorldGlobe() {
   const search = useSearchParams();
   const reduced = usePrefersReducedMotion();
   const narrow = useIsNarrow();
-  const [year, setYear] = useState(2004);
+  const [year, setYear] = useState(2012);
   const [selected, setSelected] = useState("chicago");
   const [hovered, setHovered] = useState<string | null>(null);
   const [facing, setFacing] = useState<string[]>(["chicago"]);

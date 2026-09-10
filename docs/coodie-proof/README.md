@@ -1,8 +1,8 @@
 # Coodie proof — share package
 
-The live presentation is the proof — send the URL, not the pictures. The seven numbered PNGs are the walk itself, captured from live production at 1440 × 900 on 10 Sep 2026 by pressing Space through `/?present=1`. Each filename is its scene. Use them only if Coodie cannot open the link; re-capture after any visible change so the stills never promise something the live show does not do.
+The live presentation is the proof — send the URL, not the pictures. Email JPEGs live in `docs/coodie-share/`. The numbered PNGs here are the same frames at 1440 × 900, recaptured 10 Sep 2026 after the one-list GUIDE, later Chicago year, and readable span. Use them only if Coodie cannot open the link.
 
-`08-the-guide.png` is **not part of the walk** — the show hides GUIDE so each scene carries one idea. It is here because the CH 07 listing is the thing to point at if the question is *what's actually in there*: 366 official titles in one scroll, no menus.
+`03` is year **2012** — time moved forward from the early-2004 cut so more of the map is lit. `04` is the finding aid itself (search + refine + the one basement row), not the empty present crop. `07` shows the year stills under the span. `08` is **not part of the walk** — the show hides GUIDE so each scene carries one idea — and is here for the *what's actually in there* question: 2010 titles in one scroll, no menus.
 
 James sends. Do not mark the archive goal complete after he walks it. Pause the goal yourself — this package cannot.
 
