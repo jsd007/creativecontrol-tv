@@ -457,7 +457,11 @@ function CityMark({
         />
       </mesh>
       {labelOn ? (
-        <Html distanceFactor={36} position={[0.09, 0.07, 0]} style={{ pointerEvents: selected ? "auto" : "none" }}>
+        <Html
+          position={[0.06, 0.05, 0]}
+          zIndexRange={[6, 0]}
+          style={{ pointerEvents: selected ? "auto" : "none" }}
+        >
           <div className="world-mark-label whitespace-nowrap border-l border-leader/70">
             <p className="font-cond text-[12px] tracking-[0.1em] text-paper">{location.city.toUpperCase()}</p>
             {selected ? (

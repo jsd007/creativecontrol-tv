@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-09-10 — Coodie stills are the walk, not a tour
+
+- `docs/coodie-proof/` held twelve stills shot before the globe / TV / tapes fixes, including four scenes deliberately outside the show (leftover clip, Ye through-line, CH 03, a second door). Its own README said not to attach them.
+- Replaced with **seven** PNGs captured from live by pressing Space through `/?present=1` at 1440 × 900 — one file per scene, named for the beat. Verified each landed on its documented URL with the right mark (`01 / 07 · THE DOOR` … `07 / 07 · THE SPAN`) and **SOUND OFF** on every frame.
+- The show is **seven scenes**, and code (`src/lib/present.ts`) and docs agree. Corrected one stale line in `PRESENTATION.md` that still warned against inventing an eleventh beat.
+- Send the URL, not the pictures. No hour-count. Archive goal is **not complete**.
+
+## 2026-09-09 — Globe labels, one caption per picture, docked tape file
+
+- `/world` city labels used drei `distanceFactor={36}`, which scales HTML by camera distance: a 12px name rendered **911 × 336 px** and covered half the Earth. Labels are now fixed DOM scale — measured 70 × 26 px — and sit as a quiet tag beside the mark.
+- Seven Tailwind opacity utilities were off the default scale and compiled to nothing. `bg-void/94` on the TV lower third meant the band was **fully transparent**: cream serif on the Channel Zero gold field. The band is now `.tv-third` in `globals.css`. Also snapped `bg-paper/12`, `bg-void/12`, `border-paper/8` `/12` `/14` `/22`.
+- A picture carries one caption. `ArchivePicture` / `PrototypeMedia` take `chrome="stamp"`; the TV stage uses it, so the frame keeps only PROTOTYPE MEDIA and drops the format chip and the timecode / duration footer that was colliding with the lower third. Corner brackets removed. Stage meta reads `year · format · timecode`.
+- `/tapes` file card no longer floats over the racks. It is docked bottom-left, opaque, gold-edged, outside the perspective ancestor, and reads one fact per line: `CC-0217 · MINIDV`, place, date, `1 LOGGED · 5 UNLOGGED`, OPEN THE FILE. Under 768px it docks above the thumb dock. Position measuring (`measureSheet`, `Sheet`, `fieldRef`) deleted.
+- Verified desktop 1440 and ~390: `/world`, `/world?city=chicago&fly=1`, `/tv?ch=0`, `/tv?ch=3`, `/tapes?open=t-0217`, `/tapes?open=t-0004`, clip gate. Combo still **1 RECORD**. SOUND off. No globe.gl, no second R3F canvas, no commit.
+- Archive goal is **not complete**. Tape camera is still CSS.
+
 ## 2026-09-09 — `/timeline` is a through-line, not a hue poster wall
 
 - Live span was empty HSL year cards (rainbow dashboard) plus text-only `through` names. Drill lived only in React state — `/timeline` could not open 2002 or YE.

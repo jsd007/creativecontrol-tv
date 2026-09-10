@@ -38,7 +38,6 @@ function requestedOpenId(raw: string | null) {
   return raw;
 }
 
-type Sheet = { left: number; top: number; width: number };
 type Cam = { x: number; y: number };
 
 function density(tapeId: string) {
@@ -56,12 +55,10 @@ export function TapeMosaic() {
   const router = useRouter();
   const [format, setFormat] = useState<(typeof FORMATS)[number]>("ALL");
   const openId = requestedOpenId(search.get("open"));
-  const [sheet, setSheet] = useState<Sheet | null>(null);
   const [cam, setCam] = useState<Cam>({ x: 50, y: 40 });
   const [walking, setWalking] = useState(false);
   const [arrived, setArrived] = useState(false);
   const mosaicRef = useRef<HTMLDivElement>(null);
-  const fieldRef = useRef<HTMLDivElement>(null);
   const reduced = usePrefersReducedMotion();
   const narrow = useIsNarrow();
   const years = useMemo(() => broadcastYears(), []);
@@ -125,22 +122,6 @@ export function TapeMosaic() {
     setCam({ x: Number.isFinite(ox) ? ox : 50, y: Number.isFinite(oy) ? oy : 40 });
   }
 
-  function measureSheet(id: string) {
-    const field = fieldRef.current;
-    const cell = document.getElementById(`tape-cell-${id}`);
-    if (!field || !cell) return;
-    const target = cell.querySelector(".tape-pulled, .tape-object-face") ?? cell;
-    const fr = field.getBoundingClientRect();
-    const cr = target.getBoundingClientRect();
-    if (narrow) {
-      setSheet({ left: 0, top: Math.max(0, cr.bottom - fr.top + 14), width: fr.width });
-      return;
-    }
-    const width = Math.min(fr.width - 24, 320);
-    const left = Math.max(12, Math.min(cr.left - fr.left, fr.width - width - 12));
-    setSheet({ left, top: Math.max(12, cr.bottom - fr.top + 16), width });
-  }
-
   const walked = useRef(false);
 
   function writeOpen(id: string | null) {
@@ -193,17 +174,8 @@ export function TapeMosaic() {
   }, [openId, reduced, narrow]);
 
   useLayoutEffect(() => {
-    if (!openId) {
-      setSheet(null);
-      return;
-    }
+    if (!openId) return;
     measureCam(openId);
-    if (!(arrived || narrow || reduced)) return;
-    measureSheet(openId);
-    const lock = window.setTimeout(() => measureSheet(openId), 240);
-    return () => {
-      window.clearTimeout(lock);
-    };
   }, [openId, narrow, format, arrived, reduced]);
 
   useEffect(() => {
@@ -269,7 +241,6 @@ export function TapeMosaic() {
       </div>
 
       <div
-        ref={fieldRef}
         className={`aisle-field relative mt-8 ${reduced ? "is-still" : ""}${openId ? " is-open" : ""}`}
         style={{
           perspective: reduced || narrow ? undefined : 1680,
@@ -404,38 +375,41 @@ export function TapeMosaic() {
           ) : null}
         </motion.div>
 
-        <AnimatePresence>
-          {open && sheet && arrived ? (
-            <motion.div
-              key={open.id}
-              className="aisle-sheet"
-              style={{ left: sheet.left, top: sheet.top, width: sheet.width }}
-              initial={reduced ? false : { opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduced ? undefined : { opacity: 0, y: 8 }}
-              transition={{ duration: 0.4, ease: EASE_GATE }}
-            >
-              <div className="aisle-sheet-panel">
-                {broadcastOpen ? (
-                  <p className="aisle-sheet-hold is-broadcast">PUBLIC BROADCAST</p>
-                ) : hold ? (
-                  <p className="aisle-sheet-hold">
-                    <span className="is-logged">{hold.logged} LOGGED</span>
-                    {" · "}
-                    {hold.unlogged} UNLOGGED
-                  </p>
-                ) : null}
-                <p className="aisle-sheet-meta">
-                  {open.code} · {loc?.name?.toUpperCase()} · {open.recordedApproximate ?? open.recordedDate}
-                </p>
-                <Link href={broadcastOpen ? "/tapes/t-broadcast" : `/tapes/${open.id}`} className="aisle-sheet-open">
-                  OPEN THE FILE
-                </Link>
-              </div>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
       </div>
+
+      <AnimatePresence>
+        {open && arrived ? (
+          <motion.div
+            key={open.id}
+            className="aisle-sheet"
+            initial={reduced ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduced ? undefined : { opacity: 0, y: 8 }}
+            transition={{ duration: 0.4, ease: EASE_GATE }}
+          >
+            <div className="aisle-sheet-panel">
+              <p className="aisle-sheet-code">
+                {open.code}
+                {broadcastOpen ? "" : ` · ${open.format}`}
+              </p>
+              <p className="aisle-sheet-where">{loc?.name ?? "UNPLACED"}</p>
+              <p className="aisle-sheet-when">{open.recordedApproximate ?? open.recordedDate}</p>
+              {broadcastOpen ? (
+                <p className="aisle-sheet-hold is-broadcast">PUBLIC BROADCAST</p>
+              ) : hold ? (
+                <p className="aisle-sheet-hold">
+                  <span className="is-logged">{hold.logged} LOGGED</span>
+                  {" · "}
+                  {hold.unlogged} UNLOGGED
+                </p>
+              ) : null}
+              <Link href={broadcastOpen ? "/tapes/t-broadcast" : `/tapes/${open.id}`} className="aisle-sheet-open">
+                OPEN THE FILE
+              </Link>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }

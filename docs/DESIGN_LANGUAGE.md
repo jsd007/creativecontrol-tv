@@ -45,6 +45,10 @@ Paper on void. Do not invert the whole product into a light app.
 
 Type on void must read. When type sits on living video, the globe, or a shelf, put it on an opaque `void` / `ink` plate — not a glass card. Shared classes: `.type-label` `.type-meta` `.type-nav` `.type-code` `.type-title`. Type floor is 12px for labels, 13px for desktop nav. Tracking stays open enough to read phrases (OPEN THE FILE, LOGGED · UNLOGGED, SOUND OFF). Do not solve contrast with chips or a light theme.
 
+Tailwind opacity modifiers only exist on the default scale (…/85, /90, /95, /100). An off-scale value like `bg-void/94` compiles to nothing and the plate renders fully transparent — that is how the TV lower third became gold-on-gold. Reach for a house class in `globals.css` when a plate needs an exact alpha.
+
+A picture carries at most one caption. When a stage prints its own lower third (TV) or file (clip), the frame inside it runs `chrome="stamp"` — the PROTOTYPE MEDIA label only. Timecode, duration, and format live in one place, never twice on the same picture.
+
 ## Type
 
 - **Display / threshold:** Instrument Serif — restraint, museum, not gym-poster

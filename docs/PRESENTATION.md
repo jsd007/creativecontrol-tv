@@ -100,7 +100,7 @@ The house has a door. The archive sits on Earth. The city is Chicago. Ask Ye + C
 
 Cross-lens hops are the house Cut. Chicago fly and the CC-0217 camera keep their own motion. Space during a Cut takes the next scene when the gate opens — it does not drop.
 
-ENTER on the threshold advances. After the last beat, stay put — do not invent an eleventh.
+ENTER on the threshold advances. After the last beat, stay put — do not invent an eighth.
 
 ## Beside the show (not in it)
 

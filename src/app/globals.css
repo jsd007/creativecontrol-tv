@@ -2729,6 +2729,10 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
   padding: 0.2rem 0.5rem 0.28rem 0.55rem;
 }
 
+.tv-third {
+  background: color-mix(in srgb, var(--void) 94%, transparent);
+}
+
 .clip-file {
   background: var(--void);
   padding: 1.05rem 0 0.15rem;

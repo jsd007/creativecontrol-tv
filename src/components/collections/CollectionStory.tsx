@@ -147,7 +147,7 @@ function EmptyGate() {
   return (
     <div className="viewfinder viewfinder-br relative aspect-[4/3] w-full bg-ink">
       <div className="absolute inset-0 bg-[#0c0b09]" />
-      <div className="absolute inset-[14%] border border-paper/12" />
+      <div className="absolute inset-[14%] border border-paper/10" />
       <div className="relative z-10 flex h-full items-center justify-center">
         <p className="font-mono text-[11px] tracking-[0.2em] text-dust">NO PUBLIC FRAMES</p>
       </div>

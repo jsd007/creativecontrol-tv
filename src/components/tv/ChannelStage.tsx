@@ -52,15 +52,19 @@ export function ChannelStage({
   return (
     <div>
       <div className="tv-stage-frame relative mx-auto w-full max-w-[min(100%,calc(56vh*16/9))] overflow-hidden">
-        {now ? <ArchivePicture key={now.id} clip={now} large={Boolean(now.youtubeId)} className="aspect-video w-full" /> : null}
-        <div className="pointer-events-none absolute left-3 top-3 h-3 w-3 border-l border-t border-paper/45" />
-        <div className="pointer-events-none absolute right-3 top-3 h-3 w-3 border-r border-t border-paper/45" />
-        <div className="pointer-events-none absolute bottom-3 left-3 h-3 w-3 border-b border-l border-paper/45" />
-        <div className="pointer-events-none absolute bottom-3 right-3 h-3 w-3 border-b border-r border-paper/45" />
+        {now ? (
+          <ArchivePicture
+            key={now.id}
+            clip={now}
+            large={Boolean(now.youtubeId)}
+            chrome="stamp"
+            className="aspect-video w-full"
+          />
+        ) : null}
         <Acquire on={switching} accent={channel.accent} n={channel.n} reduced={reduced} />
         <div ref={third} className="pointer-events-none absolute inset-x-0 bottom-0">
           <div className={`h-px ${accentRule(channel.accent)}`} />
-          <div className="bg-void/94 px-4 py-3">
+          <div className="tv-third px-4 py-3">
             <p className={`font-cond text-[11px] tracking-[0.24em] ${accentOnAir(channel.accent)}`}>
               NOW · {channel.name}
               {nowMark ? ` · ${nowMark}` : ""}
@@ -71,7 +75,7 @@ export function ChannelStage({
               </h2>
             ) : null}
             <p className="mt-2 font-mono text-[10px] tracking-[0.14em] text-dust">
-              {now?.year} · {now?.type.toUpperCase()} · {now?.youtubeId ? "PUBLIC BROADCAST" : now?.startTimecode}
+              {now?.year} · {now?.formatHint} · {now?.youtubeId ? "PUBLIC BROADCAST" : now?.startTimecode}
             </p>
           </div>
         </div>

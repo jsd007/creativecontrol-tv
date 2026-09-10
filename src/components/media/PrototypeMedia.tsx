@@ -8,6 +8,8 @@ type Props = {
     Pick<ArchiveClip, "id" | "tags" | "startTimecode" | "duration" | "cameraCredit">;
   className?: string;
   large?: boolean;
+  /** "stamp" keeps only the PROTOTYPE MEDIA label — for stages that carry their own caption. */
+  chrome?: "full" | "stamp";
 };
 
 /** Quiet proving field — no PROTOTYPE MEDIA stamp. For year / month / day cells. */
@@ -34,10 +36,11 @@ export function PrototypeField({
   );
 }
 
-export function PrototypeMedia({ clip, className = "", large = false }: Props) {
+export function PrototypeMedia({ clip, className = "", large = false, chrome = "full" }: Props) {
   const mute = isUnlogged(clip);
   const voice = mute ? "default" : resolveMediaVoice(clip);
   const minidv = clip.formatHint === "MINIDV" || clip.formatHint === "HI8" || clip.formatHint === "VHS";
+  const stamp = chrome === "stamp";
 
   return (
     <div className={`viewfinder viewfinder-br relative overflow-hidden bg-ink ${className}`}>
@@ -57,7 +60,9 @@ export function PrototypeMedia({ clip, className = "", large = false }: Props) {
       <div className="relative z-10 flex h-full flex-col justify-between p-3">
         <div className="flex items-start justify-between gap-3">
           <span className="font-mono text-[9px] tracking-[0.16em] text-paper/80">PROTOTYPE MEDIA</span>
-          <span className="font-mono text-[9px] tracking-[0.16em] text-paper/70">{clip.formatHint}</span>
+          {stamp ? null : (
+            <span className="font-mono text-[9px] tracking-[0.16em] text-paper/70">{clip.formatHint}</span>
+          )}
         </div>
         {large && !mute ? (
           <div className={voice === "default" ? "" : "opacity-90"}>
@@ -71,12 +76,16 @@ export function PrototypeMedia({ clip, className = "", large = false }: Props) {
         ) : (
           <span />
         )}
-        <div className="flex items-end justify-between">
-          <span className="font-mono text-[9px] tracking-[0.12em] text-paper/70">{clip.startTimecode}</span>
-          <span className="font-mono text-[9px] tracking-[0.12em] text-paper/70">
-            {mute ? formatDuration(clip.duration) : `${clip.cameraCredit} · ${formatDuration(clip.duration)}`}
-          </span>
-        </div>
+        {stamp ? (
+          <span />
+        ) : (
+          <div className="flex items-end justify-between">
+            <span className="font-mono text-[9px] tracking-[0.12em] text-paper/70">{clip.startTimecode}</span>
+            <span className="font-mono text-[9px] tracking-[0.12em] text-paper/70">
+              {mute ? formatDuration(clip.duration) : `${clip.cameraCredit} · ${formatDuration(clip.duration)}`}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

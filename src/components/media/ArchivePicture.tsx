@@ -11,11 +11,12 @@ type Props = {
   clip: PictureClip;
   className?: string;
   large?: boolean;
+  chrome?: "full" | "stamp";
 };
 
-export function ArchivePicture({ clip, className = "", large = false }: Props) {
+export function ArchivePicture({ clip, className = "", large = false, chrome = "full" }: Props) {
   if (clip.youtubeId && !isUnlogged(clip)) {
     return <BroadcastPlayer youtubeId={clip.youtubeId} title={clip.title} large={large} className={className} />;
   }
-  return <PrototypeMedia clip={clip} large={large} className={className} />;
+  return <PrototypeMedia clip={clip} large={large} chrome={chrome} className={className} />;
 }

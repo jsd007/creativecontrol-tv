@@ -376,12 +376,12 @@ export function TimelineView() {
                   <span className="flex flex-col gap-0.5" aria-hidden>
                     <span
                       className={`sprocket-hole ${
-                        active ? "bg-leader" : onThread ? "bg-leader/75" : empty ? "bg-paper/12" : "bg-paper/50"
+                        active ? "bg-leader" : onThread ? "bg-leader/75" : empty ? "bg-paper/10" : "bg-paper/50"
                       }`}
                     />
                     <span
                       className={`sprocket-hole ${
-                        active ? "bg-leader" : onThread ? "bg-leader/75" : empty ? "bg-paper/12" : "bg-paper/50"
+                        active ? "bg-leader" : onThread ? "bg-leader/75" : empty ? "bg-paper/10" : "bg-paper/50"
                       }`}
                     />
                   </span>
@@ -552,8 +552,8 @@ function MonthSprocket({
               className={`flex flex-1 flex-col items-center gap-1.5 ${active ? "sprocket-in" : ""} ${empty ? "cursor-default" : ""}`}
             >
               <span className="flex flex-col gap-0.5" aria-hidden>
-                <span className={`sprocket-hole ${active ? "bg-leader" : empty ? "bg-paper/12" : "bg-paper/50"}`} />
-                <span className={`sprocket-hole ${active ? "bg-leader" : empty ? "bg-paper/12" : "bg-paper/50"}`} />
+                <span className={`sprocket-hole ${active ? "bg-leader" : empty ? "bg-paper/10" : "bg-paper/50"}`} />
+                <span className={`sprocket-hole ${active ? "bg-leader" : empty ? "bg-paper/10" : "bg-paper/50"}`} />
               </span>
               <span className={`block h-px w-full ${active ? "bg-leader/70" : "bg-paper/15"}`} aria-hidden />
               <span
@@ -683,8 +683,8 @@ function DaySprocket({
               className={`flex w-8 flex-col items-center gap-1.5 ${active ? "sprocket-in" : ""} ${empty ? "cursor-default" : ""}`}
             >
               <span className="flex flex-col gap-0.5" aria-hidden>
-                <span className={`sprocket-hole ${active ? "bg-leader" : empty ? "bg-paper/12" : "bg-paper/50"}`} />
-                <span className={`sprocket-hole ${active ? "bg-leader" : empty ? "bg-paper/12" : "bg-paper/50"}`} />
+                <span className={`sprocket-hole ${active ? "bg-leader" : empty ? "bg-paper/10" : "bg-paper/50"}`} />
+                <span className={`sprocket-hole ${active ? "bg-leader" : empty ? "bg-paper/10" : "bg-paper/50"}`} />
               </span>
               <span className={`block h-px w-full ${active ? "bg-leader/70" : "bg-paper/15"}`} aria-hidden />
               <span

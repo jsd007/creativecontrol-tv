@@ -1,6 +1,6 @@
 # Coodie proof — share package
 
-The live presentation is the proof. The PNGs in this folder are the earlier twelve-screen capture from 9 Sep 2026 and are kept only as a visual record; do **not** attach them to the first email. Re-capture the seven scenes after the polished branch is deployed if stills are useful later.
+The live presentation is the proof — send the URL, not the pictures. The seven PNGs here are the walk itself, captured from live at 1440 × 900 on 10 Sep 2026 by pressing Space through `/?present=1`. Each filename is its scene. Use them only if Coodie cannot open the link; re-capture after any visible change so the stills never promise something the live show does not do.
 
 James sends. Do not mark the archive goal complete after he walks it. Pause the goal yourself — this package cannot.
 
@@ -45,15 +45,15 @@ Official air is **CH 07**, not the vault. 366 is the official YouTube listing wi
 
 One idea per scene. The presentation deliberately leaves the empty leftover clip, redundant person-filter pass, Studio-channel variation, and empty timeline cards outside the walk.
 
-| Scene | Beat | What it proves |
-| --- | --- | --- |
-| 01 | Door | Creative Control already has an entrance, not a generic homepage. |
-| 02 | Earth | The archive can be understood at world scale. |
-| 03 | Chicago | Place is a real way into the material, with the selected city named in the interface. |
-| 04 | One record | Ye + Chicago + 2002 + Studio resolves to one legible record instead of a wall of filters. |
-| 05 | Official air | Creative Control can broadcast through a focused television surface. |
-| 06 | CC-0217 | Every story can lead back to a physical source. |
-| 07 | Span | The archive stretches from 1994 through 2026 without pretending every year is already complete. |
+| Scene | Beat | Still | What it proves |
+| --- | --- | --- | --- |
+| 01 | Door | `01-door.png` | Creative Control already has an entrance, not a generic homepage. |
+| 02 | Earth | `02-earth.png` | The archive can be understood at world scale. |
+| 03 | Chicago | `03-chicago.png` | Place is a real way into the material, with the selected city named in the interface. |
+| 04 | One record | `04-one-record.png` | Ye + Chicago + 2002 + Studio resolves to one legible record instead of a wall of filters. |
+| 05 | Official air | `05-official-air.png` | Creative Control can broadcast through a focused television surface. |
+| 06 | CC-0217 | `06-cc-0217.png` | Every story can lead back to a physical source. |
+| 07 | Span | `07-span.png` | The archive stretches from 1994 through 2026 without pretending every year is already complete. |
 
 ## Ask him — do not guess
 

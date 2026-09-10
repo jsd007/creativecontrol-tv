@@ -46,8 +46,8 @@ function SleeveField({ visibility }: { visibility: Visibility }) {
       return (
         <div className="absolute inset-0 bg-[#1c1812]">
           <div className="absolute inset-[9%] bg-paper shadow-[0_18px_50px_rgba(0,0,0,0.45)]">
-            <div className="absolute inset-x-[10%] top-[18%] h-px bg-void/12" />
-            <div className="absolute inset-x-[10%] bottom-[18%] h-px bg-void/12" />
+            <div className="absolute inset-x-[10%] top-[18%] h-px bg-void/10" />
+            <div className="absolute inset-x-[10%] bottom-[18%] h-px bg-void/10" />
           </div>
         </div>
       );
@@ -62,14 +62,14 @@ function SleeveField({ visibility }: { visibility: Visibility }) {
     case "RESTRICTED":
       return (
         <div className="absolute inset-0 bg-[#0c0c10]">
-          <div className="absolute inset-[11%] border border-paper/22" />
+          <div className="absolute inset-[11%] border border-paper/20" />
           <div className="absolute inset-[16%] border border-paper/10" />
         </div>
       );
     case "PRIVATE":
       return (
         <div className="absolute inset-0 bg-[#070706]">
-          <div className="absolute inset-[15%] border border-paper/14" />
+          <div className="absolute inset-[15%] border border-paper/15" />
         </div>
       );
     case "COMING_SOON":
