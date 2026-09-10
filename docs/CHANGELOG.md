@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-10 — A relationship you can stumble into, and docs that match the code
+
+- Audited the objective's named artifacts against the tree. All eleven `docs/*.md` exist; all six lens routes plus `/`, clip, collections, entities and constellation resolve; the opening switcher is real and gated to `NODE_ENV === "development"` or `?opening=` / `?lens=`, and never says "Concept".
+- Three docs were asserting things the code no longer does. `CONCEPTS.md` still described a **ten**-beat show (code has seven), the pre-redesign CH 07 GUIDE, and bonds without evidence. `TODO.md`'s "Proven" section still claimed GUIDE was "a compact strip of the 13 tunables". Corrected to current state and recorded *why* the show lost three beats. Changelog history left alone — it was true when written.
+- DISCOVER had six doors and every one landed on a record. The archive could show relationships but a visitor could never stumble into one. Added a seventh — **WHO ELSE WAS THERE** → `/constellation?person=`, stated as `COODIE · YE · 12 FRAMES`. It reads `buildEntityGraph`, so authored-only and Ali's refusals are inherited, and it varies across the five heaviest bonds so it stays serendipity rather than a leaderboard.
+- Verified live: `d` opens seven sleeves in house language, and the connection door lands on the deep field.
+- Archive goal is **not complete**. The relationship surfaces are findable now but still off the rail and out of the seven scenes.
+
 ## 2026-09-10 — A bond states what holds it up
 
 - The north star asks for relationships between people / places / moments to be **visible**. They were not. `/people/ye` named Chike and Coodie under a machine axis (`PROJECT · PERSON`) and never said how Ye relates to either — the endpoints were on screen, the relationship was not.

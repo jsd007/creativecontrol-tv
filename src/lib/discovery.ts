@@ -2,13 +2,14 @@ import { catalog, cityLocations, clipsOnTape, getClip, getLocation } from "@/dat
 import type { ArchiveClip, SourceTape } from "@/data/types";
 import { MONTHS, MONTHS_SHORT } from "@/lib/format";
 import { clipHeading } from "@/lib/clipDisplay";
+import { buildEntityGraph, constellationHref, constellationSpine } from "@/lib/constellation";
 import { isOfficialHolding } from "@/lib/holdings";
 import { isAuthored, isDiscoverable } from "@/lib/visibility";
 
 const STABLE_SEED = 17;
 
 export type DiscoveryDoor = {
-  id: "tape" | "somewhere" | "unseen" | "day" | "chicago" | "pick";
+  id: "tape" | "somewhere" | "unseen" | "day" | "chicago" | "pick" | "bond";
   label: string;
   kicker: string;
   href: string;
@@ -121,6 +122,37 @@ export function coodiePick(seed = STABLE_SEED): ArchiveClip {
   );
 }
 
+export type Connection = {
+  center: string;
+  other: string;
+  frames: number;
+  href: string;
+};
+
+/**
+ * A bond the catalog already holds — the relationship itself, not another clip.
+ * Reads the same graph the fields do, so Ali's refusals and authored-only stay inherited.
+ */
+export function aConnection(seed = STABLE_SEED): Connection | undefined {
+  const bonds: Connection[] = [];
+  for (const person of constellationSpine()) {
+    const field = buildEntityGraph("person", person.id);
+    if (!field) continue;
+    for (const node of field.nodes) {
+      if (node.kind !== "person" || !node.weight) continue;
+      bonds.push({
+        center: person.shortName,
+        other: node.label,
+        frames: node.weight.frames,
+        href: constellationHref("person", person.id),
+      });
+    }
+  }
+  if (!bonds.length) return;
+  bonds.sort((a, b) => b.frames - a.frames);
+  return pick(bonds.slice(0, 5), seed + 5);
+}
+
 function dayHref(date: Date, hits: ArchiveClip[]) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
@@ -150,6 +182,7 @@ export function discoveryDoors(seed = STABLE_SEED, date = new Date()): Discovery
   const dayHits = onThisDay(date);
   const chicago = fromChicago(seed);
   const pickClip = coodiePick(seed);
+  const bond = aConnection(seed);
 
   return [
     {
@@ -194,6 +227,17 @@ export function discoveryDoors(seed = STABLE_SEED, date = new Date()): Discovery
       href: `/clip/${pickClip.slug}`,
       note: `${clipHeading(pickClip).toUpperCase()} · ${pickClip.year}`,
     },
+    ...(bond
+      ? [
+          {
+            id: "bond" as const,
+            label: "WHO ELSE WAS THERE",
+            kicker: "A CONNECTION",
+            href: bond.href,
+            note: `${bond.center.toUpperCase()} · ${bond.other.toUpperCase()} · ${bond.frames} FRAMES`,
+          },
+        ]
+      : []),
   ];
 }
 

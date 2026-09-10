@@ -8,22 +8,23 @@ Development-only opening switcher lives on `/`. It must never say “Concept 1 /
 
 ## Presentation (James → Coodie)
 
-A show path, not a public product. `/?present=1` or OPENING → SHOW (development). Ten unlabeled hairlines, desktop only. The visitor should feel they are inside the real archive, not a slide deck. James: `docs/PRESENTATION.md`.
+A show path, not a public product. `/?present=1` or OPENING → SHOW (development). Seven unlabeled hairlines, desktop only. The visitor should feel they are inside the real archive, not a slide deck. James: `docs/PRESENTATION.md`.
 
-Story beats (same catalog):
+Story beats — one idea each, defined in `src/lib/present.ts`, which is authoritative:
 
-1. Threshold `/`
-2. World
-3. Chicago fly-to
-4. Footage — Channel Zero, never aired (`/clip/channel-zero-never-aired`, PUBLIC leftover)
-5. Index — Ye + Chicago + 2002 + Studio (**1** record)
-6. Person filter — Ye
-7. Television — CH 07 ident (`/tv?ch=7`), then the programmed official network, PLAY · MUTED
-8. Channel 03 Studio (`/tv?ch=3`)
-9. Tape CC-0217 in the aisle
-10. Timeline span
+1. The door — `/`
+2. The world — `/world`
+3. Chicago — `/world?city=chicago&fly=1`
+4. One record — `/archive?person=ye&location=chicago&year=2002&type=Studio` (**1** record)
+5. Public air — `/tv?ch=7`, CH 07 ident first, PLAY · MUTED
+6. The tape — `/tapes?open=t-0217`
+7. The span — `/timeline`
 
-Space / `.` / `n` next. `,` / `p` back. `x` or Shift+Escape leave. Escape alone still closes a tape. Space on SOUND toggles and does not hop. Cross-lens hops are film cuts (View Transition gate; same-path beats keep fly / acquire). A top hairline draws; the ten marks widen. Reduced motion is an instant cut. SOUND stays off. Show marks are desktop only; the mobile dock is house chrome, not a beat.
+The cut from ten to seven was deliberate: the leftover clip, the redundant person-only filter pass, and the CH 03 Studio variation each repeated an idea the walk had already made. They stay in the product and out of the show. Do not invent an eighth.
+
+Space / `.` / `n` next. `,` / `p` back. `x` or Shift+Escape leave. Escape alone still closes a tape. Space on SOUND toggles and does not hop. Cross-lens hops are film cuts (View Transition gate; same-path beats keep fly / acquire). A top hairline draws; the seven marks widen. Reduced motion is an instant cut. SOUND stays off. Show marks are desktop only; the mobile dock is house chrome, not a beat.
+
+Stills of all seven, captured from live, are in `docs/coodie-proof/`. Re-capture after any visible change so they never promise something the show does not do.
 
 ## `/` — Threshold
 
@@ -82,7 +83,7 @@ Channels (seed):
 | 07 | Broadcast |
 | 08 | Conversations |
 
-The page is the network, not a page about a network. Ident is CC-TV + a giant channel number + name + a thin voice line + ON AIR + a crawl of official programmed titles — not a slogan. The picture carries a hairline lower-third (authored title only). When the on-air clip has a `youtubeId`, the stage is an official muted / click-to-play YouTube embed — not a thumbnail grid. Tuner is a graphic strip of channel numbers; a Flip hairline rides the selected one. Guide is the day’s rundown with ON marked — a row tunes that slot, not NOW / NEXT / LATER / ARCHIVE tabs, not a record count. Channels 00–06 and 08 keep an editorial day (OPENING / DAY / STUDIO / NIGHT / LATE), not a fake clock. CH 07 BROADCAST signs on with the house ident, then official public blocks (playlist names already on the channel, Channel Zero, upload-year books). The GUIDE is that board — not a 366-line list. Tuning a book opens that book. Fat years **2010** and **2011** nest an A–Z of official titles (letters that exist, digits as 0–9) so the year is not one rundown. A fat letter nests an official title prefix already on the file — not a show name. **2011 C** is CREATIVE CONTROL (29) vs the rest of C (7). **2010 C** is CURREN$Y (18) vs the rest of C (13). Do not nest **2010 S** or **T** via THE or invented shows; those stay letter rundowns. Thin years stay a year rundown. Thin letters stay a letter rundown. Prefix lists are not split into episodes. All **366** public embeds stay reachable. After those official titles the GUIDE does not stop as if the channel were the mock: a mute remainder (NOT IN THIS MOCK / HELD / UNOPENED / growable empty) — no invented show names, no upload count. Surfing (0–8, arrows, SURF, GUIDE) is broadcast acquisition (~150ms): a black, an accent wipe, the channel number stamps — yellow on Channel Zero, signal on Broadcast, not VHS snow. Reduced motion is an instant cut: no acquire, no crawl, no Flip, no flourish. Channel Zero is an ancestor in the programming, not a fake-1990s skin. UNLOGGED is never a show title.
+The page is the network, not a page about a network. Ident is CC-TV + a giant channel number + name + a thin voice line + ON AIR + a crawl of official programmed titles — not a slogan. The picture carries a hairline lower-third (authored title only). When the on-air clip has a `youtubeId`, the stage is an official muted / click-to-play YouTube embed — not a thumbnail grid. Tuner is a graphic strip of channel numbers; a Flip hairline rides the selected one, and each number states what that channel holds (`07 366`, `03 1`) so scale reads before you tune — counted as titled programs, never raw holdings. Guide shows the programming and keeps only the long tail behind a door: a block short enough to read is read on the page, never a click away from being discovered. Named official blocks and the house dayparts (OPENING / DAY / STUDIO / NIGHT / LATE) open as shelves with their titles listed under a header stating the count; a shelf over **10** windows with MORE. That puts every house channel on one screen at zero clicks — they hold 1–12 titles each, so a daypart door was hiding a single title — and lands CH 07 on its four named shows (**16** titles) instead of a strip of 13 doors. A row tunes that slot. No NOW / NEXT / LATER / ARCHIVE tabs, no record count. CH 07 BROADCAST signs on with the house ident, then official public blocks (playlist names already on the channel, Channel Zero, upload-year books). Years are the tail, not the front door: one quiet BY YEAR rail carrying each year and its count (2010 · 188, 2011 · 100, 2016 · 1), one open at a time. A row on CH 07 does not restamp BROADCAST — the channel already said it. Fat years **2010** and **2011** nest an A–Z of official titles (letters that exist, digits as 0–9) so the year is not one rundown. A fat letter nests an official title prefix already on the file — not a show name. **2011 C** is CREATIVE CONTROL (29) vs the rest of C (7). **2010 C** is CURREN$Y (18) vs the rest of C (13). Do not nest **2010 S** or **T** via THE or invented shows; those stay letter rundowns. Thin years stay a year rundown. Thin letters stay a letter rundown. Prefix lists are not split into episodes. All **366** public embeds stay reachable. After those official titles the GUIDE does not stop as if the channel were the mock: a mute remainder (NOT IN THIS MOCK / HELD / UNOPENED / growable empty) — no invented show names, no upload count. Surfing (0–8, arrows, SURF, GUIDE) is broadcast acquisition (~150ms): a black, an accent wipe, the channel number stamps — yellow on Channel Zero, signal on Broadcast, not VHS snow. Reduced motion is an instant cut: no acquire, no crawl, no Flip, no flourish. Channel Zero is an ancestor in the programming, not a fake-1990s skin. UNLOGGED is never a show title.
 
 ## `/tapes` — The Tapes
 
@@ -102,7 +103,7 @@ Optional. Same catalog. Not a seventh product and not in the show path yet.
 
 Default person: Coodie. The deep field can also recenter on a place or a project (`?place=` / `?project=`). Spine recenters people (Coodie / Chike / Ye / Ali / Donda). The field holds a few true spokes — a couple of people, one song, one place, one project, a couple of frames — not every valid edge. Axes stay tape / project / song / day / subject / specific place / house. Year-alone and city-alone do not draw.
 
-The field is type and hairline spokes on void — not a force graph, not a clock, not LinkedIn, not neon. People sit closer; a project, a song, a place, and frames sit at different distances. GSAP registers the name; spokes draw; labels travel out. Hover names the axis and the authored frame that proves the edge. A person, place, or project in the field recenters the field. A frame or song opens the record. The name still OPENs the node. On a phone the same spokes sit in a handheld pocket — larger type, thumb hits — not a squashed desktop and not a Wikipedia list. Reach it from a person / place / project page (`THE FIELD`), not from the lens rail, not as “Concept 7.” Not in the show path. Reduced motion is the field already drawn — JS never attaches spoke draw.
+The field is type and hairline spokes on void — not a force graph, not a clock, not LinkedIn, not neon. People sit closer; a project, a song, a place, and frames sit at different distances. GSAP registers the name; spokes draw; labels travel out. Hover names the axis, states what holds the bond up (`391 FRAMES · 2003 — 2025` for Coodie · Chike), and shows the authored frame that proves it. Spoke ink ramps with that count so a dense bond reads dense at a glance — a ramp, never a weighted graph, never a score or a percentage. A single frame carries no span, so frame spokes stay unweighted. A person, place, or project in the field recenters the field. A frame or song opens the record. The name still OPENs the node. On a phone the same spokes sit in a handheld pocket — larger type, thumb hits — not a squashed desktop and not a Wikipedia list. Reach it from a person / place / project page (`THE FIELD`) or from the DISCOVER door WHO ELSE WAS THERE — not from the lens rail, not as “Concept 7.” Not in the show path. Reduced motion is the field already drawn — JS never attaches spoke draw.
 
 ## Graph — person / place / project
 
@@ -110,7 +111,7 @@ The field is type and hairline spokes on void — not a force graph, not a clock
 
 Same catalog, one entity. Linked from clip metadata, archive facet sentences, world “THE PLACE”, and timeline day rows. Not a second product.
 
-The page is a file, not a profile. The short name is the tab. Connections are a stack of bonds: the proving still in a gate, the axis, the name, the authored frame that proves the edge. Axes stay tape / project / song / day / subject / place / house. Not a year film. Not a card directory. Not a construction circle. The rest of the node lives in the index. `/constellation` is the deep field — full-bleed, same catalog. Compact is the file. No museum essay about the decade. No “this page holds a cut” tutorial. Ali’s graph does not open Paris or the hospital tape.
+The page is a file, not a profile. The short name is the tab. Connections are a stack of bonds: the proving still in a gate, the axis, the name, then the evidence — `12 FRAMES · 1998 — 2012` and FIRST HELD BY the authored frame that proves the edge. A bond names the relationship, not only its two ends; a name with no count is an assertion. Ye · Coodie (12 frames from 1998) must not look identical to Ye · Chike (5 from 2003). Axes stay tape / project / song / day / subject / place / house. Not a year film. Not a card directory. Not a construction circle. The rest of the node lives in the index. `/constellation` is the deep field — full-bleed, same catalog. Compact is the file. No museum essay about the decade. No “this page holds a cut” tutorial. Ali’s graph does not open Paris or the hospital tape.
 
 ## `/collections` — Stories
 
@@ -157,8 +158,11 @@ DISCOVER (or `d`) is the archive offering a tape — a veil and sleeves, not a s
 | ON THIS DAY | clip if one PUBLIC hit; else `/archive?month=` / `day=` |
 | FROM CHICAGO | `/clip/` — PUBLIC Chicago frame |
 | COODIE'S PICK | `/clip/` — PUBLIC in Coodie's Picks |
+| WHO ELSE WAS THERE | `/constellation?person=` — a real bond, stated as `COODIE · YE · 12 FRAMES` |
 
 Restricted, private, coming-soon, members-only, and pending-clearance stay in the index. They are not a surprise.
+
+WHO ELSE WAS THERE is the only door that offers a *relationship* rather than a record, and it is how the deep field becomes findable without putting it on the lens rail. It reads the same graph the fields do, so authored-only and Ali's refusals are inherited rather than re-implemented. It varies across the five heaviest bonds — serendipity, not a leaderboard.
 
 ## Keyboard
 
