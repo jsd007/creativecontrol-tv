@@ -287,7 +287,7 @@ export function TimelineView() {
   const thread = THREADS.find((t) => t.id === path);
 
   return (
-    <div className="px-4 pb-24 md:px-6">
+    <div className="timeline-view px-4 pb-24 md:px-6">
       <header className="pt-4">
           <p className="font-cond text-[12px] tracking-[0.12em] text-leader">{thread ? "THROUGH" : "THE TIMELINE"}</p>
         {thread ? (
@@ -765,25 +765,25 @@ function SpanFilm({
   reduced: boolean;
 }) {
   return (
-    <div className={`mt-12 space-y-16 ${reduced ? "" : "film-advance"}`}>
+    <div className={`timeline-span-film mt-12 space-y-16 ${reduced ? "" : "film-advance"}`}>
       {DECADES.map((decade) => {
         const years = populated.filter((y) => y >= decade.start && y <= decade.end);
         if (!years.length) return null;
         const threads = threadsThrough(byYear, years, path);
         return (
           <section key={decade.id}>
-            <div className="border-b border-paper/15 pb-4">
+            <div className="timeline-decade-header border-b border-paper/15 pb-4">
               <p className="font-cond text-[12px] tracking-[0.12em] text-leader">{decade.id}</p>
               <h2 className="mt-2 max-w-[22ch] font-display text-4xl leading-none text-paper md:text-5xl">{decade.line}</h2>
               <ThroughLine
                 threads={threads}
                 onPath={onPath}
                 onHover={onHover}
-                className="mt-4 max-w-[42ch]"
+                className="timeline-decade-through mt-4 max-w-[42ch]"
                 label={`${decade.id} through`}
               />
             </div>
-            <div className="mt-6 flex gap-2 overflow-x-auto no-scrollbar pb-2">
+            <div className="timeline-decade-frames mt-6 flex gap-2 overflow-x-auto no-scrollbar pb-2">
               {years.map((y) => {
                 const list = byYear.get(y) ?? [];
                 const lead = spanLead(list);

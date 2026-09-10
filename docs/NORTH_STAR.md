@@ -34,7 +34,7 @@ Then the house:
 
 **SOUND stays OFF.** Four analog verbs if someone turns it on (threshold / acquire / cut / tape). No house WAVs on disk; procedural fallback. Official picture stays PLAY · MUTED. No licensed music. No voice.
 
-The **show** (`/?present=1`) is that argument in ten unlabeled beats — not a slide deck. Beat 4 is the PUBLIC leftover (`/clip/channel-zero-never-aired`). Beat 5 is the combo (**1**). Beat 7 is official air: CH 07 ident, then the programmed network, PLAY · MUTED. Beat 8 is house Studio (CH 03). SOUND off. DISCOVER hidden. Constellation is a seventh surface (void / phone pocket), not in the show, not a seventh website.
+The **show** (`/?present=1`) is that argument in seven scenes — not a feature tour: door, world, Chicago, one-record index, public air, one tape, the full span. The weaker prototype detours stay out of the share path. A discreet on-screen controller makes the walk understandable without instructions; Space still advances. SOUND is off and DISCOVER is hidden. Constellation is a seventh surface (void / phone pocket), not in the show, not a seventh website.
 
 A person, a place, a project is a **file of bonds**, not a profile. The rest of the node lives in the index.
 
@@ -80,7 +80,7 @@ CONFIRMED against the working tree and live hobby `https://creativecontrol-tv.ve
 - Collections as editorial house cuts. Classics **19**. Studio Nights **0**.
 - DISCOVER house-first. Constellation void + phone pocket. Person / place / project are a file of bonds. Not on the rail. Not in the show.
 - SOUND OFF. Verbs: threshold / acquire / cut / tape. No house WAVs on disk; procedural fallback in code.
-- Ten-beat show at `/?present=1` (beat 4 leftover, beat 7 official air, combo 1). Timeline through-line (`?through=ye`, stills under the span). Keyboard house walk. Mobile dock. Desktop `/world` is the globe; World Tab. Contrast floor 12px (dust / leader / bone). Tapes dossier outside the CSS camera.
+- Seven-scene show at `/?present=1` (door → world → Chicago → combo 1 → official air → CC-0217 → span), with mouse and keyboard controls. Timeline through-line (`?through=ye`, stills under the span). Mobile dock. Desktop `/world` is the globe; World Tab. Contrast floor 12px (dust / leader / bone). Tapes dossier outside the CSS camera.
 
 ## James’s advantage to demonstrate
 

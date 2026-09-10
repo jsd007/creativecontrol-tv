@@ -408,7 +408,7 @@ function CityMark({
     <group position={pos}>
       {chicago && glow ? (
         <>
-          <sprite ref={wash} scale={1.42}>
+          <sprite ref={wash} scale={0.96}>
             <spriteMaterial
               map={glow}
               color="#e2b85c"
@@ -419,7 +419,7 @@ function CityMark({
               toneMapped={false}
             />
           </sprite>
-          <sprite scale={0.38}>
+          <sprite scale={0.24}>
             <spriteMaterial
               map={glow}
               color="#efe6d6"
@@ -447,7 +447,7 @@ function CityMark({
           document.body.style.cursor = "auto";
         }}
       >
-        <sphereGeometry args={[chicago ? 0.07 : selected || hovered ? 0.044 : 0.018 + intensity * 0.022, 12, 12]} />
+        <sphereGeometry args={[chicago ? 0.045 : selected || hovered ? 0.034 : 0.014 + intensity * 0.016, 12, 12]} />
         <meshBasicMaterial
           ref={markMat}
           color={chicago ? "#e2b85c" : selected || hovered ? "#f2ead9" : "#d4b05a"}
@@ -758,7 +758,7 @@ export function WorldGlobe() {
   }, [travel]);
 
   return (
-    <div className="relative min-h-[calc(100svh-3.5rem)] pb-16 md:pb-0">
+    <div className="relative min-h-[calc(100svh-3.5rem)] overflow-x-clip pb-16 md:pb-0">
       <div className="absolute inset-0">
         {useMap ? (
           <WorldMap
@@ -844,6 +844,17 @@ export function WorldGlobe() {
       <div className="world-dock pointer-events-none relative z-10 flex min-h-[calc(100svh-3.5rem)] flex-col justify-end px-4 pb-8 pt-6 md:px-6">
         <h1 className="sr-only">The World</h1>
         <div className="world-hud pointer-events-auto w-full max-w-[14rem]">
+          {loc ? (
+            <div className="world-selection border-l border-leader/70 pl-3">
+              <p className="font-cond text-[20px] leading-none tracking-[0.08em] text-paper">{loc.city.toUpperCase()}</p>
+              <Link
+                href={`/places/${loc.slug}`}
+                className="mt-2 inline-block font-cond text-[12px] tracking-[0.14em] text-leader hover:text-paper"
+              >
+                OPEN THE PLACE
+              </Link>
+            </div>
+          ) : null}
           <p className={`font-mono text-[12px] tracking-[0.12em] text-leader ${reduced ? "" : "year-register"}`}>
             {useMap ? `YEAR ${year} · MAP` : year}
           </p>

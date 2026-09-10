@@ -2795,6 +2795,196 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
   letter-spacing: 0.1em;
 }
 
+/* Share mode: a quiet, self-explanatory seven-scene walk through one archive. */
+.present-controls {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1rem;
+  z-index: 48;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 40px;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--hairline);
+  background: color-mix(in srgb, var(--void) 96%, transparent);
+  box-shadow: 0 16px 48px color-mix(in srgb, black 38%, transparent);
+}
+
+.present-controls button {
+  min-width: 44px;
+  min-height: 30px;
+  padding-inline: 0.25rem;
+  font-family: var(--font-cond), sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--bone);
+}
+
+.present-controls button:hover:not(:disabled),
+.present-controls button:focus-visible {
+  color: var(--paper);
+}
+
+.present-controls button:focus-visible {
+  outline: 1px solid var(--leader);
+  outline-offset: 3px;
+}
+
+.present-controls button:disabled {
+  color: color-mix(in srgb, var(--dust) 34%, transparent);
+  cursor: default;
+}
+
+.present-progress {
+  min-width: 10rem;
+}
+
+.present-progress p {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--paper);
+  white-space: nowrap;
+}
+
+.present-marks {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 0.4rem;
+}
+
+.archive-refine summary::-webkit-details-marker {
+  display: none;
+}
+
+.archive-refine summary::before {
+  content: "+";
+  width: 1rem;
+  color: var(--leader);
+}
+
+.archive-refine[open] summary::before {
+  content: "−";
+}
+
+.archive-refine summary > :first-child {
+  margin-right: auto;
+}
+
+.world-selection + p {
+  margin-top: 1.35rem;
+}
+
+.is-presenting .archive-index-search,
+.is-presenting .archive-refine,
+.is-presenting .tv-crawl,
+.is-presenting .tv-guide,
+.is-presenting .aisle-formats,
+.is-presenting .aisle-bay.is-recede,
+.is-presenting .timeline-decade-through,
+.is-presenting .timeline-decade-frames {
+  display: none;
+}
+
+.is-presenting .archive-index {
+  min-height: calc(100svh - 3.5rem);
+  padding-top: clamp(3rem, 9vh, 7rem);
+}
+
+.is-presenting .archive-index-query {
+  max-width: 72rem;
+  margin-top: 0;
+  padding-block: clamp(1.5rem, 4vh, 3rem);
+}
+
+.is-presenting .archive-index-query .type-label {
+  color: var(--leader);
+}
+
+.is-presenting .archive-index-query > div:first-child > p:last-child {
+  max-width: 28ch;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(2.2rem, 5vw, 5rem);
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  word-spacing: 0.08em;
+}
+
+.is-presenting .archive-index > section[aria-label="Index"] {
+  max-width: 72rem;
+  margin-top: clamp(2rem, 5vh, 4rem);
+}
+
+.is-presenting .archive-index > section[aria-label="Index"] h2 {
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+}
+
+.is-presenting .archive-index .index-row {
+  padding-block: 1.4rem;
+}
+
+.is-presenting .television .tv-ident {
+  padding-top: 0.55rem;
+  padding-bottom: 0.55rem;
+}
+
+.is-presenting .television .tv-ident-rule {
+  margin-bottom: 0.6rem;
+}
+
+.is-presenting .television .tv-ident-n {
+  font-size: clamp(3rem, 6vw, 4.5rem);
+}
+
+.is-presenting .television .tv-tuner {
+  margin-top: 0.55rem;
+}
+
+.is-presenting .television .tv-stage-frame {
+  max-width: min(100%, calc(51vh * 16 / 9));
+}
+
+.is-presenting .aisle-field {
+  margin-top: 1.25rem;
+  padding-bottom: 0;
+}
+
+.is-presenting .aisle-cam {
+  padding-top: clamp(2rem, 7vh, 5rem);
+}
+
+.is-presenting .timeline-view {
+  min-height: calc(100svh - 3.5rem);
+  overflow: hidden;
+}
+
+.is-presenting .timeline-span-film {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: clamp(2.5rem, 7vh, 5rem);
+  background: var(--hairline);
+}
+
+.is-presenting .timeline-span-film > section {
+  min-height: clamp(10rem, 24vh, 13rem);
+  margin-top: 0 !important;
+  padding: 1.15rem;
+  background: var(--void);
+}
+
+.is-presenting .timeline-decade-header {
+  border: 0;
+  padding: 0;
+}
+
+.is-presenting .timeline-decade-header h2 {
+  margin-top: 0.85rem;
+  font-size: clamp(1.6rem, 3vw, 2.8rem);
+  line-height: 0.98;
+}
+
 @media (max-width: 767px) {
   .archive-act,
   .lens-mobile-lens,

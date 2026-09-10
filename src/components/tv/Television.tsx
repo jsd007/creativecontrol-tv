@@ -130,7 +130,7 @@ export function Television() {
         : "";
 
   return (
-    <div className="px-4 pb-24 md:px-6">
+    <div className="television px-4 pb-24 md:px-6">
       <Ident channel={channel} clock={clock} titles={titles} onTitle={onTitle} reduced={reduced} />
       <Tuner ch={ch} reduced={reduced} onPick={goChannel} />
       <div className="mt-4">

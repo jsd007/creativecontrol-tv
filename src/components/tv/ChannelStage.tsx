@@ -51,8 +51,8 @@ export function ChannelStage({
 
   return (
     <div>
-      <div className="relative mx-auto w-full max-w-[min(100%,calc(56vh*16/9))] overflow-hidden">
-        {now ? <ArchivePicture key={now.id} clip={now} large className="aspect-video w-full" /> : null}
+      <div className="tv-stage-frame relative mx-auto w-full max-w-[min(100%,calc(56vh*16/9))] overflow-hidden">
+        {now ? <ArchivePicture key={now.id} clip={now} large={Boolean(now.youtubeId)} className="aspect-video w-full" /> : null}
         <div className="pointer-events-none absolute left-3 top-3 h-3 w-3 border-l border-t border-paper/45" />
         <div className="pointer-events-none absolute right-3 top-3 h-3 w-3 border-r border-t border-paper/45" />
         <div className="pointer-events-none absolute bottom-3 left-3 h-3 w-3 border-b border-l border-paper/45" />
