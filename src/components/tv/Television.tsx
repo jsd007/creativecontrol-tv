@@ -42,6 +42,8 @@ export function Television() {
   chRef.current = ch;
 
   const boards = useMemo(() => CHANNELS.map((channel) => channelLineup(channel)), []);
+  /** What the tuner promises is what the guide can hand you — titled programs, not raw holdings. */
+  const counts = useMemo(() => boards.map((board) => board.filter((clip) => programTitle(clip)).length), [boards]);
   const channel = CHANNELS[ch];
   const lineup = boards[ch];
   const now = lineup[slot % lineup.length];
@@ -132,7 +134,7 @@ export function Television() {
   return (
     <div className="television px-4 pb-24 md:px-6">
       <Ident channel={channel} clock={clock} titles={titles} onTitle={onTitle} reduced={reduced} />
-      <Tuner ch={ch} reduced={reduced} onPick={goChannel} />
+      <Tuner ch={ch} counts={counts} reduced={reduced} onPick={goChannel} />
       <div className="mt-4">
         <ChannelStage
           channel={channel}

@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-09-10 — GUIDE shows the programming instead of guarding it
+
+- Everything on `/tv` was behind doors. Every house channel's **whole** lineup is 1–12 titles, and you still had to click a daypart to see one of them (CH 03 held a single title behind a click). CH 07 opened as 13 identical doors, so its four named shows sat at the same depth as a 188-title year — channel → year → letter → prefix → title before a video.
+- GUIDE now opens what is short enough to read and keeps only the tail behind a door. Named blocks and dayparts render as shelves with their titles listed and the count stated (`CHANNEL ZERO / 4 TITLES`); a shelf over **10** windows with MORE. Measured: CH 01 went from 0 titles visible to **8**, CH 07 from 0 to **19**.
+- Years are the tail — one quiet BY YEAR rail carrying the count (2009 · 3, 2010 · 188, 2011 · 100, 2012 · 32 …), one open at a time. Fat years **2010** / **2011** keep the A–Z rail and the official-prefix nest. No new nests, no 2010 S/T via THE, all **366** embeds still reachable.
+- Tuner states holdings per channel (`07 366`, `03 1`), counted as titled programs so it promises only what GUIDE can hand back. Dropped the BROADCAST restamp on CH 07 rows — the channel already said it.
+- Arrow-key walk rebuilt over the new order (shelf rows → year rail → letters → prefixes → year rows). Per-shelf paging is its own key (`mp:`), so MORE on one shelf does not move another.
+- Verified 1440 × 900 and 390 × 844, no overflow; `tsc`, `next lint`, `next build` clean. Re-captured `docs/coodie-proof/05-official-air.png` because the tuner now reads 366 in frame.
+- Archive goal is **not complete**.
+
 ## 2026-09-10 — Coodie stills are the walk, not a tour
 
 - `docs/coodie-proof/` held twelve stills shot before the globe / TV / tapes fixes, including four scenes deliberately outside the show (leftover clip, Ye through-line, CH 03, a second door). Its own README said not to attach them.

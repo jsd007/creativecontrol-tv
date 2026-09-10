@@ -8,11 +8,12 @@ import { GATE_EASE } from "@/lib/motion";
 
 type Props = {
   ch: number;
+  counts: number[];
   reduced: boolean;
   onPick: (n: number) => void;
 };
 
-export function Tuner({ ch, reduced, onPick }: Props) {
+export function Tuner({ ch, counts, reduced, onPick }: Props) {
   const root = useRef<HTMLElement>(null);
   const hair = useRef<HTMLSpanElement>(null);
   const first = useRef(true);
@@ -52,17 +53,21 @@ export function Tuner({ ch, reduced, onPick }: Props) {
           {CHANNELS.map((item, i) => {
             const on = i === ch;
             const title = onAirTitle(item);
+            const held = counts[i] ?? 0;
             return (
               <li key={item.id}>
                 <button
                   type="button"
                   aria-pressed={on}
-                  aria-label={`${item.n} ${item.name}${title ? `, ${title}` : ""}`}
+                  aria-label={`${item.n} ${item.name}, ${held} titles${title ? `, ${title}` : ""}`}
                   onClick={() => onPick(i)}
-                  className={`min-w-[3rem] px-1.5 py-1 text-left ${on ? "text-paper" : "text-dust hover:text-bone"}`}
+                  className={`min-w-[4.5rem] px-1.5 py-1 text-left ${on ? "text-paper" : "text-dust hover:text-bone"}`}
                 >
-                  <span className={`block font-cond text-[20px] leading-none tracking-[0.08em] md:text-[24px] ${on ? accentNumber(item.accent) : ""}`}>
-                    {item.n}
+                  <span className="flex items-baseline gap-2">
+                    <span className={`font-cond text-[20px] leading-none tracking-[0.08em] md:text-[24px] ${on ? accentNumber(item.accent) : ""}`}>
+                      {item.n}
+                    </span>
+                    <span className="font-mono text-[10px] leading-none tracking-[0.1em]">{held}</span>
                   </span>
                   <span className="tv-tuner-name mt-1 block font-cond text-[10px] tracking-[0.16em]">{item.name}</span>
                 </button>
