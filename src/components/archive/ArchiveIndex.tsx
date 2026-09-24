@@ -6,6 +6,7 @@ import { catalog, getCollection, getLocation, getPerson, getProject } from "@/da
 import type { ArchiveFilters } from "@/lib/archiveQuery";
 import { activeFilterCount, filterClips, sentenceFor, yearsInCatalog } from "@/lib/archiveQuery";
 import { bindCollectionFilter } from "@/lib/collectionMembership";
+import { clipHeading } from "@/lib/clipDisplay";
 import { isAuthored, isDiscoverable } from "@/lib/visibility";
 import { IndexSheet } from "./IndexSheet";
 import Link from "next/link";
@@ -55,6 +56,8 @@ function Rail({
         <button
           type="button"
           onClick={() => onChange(undefined)}
+          aria-label={`${label}: all`}
+          aria-pressed={!value}
           className={`font-cond text-[13px] tracking-[0.12em] ${value ? "text-dust hover:text-paper" : "text-paper"}`}
         >
           ALL
@@ -64,6 +67,7 @@ function Rail({
             key={opt.value}
             type="button"
             onClick={() => onChange(value === opt.value ? undefined : opt.value)}
+            aria-pressed={value === opt.value}
             className={`font-cond text-[13px] tracking-[0.12em] ${
               value === opt.value ? "text-leader" : "text-dust hover:text-paper"
             }`}
@@ -117,6 +121,17 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
   const results = filters.q ? matches : querying ? authored : sheet;
   const sentence = sentenceFor(filters);
   const years = yearsInCatalog();
+  const entrySlugs = [
+    "curren-y-wiz-khalifa-nyc-cmj-2009-www-creativecontrol-tv",
+    "wiki-wikispeaks",
+    "pro-era-beast-coastal",
+    "tear-up",
+    "channel-zero-redman-erykah-badu",
+    "vision-behind-window-seat",
+  ];
+  const openingRecords = entrySlugs
+    .map((slug) => catalog.clips.find((clip) => clip.youtubeId && clip.slug === slug))
+    .filter((clip): clip is (typeof catalog.clips)[number] => Boolean(clip));
 
   const era = filters.era ? catalog.eras.find((e) => e.id === filters.era) : undefined;
   const yearNum = filters.year ? Number(filters.year) : undefined;
@@ -249,10 +264,14 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
 
   return (
     <div className="archive-index px-4 pb-24 md:px-6">
-      <h1 className="sr-only">The Index</h1>
+      <header className="archive-index-intro">
+        <p className="type-label text-leader">FINDING AID</p>
+        <h1>The Index</h1>
+        <p>Search a person, place, year, or tape. Each result opens a record, and each record leads to more of the archive.</p>
+      </header>
       <form
         role="search"
-        className="archive-index-search mt-8 border-b border-paper/15 pb-3"
+        className="archive-index-search mt-8 flex items-end gap-4 border-b border-paper/35 pb-3"
         onSubmit={(e) => {
           e.preventDefault();
           bindSearch(q);
@@ -262,13 +281,14 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="A person, a tape code, a street, a year…"
+          placeholder="Name, place, year, tape…"
           aria-label="Search the index"
-          className="archive-find w-full bg-transparent font-display text-3xl text-paper placeholder:text-paper/25 md:text-4xl"
+          className="archive-find min-w-0 flex-1 bg-transparent font-display text-3xl text-paper placeholder:text-bone/65 md:text-4xl"
         />
+        <button type="submit" className="archive-search-submit">SEARCH</button>
       </form>
 
-      <details className="archive-refine mt-6 max-w-5xl">
+      <details className="archive-refine mt-6">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-y border-paper/10 py-3 font-cond text-[13px] tracking-[0.14em] text-dust hover:text-paper">
           <span>REFINE THE INDEX</span>
           <span className={filterCount ? "text-leader" : "text-dust"}>
@@ -292,6 +312,8 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
                 setOpenDecade(null);
                 setFilters({ year: undefined });
               }}
+              aria-label="Span: all years"
+              aria-pressed={!filters.year && !decadeId}
               className={`font-cond text-[13px] tracking-[0.12em] ${filters.year || decadeId ? "text-dust hover:text-paper" : "text-paper"}`}
             >
               ALL
@@ -301,6 +323,7 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
                 key={d.id}
                 type="button"
                 onClick={() => chooseDecade(d.id)}
+                aria-pressed={decadeId === d.id}
                 className={`font-cond text-[13px] tracking-[0.12em] ${
                   decadeId === d.id ? "text-leader" : "text-dust hover:text-paper"
                 }`}
@@ -316,6 +339,7 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
                   key={y}
                   type="button"
                   onClick={() => setFilter("year", filters.year === String(y) ? undefined : String(y))}
+                  aria-pressed={filters.year === String(y)}
                   className={`font-mono text-[12px] tracking-[0.08em] ${
                     filters.year === String(y) ? "text-leader" : "text-dust hover:text-paper"
                   }`}
@@ -362,6 +386,26 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
           />
         </div>
       </details>
+
+      {!querying && openingRecords.length ? (
+        <section className="archive-highlights" aria-label="Six public records to start with">
+          <div className="archive-highlights-head">
+            <div><p className="type-label text-leader">START HERE</p><h2>Six public records</h2></div>
+            <p>Examples from the public channel. The concept index continues below.</p>
+          </div>
+          <ol>
+            {openingRecords.map((clip, index) => (
+              <li key={clip.id}>
+                <Link href={`/clip/${clip.slug}`}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{clipHeading(clip)}</strong>
+                  <small>{clip.year} · PUBLIC SOURCE</small>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
 
       <div className="archive-index-query mt-8 flex flex-wrap items-end justify-between gap-4 border-y border-paper/10 py-4">
         <div>

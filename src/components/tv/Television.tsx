@@ -140,7 +140,7 @@ export function Television() {
     <div className="television px-4 pb-24 md:px-6">
       <Ident channel={channel} clock={clock} titles={titles} onTitle={onTitle} reduced={reduced} />
       <Tuner ch={ch} counts={counts} reduced={reduced} onPick={goChannel} />
-      <div className="mt-4">
+      <div className="tv-program-layout">
         <ChannelStage
           channel={channel}
           now={now}
@@ -152,8 +152,8 @@ export function Television() {
           reduced={reduced}
           onSurf={surf}
         />
+        <Guide key={channel.id} channel={channel} sections={sections} lineup={lineup} nowId={now?.id} onTune={tuneSlot} />
       </div>
-      <Guide channel={channel} sections={sections} lineup={lineup} nowId={now?.id} onTune={tuneSlot} />
     </div>
   );
 }

@@ -4,11 +4,16 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Html, Line, OrbitControls } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
 import { catalog, cityLocations, getLocation } from "@/data";
-import type { Location } from "@/data/types";
+import type { ArchiveClip, Location } from "@/data/types";
+import { youtubeThumbnail } from "@/data/youtube";
+import { PrototypeField } from "@/components/media/PrototypeMedia";
+import { clipHeading, isUnlogged } from "@/lib/clipDisplay";
+import { isAuthored } from "@/lib/visibility";
 import { CONTINENTS, CUTS, paintLand, paintNight, pathD } from "@/lib/geography";
 import { gsap, houseGsap } from "@/lib/gsap";
 import { activateOnSpace, isTypingTarget } from "@/lib/keys";
@@ -29,13 +34,13 @@ import {
 
 const GLOBE_R = 1.6;
 const MARK_R = 1.632;
-const IDLE_R = 5.78;
+const IDLE_R = 7.2;
 const IDLE_LAT = 18;
 const IDLE_LON = -38;
 const FOV = 34;
 const LABEL_FACE = 0.22;
-const FLY_R = 4.85;
-const CHICAGO_R = 4.52;
+const FLY_R = 7.2;
+const CHICAGO_R = 7.0;
 const LOOK = new THREE.Vector3(0, 0.04, 0);
 
 function probeWebGL() {
@@ -119,66 +124,11 @@ function markVisible(location: Location, year: number) {
   return location.city === "Chicago" || recordsToYear(location, year) > 0;
 }
 
-/** Selected, then Chicago, then other facing marks. Not a chip row. */
-function cityPath(cities: Location[], selected: string, facing: string[], year: number) {
-  const seen = new Set<string>();
-  const out: Location[] = [];
-  const add = (loc?: Location) => {
-    if (!loc || seen.has(loc.id)) return;
-    if (loc.id !== selected && !markVisible(loc, year)) return;
-    seen.add(loc.id);
-    out.push(loc);
-  };
-  add(cities.find((c) => c.id === selected));
-  add(cities.find((c) => c.city === "Chicago"));
-  for (const id of facing) add(cities.find((c) => c.id === id));
-  return out;
-}
-
 /** Re-read the landed camera into OrbitControls so resume doesn't snap back to idle. */
 function syncOrbit(ctrl: OrbitControlsImpl | null) {
   if (!ctrl) return;
   ctrl.target.copy(LOOK);
   ctrl.update();
-}
-
-function FacingWatch({
-  cities,
-  onFacing,
-}: {
-  cities: Location[];
-  onFacing: (ids: string[]) => void;
-}) {
-  const { camera } = useThree();
-  const last = useRef("");
-  const wait = useRef(0);
-  const held = useRef<Set<string>>(new Set());
-  const citiesRef = useRef(cities);
-  const onFacingRef = useRef(onFacing);
-  const pos = useMemo(
-    () => cities.map((c) => ({ id: c.id, vec: latLonToVec(c.lat, c.lon) })),
-    [cities],
-  );
-  citiesRef.current = cities;
-  onFacingRef.current = onFacing;
-
-  useFrame((_, dt) => {
-    wait.current += dt;
-    if (wait.current < 0.22) return;
-    wait.current = 0;
-    const next = new Set<string>();
-    for (const c of pos) {
-      const face = facingAmount(c.vec, camera);
-      if (face > LABEL_FACE || (held.current.has(c.id) && face > 0.08)) next.add(c.id);
-    }
-    held.current = next;
-    const ids = pos.filter((c) => next.has(c.id)).map((c) => c.id);
-    const key = ids.join(",");
-    if (key === last.current) return;
-    last.current = key;
-    onFacingRef.current(ids);
-  });
-  return null;
 }
 
 function GlobeBody({ cities }: { cities: Location[] }) {
@@ -628,15 +578,20 @@ function WorldMap({
   cities,
   selected,
   year,
+  compact,
   onSelect,
 }: {
   cities: Location[];
   selected: string;
   year: number;
+  compact: boolean;
   onSelect: (id: string) => void;
 }) {
+  const chosen = cities.find((city) => city.id === selected);
+  const centerX = chosen ? ((chosen.lon + 180) / 360) * 360 : 180;
+  const viewX = Math.max(0, Math.min(180, centerX - 90));
   return (
-    <svg viewBox="0 0 360 180" className="h-full w-full" aria-hidden>
+    <svg viewBox={compact ? `${viewX} 0 180 180` : "0 0 360 180"} className="h-full w-full" aria-hidden>
       <rect width="360" height="180" fill="#070706" />
       {CONTINENTS.map((ring, i) => (
         <path key={i} d={pathD(ring, 360, 180)} fill="#4a4030" stroke="#c4a05a" strokeOpacity="0.4" strokeWidth="0.4" />
@@ -669,25 +624,60 @@ function WorldMap({
   );
 }
 
+const FRONT_PLACES = ["chicago", "new-york", "los-angeles", "atlanta", "new-orleans", "dallas"];
+
+function placeStories(location: Location, year: number): ArchiveClip[] {
+  return catalog.clips
+    .filter((clip) => {
+      if (!isAuthored(clip) || isUnlogged(clip) || clip.year > year) return false;
+      return getLocation(clip.locationId)?.city === location.city;
+    })
+    .sort((a, b) => Number(Boolean(b.youtubeId)) - Number(Boolean(a.youtubeId)) || Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || a.year - b.year)
+    .slice(0, 6);
+}
+
+function WorldStory({ clip, index }: { clip: ArchiveClip; index: number }) {
+  const place = getLocation(clip.locationId);
+  return (
+    <Link href={`/clip/${clip.slug}`} className="world-story group">
+      <div className="world-story-image">
+        {clip.youtubeId ? (
+          <Image src={youtubeThumbnail(clip.youtubeId)} alt="" width={320} height={200} unoptimized />
+        ) : (
+          <PrototypeField clip={clip} className="h-full w-full" />
+        )}
+      </div>
+      <div className="world-story-copy">
+        <p className="world-story-kicker">{String(index + 1).padStart(2, "0")} · {clip.youtubeId ? "PUBLIC SOURCE" : "EXAMPLE ENTRY"}</p>
+        <h3>{clipHeading(clip)}</h3>
+        <p className="world-story-meta">{clip.year} · {place?.name ?? "PLACE UNCONFIRMED"}</p>
+      </div>
+    </Link>
+  );
+}
+
 export function WorldGlobe() {
   const cities = useMemo(() => cityLocations(), []);
   const search = useSearchParams();
   const reduced = usePrefersReducedMotion();
   const narrow = useIsNarrow();
-  const [year, setYear] = useState(2012);
-  const [selected, setSelected] = useState("chicago");
+  const [year, setYear] = useState(2026);
+  const [selected, setSelected] = useState(() => {
+    const raw = search.get("city");
+    return cities.find((city) => city.id === raw || city.slug === raw)?.id ?? "chicago";
+  });
   const [hovered, setHovered] = useState<string | null>(null);
-  const [facing, setFacing] = useState<string[]>(["chicago"]);
   const [webgl, setWebgl] = useState(true);
   const [mounted, setMounted] = useState(false);
-  const [flying, setFlying] = useState(false);
+  const [flying, setFlying] = useState(() => search.get("fly") === "1");
   const [settling, setSettling] = useState(false);
   const controls = useRef<OrbitControlsImpl | null>(null);
   const loc = getLocation(selected);
   const records = loc ? recordsToYear(loc, year) : 0;
+  const stories = useMemo(() => loc ? placeStories(loc, year) : [], [loc, year]);
   const marks = useMemo(() => cities.filter((c) => markVisible(c, year)), [cities, year]);
-  const path = useMemo(() => cityPath(cities, selected, facing, year), [cities, selected, facing, year]);
-  const extras = path.filter((c) => c.id !== selected);
+  const front = FRONT_PLACES.map((id) => cities.find((city) => city.id === id)).filter((city): city is Location => Boolean(city));
+  const otherPlaces = marks.filter((city) => !FRONT_PLACES.includes(city.id));
 
   useEffect(() => {
     if (!loc) return;
@@ -747,11 +737,6 @@ export function WorldGlobe() {
   }, [cities]);
 
   useEffect(() => {
-    if (!useMap) return;
-    setFacing(marks.map((c) => c.id));
-  }, [useMap, marks]);
-
-  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (isTypingTarget(e.target)) return;
       if (e.key === "ArrowRight" || e.key === "ArrowDown") travel(1);
@@ -762,18 +747,54 @@ export function WorldGlobe() {
   }, [travel]);
 
   return (
-    <div className="relative min-h-[calc(100svh-3.5rem)] overflow-x-clip pb-16 md:pb-0">
-      <div className="absolute inset-0">
+    <div className="world-experience">
+      <aside className="world-places" aria-label="Explore places">
+        <p className="world-eyebrow">PLACES</p>
+        <nav aria-label="Choose a place" className="world-place-options">
+          {front.map((city) => (
+            <button key={city.id} type="button" aria-current={selected === city.id ? "location" : undefined} onClick={() => choose(city.id)}>
+              {city.city.toUpperCase()}
+            </button>
+          ))}
+        </nav>
+        {otherPlaces.length ? (
+          <details className="world-more-places">
+            <summary>MORE PLACES</summary>
+            <nav aria-label="More places">
+              {otherPlaces.map((city) => (
+                <button key={city.id} type="button" aria-current={selected === city.id ? "location" : undefined} onClick={() => choose(city.id)}>
+                  {city.city.toUpperCase()}
+                </button>
+              ))}
+            </nav>
+          </details>
+        ) : null}
+        <div className="world-time-control">
+          <label htmlFor="world-year">THROUGH {year}</label>
+          <input id="world-year" type="range" min={1994} max={2026} value={year} onChange={(event) => setYear(Number(event.target.value))} className="world-year" />
+          <div aria-hidden><span>1994</span><span>2026</span></div>
+        </div>
+        <details className="world-time-mobile">
+          <summary>TIME · THROUGH {year}</summary>
+          <label htmlFor="world-year-mobile" className="sr-only">Show records through year {year}</label>
+          <input id="world-year-mobile" type="range" min={1994} max={2026} value={year} onChange={(event) => setYear(Number(event.target.value))} className="world-year" />
+          <div aria-hidden><span>1994</span><span>2026</span></div>
+        </details>
+      </aside>
+
+      <section className="world-stage" aria-label={loc ? `Globe showing ${loc.city}` : "Globe"}>
+        <div className="world-canvas">
         {useMap ? (
           <WorldMap
             cities={cities}
             selected={selected}
             year={year}
+            compact={narrow}
             onSelect={choose}
           />
         ) : useGlobe ? (
           <Canvas
-            camera={{ position: latLonToVec(IDLE_LAT, IDLE_LON, IDLE_R).toArray(), fov: FOV, near: 0.12, far: 90 }}
+            camera={{ position: flying || !loc ? latLonToVec(IDLE_LAT, IDLE_LON, IDLE_R).toArray() : latLonToVec(loc.lat, loc.lon, loc.city === "Chicago" ? CHICAGO_R : FLY_R).toArray(), fov: FOV, near: 0.12, far: 90 }}
             dpr={[1, 1.5]}
             gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
             onCreated={({ gl }) => {
@@ -797,7 +818,6 @@ export function WorldGlobe() {
             <AtmosphereShell radius={1.82} frag={LIMB_FRAG} />
             <AtmosphereShell radius={2.08} frag={HAZE_FRAG} additive />
             <Arcs year={year} />
-            <FacingWatch cities={marks} onFacing={setFacing} />
             {cities.map((city) => (
               <CityMark
                 key={city.id}
@@ -828,10 +848,10 @@ export function WorldGlobe() {
               enablePan={false}
               enableRotate={!flying}
               enableZoom={!flying}
-              minDistance={2.68}
-              maxDistance={6.5}
+              minDistance={4.8}
+              maxDistance={9}
               enableDamping={!reduced && !flying}
-              autoRotate={!flying && !reduced && !settling}
+              autoRotate={false}
               autoRotateSpeed={0.1}
               target={[0, 0.04, 0]}
               onStart={() => {
@@ -843,95 +863,25 @@ export function WorldGlobe() {
         ) : (
           <div className="h-full w-full bg-void" />
         )}
-      </div>
-
-      <div className="world-dock pointer-events-none relative z-10 flex min-h-[calc(100svh-3.5rem)] flex-col justify-end px-4 pb-8 pt-6 md:px-6">
-        <h1 className="sr-only">The World</h1>
-        <div className="world-hud pointer-events-auto w-full max-w-[14rem]">
-          {loc ? (
-            <div className="world-selection border-l border-leader/70 pl-3">
-              <p className="font-cond text-[20px] leading-none tracking-[0.08em] text-paper">{loc.city.toUpperCase()}</p>
-              <Link
-                href={`/places/${loc.slug}`}
-                className="mt-2 inline-block font-cond text-[12px] tracking-[0.14em] text-leader hover:text-paper"
-              >
-                OPEN THE PLACE
-              </Link>
-            </div>
-          ) : null}
-          <p className={`font-mono text-[12px] tracking-[0.12em] text-leader ${reduced ? "" : "year-register"}`}>
-            {useMap ? `YEAR ${year} · MAP` : year}
-          </p>
-          <input
-            type="range"
-            min={1994}
-            max={2026}
-            value={year}
-            aria-label="Year"
-            onChange={(e) => setYear(Number(e.target.value))}
-            className="world-year mt-3 w-full"
-          />
-          <p className="sr-only" aria-live="polite">
-            {loc ? loc.city : ""}
-          </p>
-          <p className="sr-only">Arrow keys travel. Tab reaches a facing city and THE PLACE.</p>
-          <nav className="world-cities" aria-label="Cities">
-            {loc ? (
-              <button
-                type="button"
-                className="world-city"
-                aria-current="true"
-                onClick={() => choose(loc.id)}
-                onFocus={() => setHovered(loc.id)}
-                onBlur={() => setHovered(null)}
-              >
-                {loc.city.toUpperCase()}
-              </button>
-            ) : null}
-            {loc ? (
-              <Link
-                href={`/places/${loc.slug}`}
-                className="world-place"
-                onKeyDown={activateOnSpace}
-                onFocus={() => setHovered(loc.id)}
-                onBlur={() => setHovered(null)}
-              >
-                THE PLACE
-              </Link>
-            ) : null}
-            {extras.map((city) => (
-              <button
-                key={city.id}
-                type="button"
-                className="world-city"
-                onClick={() => choose(city.id)}
-                onFocus={() => setHovered(city.id)}
-                onBlur={() => setHovered(null)}
-              >
-                {city.city.toUpperCase()}
-              </button>
-            ))}
-          </nav>
-          {useMap ? (
-            <div className="mt-5 flex items-center gap-6">
-              <button
-                type="button"
-                onClick={() => travel(-1)}
-                className="font-cond text-[12px] tracking-[0.1em] text-dust hover:text-paper"
-              >
-                PREV
-              </button>
-              <button
-                type="button"
-                onClick={() => travel(1)}
-                className="font-cond text-[12px] tracking-[0.1em] text-dust hover:text-paper"
-              >
-                NEXT
-              </button>
-            </div>
-          ) : null}
         </div>
-      </div>
+        <div className="world-stage-action">
+          <p>{loc?.city.toUpperCase() ?? "THE WORLD"}</p>
+          <h1>Open the place</h1>
+          {loc ? <Link href={`/places/${loc.slug}`} onKeyDown={activateOnSpace}>OPEN {loc.city.toUpperCase()} <span aria-hidden>→</span></Link> : null}
+        </div>
+      </section>
+
+      <aside className="world-stories" aria-live="polite">
+        <div className="world-stories-header">
+          <h2>{loc?.city ?? "Choose a place"}</h2>
+          <p>{stories.length} {stories.length === 1 ? "RECORD" : "RECORDS"}</p>
+        </div>
+        <p className="world-stories-context">Selected examples through {year}. Public uploads are marked; other entries illustrate a proposed archive.</p>
+        {stories.length ? stories.map((clip, index) => <WorldStory key={clip.id} clip={clip} index={index} />) : (
+          <p className="world-stories-empty">No example entries through {year}. Move the year forward or choose another place.</p>
+        )}
+        {loc ? <Link href={`/archive?location=${loc.id}`} className="world-all-link">BROWSE ALL {loc.city.toUpperCase()} RECORDS <span aria-hidden>→</span></Link> : null}
+      </aside>
     </div>
   );
 }

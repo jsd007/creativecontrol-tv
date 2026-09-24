@@ -9,7 +9,7 @@ import { HoldingLine } from "@/components/archive/HoldingLine";
 import { HeldFrame } from "@/components/media/HeldFrame";
 import { PrototypeField, PrototypeMedia } from "@/components/media/PrototypeMedia";
 import { TapeFrame } from "@/components/tapes/TapeFrame";
-import { filmBeat, isUnlogged } from "@/lib/clipDisplay";
+import { clipHeading, filmBeat, isUnlogged } from "@/lib/clipDisplay";
 import { clipWhen, MONTHS, MONTHS_SHORT } from "@/lib/format";
 import { isOfficialHolding, officialHoldings, sortHoldings } from "@/lib/holdings";
 import { isTypingTarget } from "@/lib/keys";
@@ -26,6 +26,14 @@ import { holdFor, isClosed } from "@/lib/visibility";
 
 const THREADS = TIMELINE_THREADS;
 const SPAN = TIMELINE_SPAN;
+const START_MOMENTS = [
+  { year: 1995, slug: "she-watch-channel-zero" },
+  { year: 2002, slug: "basement-october-2002" },
+  { year: 2009, slug: "curren-y-wiz-khalifa-nyc-cmj-2009-www-creativecontrol-tv" },
+  { year: 2012, slug: "wiki-wikispeaks" },
+  { year: 2016, slug: "channel-zero-redman-erykah-badu" },
+  { year: 2025, slug: "vision-behind-window-seat" },
+];
 
 type PathId = TimelinePath;
 
@@ -285,6 +293,10 @@ export function TimelineView() {
 
   const populated = SPAN.filter((y) => (byYear.get(y)?.length ?? 0) > 0);
   const thread = THREADS.find((t) => t.id === path);
+  const startingMoments = START_MOMENTS.map(({ year: value, slug }) => ({
+    year: value,
+    clip: (byYear.get(value) ?? []).find((clip) => clip.slug === slug) ?? spanLead(byYear.get(value) ?? []),
+  })).filter((item) => item.clip);
 
   return (
     <div className="timeline-view px-4 pb-24 md:px-6">
@@ -305,6 +317,24 @@ export function TimelineView() {
           <h1 className="mt-2 font-display text-5xl leading-none text-paper md:text-6xl">1994 — 2026</h1>
         )}
       </header>
+
+      {!year && path === "all" ? (
+        <section className="timeline-starts" aria-label="Six moments to start with">
+          <div className="timeline-starts-head">
+            <div><p className="type-label text-leader">START WITH A MOMENT</p><h2>Follow the years</h2></div>
+            <p>Six examples across the span. Open a year to follow its people, places, and source files.</p>
+          </div>
+          <div className="timeline-starts-list">
+            {startingMoments.map(({ year: value, clip }) => clip ? (
+              <button key={value} type="button" onClick={() => chooseYear(value)}>
+                <span>{value}</span>
+                <strong>{clipHeading(clip)}</strong>
+                <small>{clip.youtubeId ? "PUBLIC SOURCE" : "EXAMPLE ENTRY"}</small>
+              </button>
+            ) : null)}
+          </div>
+        </section>
+      ) : null}
 
       {path !== "all" || year ? (
         <ThroughLine
@@ -372,9 +402,15 @@ export function TimelineView() {
         </nav>
       ) : null}
 
-      <p className="timeline-rail-mark mt-8">
-        EVERY YEAR · 1994 — 2026 · {populated.length} {populated.length === 1 ? "YEAR HOLDS" : "YEARS HOLD"} FRAMES
-      </p>
+      <div className="timeline-year-select">
+        <label htmlFor="timeline-jump">JUMP TO A YEAR</label>
+        <select id="timeline-jump" value={year ?? ""} onChange={(event) => { if (event.target.value) chooseYear(Number(event.target.value)); }}>
+          <option value="">CHOOSE A YEAR</option>
+          {populated.map((value) => <option key={value} value={value}>{value}</option>)}
+        </select>
+      </div>
+      <details className="timeline-year-jump">
+        <summary>BROWSE THE FULL SPAN · 1994 — 2026</summary>
       <div className="mt-2 overflow-x-auto no-scrollbar">
         <div className="relative min-w-[720px] pb-2 md:min-w-[1100px]">
           <div className="type-label mb-2 flex justify-between tracking-[0.18em]">
@@ -395,6 +431,7 @@ export function TimelineView() {
                   type="button"
                   role="option"
                   aria-selected={active}
+                  aria-label={String(y)}
                   onClick={() => chooseYear(y)}
                   className={`flex w-8 flex-col items-center gap-1.5 ${active ? "sprocket-in" : ""}`}
                 >
@@ -433,6 +470,7 @@ export function TimelineView() {
           ) : null}
         </div>
       </div>
+      </details>
 
       {year ? (
         <section className="mt-10">

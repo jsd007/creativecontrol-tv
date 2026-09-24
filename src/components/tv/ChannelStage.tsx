@@ -51,7 +51,7 @@ export function ChannelStage({
 
   return (
     <div>
-      <div className="tv-stage-frame relative mx-auto w-full max-w-[min(100%,calc(56vh*16/9))] overflow-hidden">
+      <div className="tv-stage-frame relative mx-auto w-full overflow-hidden">
         {now ? (
           <ArchivePicture
             key={now.id}
@@ -75,7 +75,7 @@ export function ChannelStage({
               </h2>
             ) : null}
             <p className="mt-2 font-mono text-[10px] tracking-[0.14em] text-dust">
-              {now?.year} · {now?.formatHint} · {now?.youtubeId ? "PUBLIC BROADCAST" : now?.startTimecode}
+              {now?.year} · {now?.formatHint} · {now?.youtubeId ? "PUBLIC SOURCE" : "EXAMPLE PROGRAM"}
             </p>
           </div>
         </div>

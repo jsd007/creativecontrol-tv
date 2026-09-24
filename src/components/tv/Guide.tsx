@@ -27,6 +27,7 @@ function matches(clip: ArchiveClip, title: string, find: string) {
 export function Guide({ channel, sections, lineup, nowId, onTune }: Props) {
   const root = useRef<HTMLElement>(null);
   const [find, setFind] = useState("");
+  const [showAll, setShowAll] = useState(false);
 
   /** One list. Every title on the channel, in air order, with the block as a quiet marker. */
   const { rows, shown, total } = useMemo(() => {
@@ -50,9 +51,18 @@ export function Guide({ channel, sections, lineup, nowId, onTune }: Props) {
     }
     return { rows, shown, total };
   }, [sections, lineup, find]);
+  const visibleRows = useMemo(() => {
+    if (showAll || find.trim()) return rows;
+    let titles = 0;
+    return rows.filter((row) => {
+      if (row.kind === "mark") return titles < 8;
+      titles += 1;
+      return titles <= 8;
+    });
+  }, [rows, showAll, find]);
 
   function step(from: number, dir: 1 | -1) {
-    const titles = rows.filter((r): r is Extract<Row, { kind: "title" }> => r.kind === "title");
+    const titles = visibleRows.filter((r): r is Extract<Row, { kind: "title" }> => r.kind === "title");
     const at = titles.findIndex((r) => r.index === from);
     const next = titles[at + dir];
     if (!next) return;
@@ -73,10 +83,10 @@ export function Guide({ channel, sections, lineup, nowId, onTune }: Props) {
   }
 
   return (
-    <section ref={root} id="guide" className="tv-guide mt-12 scroll-mt-28" data-guide>
+    <section ref={root} id="guide" className="tv-guide scroll-mt-28" data-guide>
       <div className="flex flex-wrap items-end justify-between gap-4 border-b border-paper/15 pb-2">
         <div>
-          <p className="font-cond text-[12px] tracking-[0.22em] text-leader">GUIDE</p>
+          <p className="font-cond text-[12px] tracking-[0.22em] text-leader">ON THIS CHANNEL</p>
           <p className="mt-1 font-cond text-[13px] tracking-[0.12em] text-dust">{channel.voice}</p>
         </div>
         <div className="flex items-baseline gap-4">
@@ -94,9 +104,9 @@ export function Guide({ channel, sections, lineup, nowId, onTune }: Props) {
         </div>
       </div>
 
-      {rows.length ? (
+      {visibleRows.length ? (
         <div className="mt-1">
-          {rows.map((row) =>
+          {visibleRows.map((row) =>
             row.kind === "mark" ? (
               <p key={row.key} className="tv-guide-mark font-cond text-[12px] tracking-[0.2em] text-leader">
                 {row.label}
@@ -119,7 +129,13 @@ export function Guide({ channel, sections, lineup, nowId, onTune }: Props) {
         <p className="mt-6 font-mono text-[11px] tracking-[0.18em] text-dust">NOTHING UNDER THAT NAME</p>
       )}
 
-      {channel.id === "broadcast" && !find.trim() ? <BroadcastRemainder /> : null}
+      {!find.trim() && shown > 8 ? (
+        <button type="button" aria-expanded={showAll} onClick={() => setShowAll((value) => !value)} className="tv-guide-all">
+          {showAll ? "SHOW SHORT GUIDE" : `SHOW ALL ${shown} TITLES`} <span aria-hidden>{showAll ? "↑" : "↓"}</span>
+        </button>
+      ) : null}
+
+      {channel.id === "broadcast" && showAll && !find.trim() ? <BroadcastRemainder /> : null}
     </section>
   );
 }
