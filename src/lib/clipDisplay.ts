@@ -8,7 +8,9 @@ export function isUnlogged(clip: Pick<ArchiveClip, "id" | "tags">) {
 
 /** Short screen labels for a few verbatim upload titles; the catalog retains source wording. */
 function screenTitle(title: string) {
-  if (title.startsWith("Curren$y - Wiz Khalifa - NYC CMJ 2009")) return "Curren$y & Wiz Khalifa at NYC CMJ";
+  if (/^Curren\$y\s*-\s*Wiz Khalifa\s*-\s*NYC CMJ/.test(title)) return "Curren$y & Wiz Khalifa at NYC CMJ";
+  if (title.startsWith("Woodstock 2009 - Curren$y")) return "Curren$y at Woodstock 2009";
+  if (title.startsWith("Curren$y NYC CMJ - BBKings")) return "Curren$y at B.B. King Blues Club";
   if (title.startsWith("ESPN 30 FOR 30 DOCUMENTARY - BENJI 1984")) return "Benji | 30 for 30 trailer";
   return title;
 }

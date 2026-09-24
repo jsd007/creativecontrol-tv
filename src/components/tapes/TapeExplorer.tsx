@@ -101,26 +101,6 @@ export function TapeExplorer() {
       </div>
 
       <div className="tape-explorer-layout">
-        <section className="tape-explorer-list" aria-label="Source tapes">
-          <div className="tape-explorer-list-head">
-            <h2>{scope === "ALL" ? "SELECT A SOURCE" : scope === "CAMERA" ? "CAMERA ORIGINALS" : "DIGITAL & PHONE"}</h2>
-            <p>{visible.length} {visible.length === 1 ? "SOURCE" : "SOURCES"}</p>
-          </div>
-          {visible.length ? visible.map((tape) => {
-            const place = getLocation(tape.locationId);
-            return (
-              <button key={tape.id} type="button" aria-pressed={selected?.id === tape.id} onClick={() => choose(tape)} className="tape-source-row">
-                <span className="tape-source-code">{tape.code}</span>
-                <span className="tape-source-main"><strong>{tape.originalLabel}</strong><small>{place?.name ?? "Place unconfirmed"} · {tape.format}</small></span>
-                <span className="tape-source-year">{tape.year}</span>
-              </button>
-            );
-          }) : <p className="tape-explorer-empty">No sources match this search.</p>}
-          {scope === "ALL" && !needle && !showAll ? (
-            <button className="tape-explorer-all" type="button" onClick={() => setShowAll(true)}>VIEW ALL {allTapes.length} CONCEPT SOURCES <span aria-hidden>→</span></button>
-          ) : null}
-        </section>
-
         {selected ? (
           <section ref={fileRef} className="tape-explorer-file" aria-label={`${selected.code} file`}>
             <div className="tape-explorer-file-top">
@@ -141,6 +121,26 @@ export function TapeExplorer() {
             </div>
           </section>
         ) : null}
+
+        <section className="tape-explorer-list" aria-label="Source tapes">
+          <div className="tape-explorer-list-head">
+            <h2>{scope === "ALL" ? "SELECT A SOURCE" : scope === "CAMERA" ? "CAMERA ORIGINALS" : "DIGITAL & PHONE"}</h2>
+            <p>{visible.length} {visible.length === 1 ? "SOURCE" : "SOURCES"}</p>
+          </div>
+          {visible.length ? visible.map((tape) => {
+            const place = getLocation(tape.locationId);
+            return (
+              <button key={tape.id} type="button" aria-pressed={selected?.id === tape.id} onClick={() => choose(tape)} className="tape-source-row">
+                <span className="tape-source-code">{tape.code}</span>
+                <span className="tape-source-main"><strong>{tape.originalLabel}</strong><small>{place?.name ?? "Place unconfirmed"} · {tape.format}</small></span>
+                <span className="tape-source-year">{tape.year}</span>
+              </button>
+            );
+          }) : <p className="tape-explorer-empty">No sources match this search.</p>}
+          {scope === "ALL" && !needle && !showAll ? (
+            <button className="tape-explorer-all" type="button" onClick={() => setShowAll(true)}>VIEW ALL {allTapes.length} CONCEPT SOURCES <span aria-hidden>→</span></button>
+          ) : null}
+        </section>
       </div>
     </div>
   );

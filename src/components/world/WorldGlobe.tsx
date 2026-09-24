@@ -688,8 +688,10 @@ export function WorldGlobe() {
     );
     if (latest > year) setYear(latest);
   }, [loc, records, year]);
-  const useGlobe = mounted && !narrow && !reduced && webgl;
-  const useMap = mounted && !useGlobe;
+  // Layout width and reduced motion should not replace the defining interaction.
+  // The static map is only for devices that cannot render WebGL at all.
+  const useGlobe = mounted && webgl;
+  const useMap = mounted && !webgl;
 
   useEffect(() => {
     setMounted(true);
@@ -865,15 +867,16 @@ export function WorldGlobe() {
         )}
         </div>
         <div className="world-stage-action">
-          <p>{loc?.city.toUpperCase() ?? "THE WORLD"}</p>
-          <h1>Open the place</h1>
-          {loc ? <Link href={`/places/${loc.slug}`} onKeyDown={activateOnSpace}>OPEN {loc.city.toUpperCase()} <span aria-hidden>→</span></Link> : null}
+          <p><span className="world-selected-prefix">SELECTED PLACE · </span>{records} {records === 1 ? "RECORD" : "RECORDS"}</p>
+          <h1>{loc?.city ?? "Choose a place"}</h1>
+          {loc ? <Link href={`/places/${loc.slug}`} onKeyDown={activateOnSpace}>EXPLORE {loc.city.toUpperCase()} <span aria-hidden>→</span></Link> : null}
         </div>
+        {useGlobe ? <p className="world-gesture" aria-hidden>{narrow ? "DRAG TO ROTATE" : "DRAG TO ROTATE · SCROLL TO ZOOM"}</p> : null}
       </section>
 
       <aside className="world-stories" aria-live="polite">
         <div className="world-stories-header">
-          <h2>{loc?.city ?? "Choose a place"}</h2>
+          <h2>From {loc?.city ?? "a place"}</h2>
           <p>{stories.length} {stories.length === 1 ? "RECORD" : "RECORDS"}</p>
         </div>
         <p className="world-stories-context">Selected examples through {year}. Public uploads are marked; other entries illustrate a proposed archive.</p>

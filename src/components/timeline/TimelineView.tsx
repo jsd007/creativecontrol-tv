@@ -322,8 +322,9 @@ export function TimelineView() {
         <section className="timeline-starts" aria-label="Six moments to start with">
           <div className="timeline-starts-head">
             <div><p className="type-label text-leader">START WITH A MOMENT</p><h2>Follow the years</h2></div>
-            <p>Six examples across the span. Open a year to follow its people, places, and source files.</p>
+            <p>Choose a moment to open its year and follow the connected people, places, and sources.</p>
           </div>
+          <p className="timeline-scroll-cue">SCROLL FOR MORE <span aria-hidden>→</span></p>
           <div className="timeline-starts-list">
             {startingMoments.map(({ year: value, clip }) => clip ? (
               <button key={value} type="button" onClick={() => chooseYear(value)}>
