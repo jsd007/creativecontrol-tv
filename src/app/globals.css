@@ -2750,37 +2750,34 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
   border-bottom: 1px solid var(--hairline);
 }
 
-/* The block marker rides the scroll so a long list always says where you are. */
-.tv-guide-mark {
-  position: sticky;
-  top: 3.5rem;
-  z-index: 4;
-  margin-top: 1.5rem;
-  padding: 0.55rem 0 0.4rem;
-  background: var(--void);
-  border-bottom: 1px solid var(--hairline);
-}
-
 .tv-guide-find {
-  width: 11rem;
-  padding: 0.25rem 0;
+  width: 100%;
+  min-width: 0;
+  padding: 0.5rem 0;
   color: var(--paper);
   background: transparent;
   border: 0;
-  border-bottom: 1px solid var(--hairline);
+  font-family: var(--font-sans), sans-serif;
+  font-size: 13px;
 }
 
 .tv-guide-find::placeholder {
   color: var(--dust);
 }
 
-.tv-guide-find:focus {
+.tv-guide-find:focus,
+.tv-guide-field select:focus {
   outline: none;
-  border-bottom-color: var(--leader);
 }
 
 .tv-third {
   background: color-mix(in srgb, var(--void) 94%, transparent);
+}
+
+.tv-stage-caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
 }
 
 .clip-file {
@@ -4076,24 +4073,154 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
   padding-top: 0.75rem;
 }
 
-.tv-guide-all {
+.tv-guide-head {
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: space-between;
   gap: 1rem;
-  width: 100%;
-  min-height: 48px;
-  border-top: 1px solid var(--hairline);
-  margin-top: 0.6rem;
+  padding-bottom: 1rem;
+}
+
+.tv-guide-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.55rem;
+  margin-bottom: 0.8rem;
+}
+
+.tv-guide-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--hairline);
+  padding: 0.5rem 0.65rem 0.1rem;
+}
+
+.tv-guide-field:focus-within {
+  border-color: var(--leader);
+}
+
+.tv-guide-field > span,
+.tv-guide-row-meta,
+.tv-guide-row-number,
+.tv-guide-row-file,
+.tv-guide-pager,
+.tv-guide-note {
+  font-family: var(--font-cond), sans-serif;
+  letter-spacing: 0.1em;
+}
+
+.tv-guide-return {
+  display: block;
+  margin: 0.8rem 0 1rem;
   color: var(--leader);
   font-family: var(--font-cond), sans-serif;
-  font-size: 13px;
-  letter-spacing: 0.12em;
+  font-size: 11px;
+  letter-spacing: 0.1em;
   text-align: left;
 }
 
-.tv-guide-all:hover {
+.tv-guide-return:hover {
   color: var(--paper);
+}
+
+.tv-guide-field > span {
+  color: var(--leader);
+  font-size: 10px;
+}
+
+.tv-guide-field select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.5rem 0;
+  color: var(--paper);
+  background: var(--void);
+  border: 0;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tv-guide-row {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.7rem;
+  border-top: 1px solid var(--hairline);
+  padding: 0.82rem 0;
+}
+
+.tv-guide-row-number {
+  padding-top: 0.18rem;
+  color: var(--dust);
+  font-size: 11px;
+}
+
+.tv-guide-row-title {
+  display: block;
+  width: 100%;
+  color: var(--bone);
+  font-family: var(--font-sans), sans-serif;
+  font-size: 14px;
+  line-height: 1.25;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.tv-guide-row-title:hover,
+.tv-guide-row.is-on-air .tv-guide-row-title,
+.tv-guide-row-file:hover {
+  color: var(--paper);
+}
+
+.tv-guide-row-meta {
+  margin-top: 0.3rem;
+  color: var(--dust);
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.tv-guide-row-file {
+  padding: 0.14rem 0;
+  color: var(--leader);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.tv-guide-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-top: 1px solid var(--hairline);
+  padding: 0.8rem 0;
+  color: var(--dust);
+  font-size: 11px;
+}
+
+.tv-guide-pager > div {
+  display: flex;
+  gap: 1rem;
+}
+
+.tv-guide-pager button:not(:disabled) {
+  color: var(--leader);
+}
+
+.tv-guide-pager button:disabled {
+  opacity: 0.35;
+}
+
+.tv-guide-note {
+  border-top: 1px solid var(--hairline);
+  padding-top: 0.8rem;
+  color: var(--dust);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.tv-guide-empty {
+  border-top: 1px solid var(--hairline);
+  padding: 1.5rem 0;
 }
 
 .is-presenting .tv-program-layout {
@@ -4163,13 +4290,12 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
     aspect-ratio: 16 / 10;
   }
 
-  .tv-guide > div:first-child > div:last-child {
-    width: 100%;
-    justify-content: space-between;
+  .tv-stage-caption {
+    position: relative;
   }
 
-  .tv-guide-find {
-    width: min(12rem, 60vw);
+  .tv-guide-tools {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -27,6 +27,11 @@ function clockLabel() {
 
 /** CH 07 is the channel with the content. The house cuts are siblings, not the front door. */
 const DEFAULT_CH = CHANNELS.findIndex((c) => c.id === "broadcast");
+const BROADCAST_OPENER = "wiki-wikispeaks";
+
+function openingSlot(channel: (typeof CHANNELS)[number], lineup: ReturnType<typeof channelLineup>) {
+  return channel.id === "broadcast" ? Math.max(0, lineup.findIndex((clip) => clip.slug === BROADCAST_OPENER)) : 0;
+}
 
 function channelFromSearch(search: { get: (key: string) => string | null }) {
   const raw = search.get("ch");
@@ -38,7 +43,10 @@ function channelFromSearch(search: { get: (key: string) => string | null }) {
 export function Television() {
   const search = useSearchParams();
   const [ch, setCh] = useState(() => channelFromSearch(search));
-  const [slot, setSlot] = useState(0);
+  const [slot, setSlot] = useState(() => {
+    const first = CHANNELS[channelFromSearch(search)];
+    return openingSlot(first, channelLineup(first));
+  });
   const [switching, setSwitching] = useState(false);
   const [clock, setClock] = useState("00:00:00");
   const reduced = usePrefersReducedMotion();
@@ -69,15 +77,16 @@ export function Television() {
 
   function goChannel(n: number) {
     const nextCh = ((n % CHANNELS.length) + CHANNELS.length) % CHANNELS.length;
+    const firstSlot = openingSlot(CHANNELS[nextCh], boards[nextCh]);
     if (nextCh === chRef.current) {
-      if (slot !== 0) {
-        setSlot(0);
+      if (slot !== firstSlot) {
+        setSlot(firstSlot);
         acquire(MOTION.acquireMs);
       }
       return;
     }
     setCh(nextCh);
-    setSlot(0);
+    setSlot(firstSlot);
     acquire(MOTION.acquireMs);
   }
 

@@ -62,7 +62,7 @@ export function ChannelStage({
           />
         ) : null}
         <Acquire on={switching} accent={channel.accent} n={channel.n} reduced={reduced} />
-        <div ref={third} className="pointer-events-none absolute inset-x-0 bottom-0">
+        <div ref={third} className="tv-stage-caption pointer-events-none">
           <div className={`h-px ${accentRule(channel.accent)}`} />
           <div className="tv-third px-4 py-3">
             <p className={`font-cond text-[11px] tracking-[0.24em] ${accentOnAir(channel.accent)}`}>

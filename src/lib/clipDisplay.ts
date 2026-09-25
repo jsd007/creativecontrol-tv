@@ -12,7 +12,7 @@ function screenTitle(title: string) {
   if (title.startsWith("Woodstock 2009 - Curren$y")) return "Curren$y at Woodstock 2009";
   if (title.startsWith("Curren$y NYC CMJ - BBKings")) return "Curren$y at B.B. King Blues Club";
   if (title.startsWith("ESPN 30 FOR 30 DOCUMENTARY - BENJI 1984")) return "Benji | 30 for 30 trailer";
-  return title;
+  return title.replace(/\s+-\s+(?:(?:WWW\.)?CREATIVECONTROL\.TV|CREATIVE CONTROL)\s*$/i, "").trim();
 }
 
 /** Authored shot-log title, or UNLOGGED — never an invented scene name. */
