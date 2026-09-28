@@ -2,7 +2,7 @@
 
 import { useGSAP } from "@gsap/react";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { ArchivePicture } from "@/components/media/ArchivePicture";
 import type { ArchiveClip } from "@/data/types";
 import type { Channel } from "@/lib/television";
@@ -15,26 +15,53 @@ type Props = {
   channel: Channel;
   now?: ArchiveClip;
   next?: ArchiveClip;
+  previous?: ArchiveClip;
   onTitle: string;
   nextTitle: string;
+  previousTitle: string;
+  selectionLabel: string;
+  position: number;
+  total: number;
+  programLink: string;
   nowMark: string;
   switching: boolean;
   reduced: boolean;
-  onSurf: () => void;
+  onNext: () => void;
+  onPrevious: () => void;
 };
 
 export function ChannelStage({
   channel,
   now,
   next,
+  previous,
   onTitle,
   nextTitle,
+  previousTitle,
+  selectionLabel,
+  position,
+  total,
+  programLink,
   nowMark,
   switching,
   reduced,
-  onSurf,
+  onNext,
+  onPrevious,
 }: Props) {
   const third = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState("");
+  const [manualLink, setManualLink] = useState("");
+
+  async function copyLink() {
+    const url = new URL(programLink, window.location.origin).href;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(programLink);
+      setManualLink("");
+    } catch {
+      setManualLink(url);
+    }
+  }
 
   useGSAP(
     () => {
@@ -70,7 +97,7 @@ export function ChannelStage({
               {nowMark ? ` · ${nowMark}` : ""}
             </p>
             {onTitle ? (
-              <h2 className="mt-1 font-display text-3xl leading-none text-paper md:text-5xl" aria-live="polite">
+              <h2 tabIndex={-1} className="mt-1 font-display text-3xl leading-none text-paper md:text-5xl" aria-live="polite">
                 {onTitle}
               </h2>
             ) : null}
@@ -80,22 +107,40 @@ export function ChannelStage({
           </div>
         </div>
       </div>
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-          {now ? (
-            <Link href={`/clip/${now.slug}`} className="font-cond text-[13px] tracking-[0.14em] text-paper underline underline-offset-4">
-              OPEN CLIP
-            </Link>
-          ) : null}
-          <a href="#guide" className="font-cond text-[13px] tracking-[0.14em] text-dust hover:text-paper">
-            GUIDE
-          </a>
-        </div>
-        {next && nextTitle ? (
-          <button type="button" onClick={onSurf} className="tv-surf font-cond text-[13px] tracking-[0.18em] text-leader">
-            SURF → {nextTitle}
-          </button>
+      <div className="tv-screen-actions">
+        {now ? (
+          <Link href={`/clip/${now.slug}`} className="text-paper underline underline-offset-4">
+            CLIP DETAILS
+          </Link>
         ) : null}
+        <a href="#guide" className="text-dust hover:text-paper">
+          PROGRAM GUIDE
+        </a>
+        <button type="button" onClick={copyLink} className="text-leader">
+          {copied === programLink ? "LINK COPIED" : "COPY PROGRAM LINK"}
+        </button>
+      </div>
+      <span className="sr-only" role="status">{copied === programLink ? "Program link copied to clipboard." : ""}</span>
+      {manualLink ? (
+        <label className="tv-manual-link">Copy this program link
+          <input aria-label="Program link to copy" readOnly value={new URL(programLink, manualLink).href} onFocus={(event) => event.target.select()} />
+        </label>
+      ) : null}
+      <div className="tv-sequence">
+        <p className="tv-sequence-context">
+          <span>{selectionLabel}</span>
+          <span>{position >= 0 ? `${position + 1} OF ${total}` : "CURRENT PROGRAM OUTSIDE THIS VIEW"}</span>
+        </p>
+        <div className="tv-sequence-controls">
+          <button type="button" onClick={onPrevious} disabled={!previous} aria-label={previous ? `Previous program: ${previousTitle}` : "No previous program"}>
+            <span>← PREVIOUS</span>
+            <strong>{previousTitle || "Start of selection"}</strong>
+          </button>
+          <button type="button" onClick={onNext} disabled={!next} aria-label={next ? `Next program: ${nextTitle}` : "No next program"}>
+            <span>{position < 0 ? "START THIS VIEW" : "NEXT PROGRAM"} →</span>
+            <strong>{nextTitle || (total ? "End of selection" : "No matching programs")}</strong>
+          </button>
+        </div>
       </div>
     </div>
   );

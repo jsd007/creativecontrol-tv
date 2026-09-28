@@ -2,7 +2,7 @@
 
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
-import { CHANNELS, accentNumber, onAirTitle } from "@/lib/television";
+import { CHANNELS, accentNumber } from "@/lib/television";
 import { houseGsap } from "@/lib/gsap";
 import { GATE_EASE } from "@/lib/motion";
 
@@ -58,14 +58,13 @@ export function Tuner({ ch, counts, reduced, onPick }: Props) {
         <ul className="hand-strip flex gap-x-1 gap-y-2">
           {CHANNELS.map((item, i) => {
             const on = i === ch;
-            const title = onAirTitle(item);
             const held = counts[i] ?? 0;
             return (
               <li key={item.id}>
                 <button
                   type="button"
                   aria-pressed={on}
-                  aria-label={`${item.n} ${item.name}, ${held} titles${title ? `, ${title}` : ""}`}
+                  aria-label={`${item.n} ${item.name}, ${held} ${held === 1 ? "title" : "titles"}`}
                   onClick={() => onPick(i)}
                   className={`min-w-[4.5rem] px-1.5 py-1 text-left ${on ? "text-paper" : "text-dust hover:text-bone"}`}
                 >

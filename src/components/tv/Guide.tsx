@@ -1,84 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState, type KeyboardEvent } from "react";
-import type { ArchiveClip } from "@/data/types";
-import { programTitle } from "@/lib/clipDisplay";
+import { useRef, type KeyboardEvent } from "react";
 import { accentOnAir, guideNowClass, guideWindow, type Channel, type GuideSection } from "@/lib/television";
+import { ALL_PROGRAMS, type TVProgram } from "@/lib/tvNavigation";
 
 type Props = {
   channel: Channel;
   sections: GuideSection[];
-  lineup: ArchiveClip[];
+  programs: TVProgram[];
+  results: TVProgram[];
+  find: string;
+  block: string;
+  page: number;
+  onFind: (value: string) => void;
+  onBlock: (value: string) => void;
+  onPage: (value: number) => void;
+  onReset: () => void;
   nowId?: string;
   onTune: (index: number) => void;
 };
 
-type Program = { clip: ArchiveClip; title: string; block: string; index: number };
-
-/** Public uploads that demonstrate several ways into the archive, not a claim about a complete collection. */
-const STARTER_SLUGS = [
-  "channel-zero-redman-erykah-badu",
-  "tear-up",
-  "curren-y-wiz-khalifa-nyc-cmj-2009-www-creativecontrol-tv",
-  "wiki-wikispeaks",
-  "pro-era-beast-coastal",
-  "vision-behind-window-seat",
-];
-const ALL_BLOCKS = "__all__";
-
-export function Guide({ channel, sections, lineup, nowId, onTune }: Props) {
+export function Guide({ channel, sections, programs, results, find, block, page, onFind, onBlock, onPage, onReset, nowId, onTune }: Props) {
   const root = useRef<HTMLElement>(null);
-  const [find, setFind] = useState("");
-  const [block, setBlock] = useState("");
-  const [page, setPage] = useState(0);
   const isBroadcast = channel.id === "broadcast";
-
-  const programs = useMemo<Program[]>(
-    () =>
-      sections.flatMap((section) =>
-        section.rows.map((clip) => ({
-          clip,
-          title: programTitle(clip),
-          block: section.section,
-          index: lineup.indexOf(clip),
-        })),
-      ),
-    [sections, lineup],
-  );
-  const starters = useMemo(
-    () =>
-      STARTER_SLUGS.map((slug) => programs.find((program) => program.clip.slug === slug)).filter(
-        (program): program is Program => Boolean(program),
-      ),
-    [programs],
-  );
   const needle = find.trim().toLowerCase();
   const browsing = Boolean(needle || block);
-  const results = useMemo(() => {
-    if (!browsing) return isBroadcast ? starters : programs;
-    return programs.filter((program) => {
-      if (block && block !== ALL_BLOCKS && program.block !== block) return false;
-      if (!needle) return true;
-      return `${program.title} ${program.clip.title} ${program.clip.year} ${program.block}`
-        .toLowerCase()
-        .includes(needle);
-    });
-  }, [programs, starters, isBroadcast, browsing, block, needle]);
   const windowed = guideWindow(results, page, 8);
   const start = windowed.page * 8 + 1;
   const end = Math.min(start + windowed.rows.length - 1, results.length);
-
-  function changeFind(value: string) {
-    setFind(value);
-    if (value.trim() && isBroadcast && !block) setBlock(ALL_BLOCKS);
-    setPage(0);
-  }
-
-  function changeBlock(value: string) {
-    setBlock(value);
-    setPage(0);
-  }
 
   function arrowKeys(e: KeyboardEvent, index: number) {
     if (!["ArrowDown", "ArrowUp"].includes(e.key)) return;
@@ -96,13 +46,13 @@ export function Guide({ channel, sections, lineup, nowId, onTune }: Props) {
         <div>
           <p className="font-cond text-[12px] tracking-[0.22em] text-leader">PROGRAM GUIDE</p>
           <h2 className="mt-1 font-display text-2xl leading-none text-paper">
-            {browsing ? (needle ? "Find a program" : block === ALL_BLOCKS ? "All broadcasts" : block) : isBroadcast ? "Start watching" : channel.name}
+            {browsing ? (needle ? "Find a program" : block === ALL_PROGRAMS ? "All broadcasts" : block) : isBroadcast ? "Start watching" : channel.name}
           </h2>
           <p className="mt-2 font-sans text-[13px] leading-snug text-dust">
             {browsing
               ? `${results.length} ${results.length === 1 ? "program" : "programs"} in this view`
               : isBroadcast
-                ? "Six public broadcasts. Choose one to tune in."
+                ? "Six starting points. Choose a title, then press play."
                 : `${programs.length} example ${programs.length === 1 ? "program" : "programs"} on this channel.`}
           </p>
         </div>
@@ -114,7 +64,7 @@ export function Guide({ channel, sections, lineup, nowId, onTune }: Props) {
           <span>SEARCH THIS CHANNEL</span>
           <input
             value={find}
-            onChange={(e) => changeFind(e.target.value)}
+            onChange={(e) => onFind(e.target.value)}
             type="search"
             placeholder="Title, year, or block"
             aria-label="Search programs on this channel"
@@ -123,9 +73,9 @@ export function Guide({ channel, sections, lineup, nowId, onTune }: Props) {
         </label>
         <label className="tv-guide-field">
           <span>PROGRAM BLOCK</span>
-          <select value={block} onChange={(e) => changeBlock(e.target.value)} aria-label="Choose a program block">
+          <select value={block} onChange={(e) => onBlock(e.target.value)} aria-label="Choose a program block">
             <option value="">{isBroadcast ? "Start here (6 picks)" : "Full channel"}</option>
-            {isBroadcast ? <option value={ALL_BLOCKS}>All public uploads ({programs.length})</option> : null}
+            {isBroadcast ? <option value={ALL_PROGRAMS}>All public uploads ({programs.length})</option> : null}
             {sections.map((section) => (
               <option key={section.section} value={section.section}>
                 {section.section} ({section.rows.length})
@@ -153,24 +103,24 @@ export function Guide({ channel, sections, lineup, nowId, onTune }: Props) {
         <div className="tv-guide-empty">
           <p className="font-cond text-[17px] tracking-[0.1em] text-paper">NO PROGRAMS FOUND</p>
           <p className="mt-1 text-[13px] text-dust">Try another title, year, or block.</p>
-          <button type="button" onClick={() => { changeFind(""); changeBlock(""); }} className="mt-4 font-cond text-[12px] tracking-[0.14em] text-leader underline underline-offset-4">
+          <button type="button" onClick={onReset} className="mt-4 font-cond text-[12px] tracking-[0.14em] text-leader underline underline-offset-4">
             RESET GUIDE
           </button>
         </div>
       )}
 
-      {browsing && results.length > 0 ? (
+      {(browsing || windowed.pages > 1) && results.length > 0 ? (
         <div className="tv-guide-pager">
           <span>{start}–{end} OF {results.length}</span>
           <div>
-            <button type="button" disabled={!windowed.hasPrev} onClick={() => setPage(windowed.page - 1)} aria-label="Previous guide page">← PREV</button>
-            <button type="button" disabled={!windowed.hasMore} onClick={() => setPage(windowed.page + 1)} aria-label="Next guide page">NEXT →</button>
+            <button type="button" disabled={!windowed.hasPrev} onClick={() => onPage(windowed.page - 1)} aria-label="Previous guide page">← PREV</button>
+            <button type="button" disabled={!windowed.hasMore} onClick={() => onPage(windowed.page + 1)} aria-label="Next guide page">NEXT →</button>
           </div>
         </div>
       ) : null}
 
       {isBroadcast && browsing ? (
-        <button type="button" onClick={() => { changeFind(""); changeBlock(""); }} className="tv-guide-return">
+        <button type="button" onClick={onReset} className="tv-guide-return">
           ← BACK TO SIX STARTING POINTS
         </button>
       ) : null}
@@ -194,7 +144,7 @@ function TitleRow({
   onArrow,
 }: {
   channel: Channel;
-  program: Program;
+  program: TVProgram;
   number: number;
   on: boolean;
   onTune: (index: number) => void;
@@ -215,12 +165,12 @@ function TitleRow({
           onKeyDown={(e) => onArrow(e, index)}
           className="tv-guide-row-title"
         >
-          {title}
+          <span>{title}</span>
+          <span className="tv-guide-row-meta block">{block === String(clip.year) ? block : `${block} · ${clip.year}`}</span>
         </button>
-        <p className="tv-guide-row-meta">{block === String(clip.year) ? block : `${block} · ${clip.year}`}</p>
       </div>
       <Link href={`/clip/${clip.slug}`} aria-label={`Open archive file for ${title}`} className="tv-guide-row-file">
-        FILE ↗
+        DETAILS ↗
       </Link>
     </div>
   );
