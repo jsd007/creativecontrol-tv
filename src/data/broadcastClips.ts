@@ -1,5 +1,6 @@
 import type { ArchiveClip, ClipType } from "./types";
 import { youtubeUploads, type YoutubeVideo } from "./youtube";
+import { PORTFOLIO_BLOCK } from "./portfolio";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -162,12 +163,27 @@ function clipFromUpload(video: YoutubeVideo, slug: string): ArchiveClip {
     thumbnail: "",
     poster: "",
     youtubeId: video.id,
+    contentState: "public-source",
+    relatedClipIds: [],
+    ...(video.id === "BgXLP8rCwEE" ? {
+      // Promote the existing CC trailer, rather than duplicating its catalog record.
+      programBlock: PORTFOLIO_BLOCK,
+      publicSource: {
+        publisher: "Creative Control",
+        url: "https://www.youtube.com/watch?v=BgXLP8rCwEE",
+        kind: "trailer" as const,
+      },
+      peopleIds: ["coodie", "chike", "benji"],
+      collectionIds: ["classics", "portfolio", "chicago-before"],
+      themes: ["sports", "chicago", "memory"],
+      credits: [{ name: "Coodie & Chike", role: "Directors" }],
+      relatedClipIds: ["c-portfolio-coney", "c-portfolio-meal-ticket"],
+    } : {}),
     featured: false,
     visibility: "PUBLIC",
     rightsStatus: "UNCLEAR",
     editorialStatus: "APPROVED",
     sensitivityStatus: "NONE",
-    relatedClipIds: [],
     type,
     mediaKind: /trailer|preview|ep\.?\s*\d/i.test(title) ? "LEADER" : "FIELD",
     formatHint: "DIGITAL",

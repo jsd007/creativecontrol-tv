@@ -215,7 +215,7 @@ export function relationScore(from: ArchiveClip, to: ArchiveClip) {
 export function relatedClips(clip: ArchiveClip) {
   const byId = new Map(catalog.clips.map((c) => [c.id, c]));
   const sameTape = catalog.clips
-    .filter((c) => c.sourceTapeId === clip.sourceTapeId && c.id !== clip.id)
+    .filter((c) => Boolean(clip.sourceTapeId) && c.sourceTapeId === clip.sourceTapeId && c.id !== clip.id)
     .sort((a, b) => a.startTimecode.localeCompare(b.startTimecode));
   const named = clip.relatedClipIds.map((id) => byId.get(id)).filter(Boolean) as ArchiveClip[];
 

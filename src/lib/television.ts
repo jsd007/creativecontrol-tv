@@ -99,8 +99,8 @@ export const CHANNELS: Channel[] = [
   },
 ];
 
-/** Official public playlist names, then Channel Zero, then upload year. Never an invented show. */
-const NAMED_BLOCKS = ["CREATIVE CONTROL TV", "CHANNEL ZERO", "TEAR UP", "ECKŌ STUDIO SESSIONS", "BENT"] as const;
+/** Public playlist/upload groups plus the curated portfolio block; not a broadcast schedule. */
+const NAMED_BLOCKS = ["CREATIVE CONTROL TV", "PROJECTS & FILMS", "CHANNEL ZERO", "TEAR UP", "ECKŌ STUDIO SESSIONS", "BENT"] as const;
 
 export function daypart(clip: ArchiveClip): Daypart {
   if (clip.type === "Title" || clip.type === "Broadcast") return "OPENING";
@@ -127,6 +127,7 @@ function programDay(clips: ArchiveClip[], bias?: "leftovers") {
 }
 
 export function officialBlock(clip: ArchiveClip) {
+  if (clip.programBlock) return clip.programBlock;
   if (clip.tags.includes("ident")) return "CREATIVE CONTROL TV";
   const upload = clip.youtubeId ? getYoutubeUpload(clip.youtubeId) : undefined;
   const playlistId = upload?.playlistIds?.[0];

@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useRef } from "react";
 import { catalog, clipsOnTape, getLocation } from "@/data";
 import type { ArchiveClip, SourceTape } from "@/data/types";
 import { clipHeading, isUnlogged } from "@/lib/clipDisplay";
 import { isAuthored } from "@/lib/visibility";
+import { clipHref, lensHref, tapeHref } from "@/lib/lensNavigation";
 import { shelfOf } from "./TapeShelf";
 import { TapeObject } from "./TapeObject";
 
@@ -40,11 +41,10 @@ function relatedTo(tape: SourceTape, excluding: Set<string>): ArchiveClip[] {
 }
 
 export function TapeExplorer() {
-  const router = useRouter();
   const search = useSearchParams();
-  const [scope, setScope] = useState<Scope>("ALL");
-  const [find, setFind] = useState("");
-  const [showAll, setShowAll] = useState(false);
+  const scope: Scope = search.get("scope") === "CAMERA" ? "CAMERA" : search.get("scope") === "DIGITAL" ? "DIGITAL" : "ALL";
+  const find = search.get("q") ?? "";
+  const showAll = search.get("all") === "1";
   const fileRef = useRef<HTMLElement>(null);
   const openedRef = useRef<string | null>(null);
   const allTapes = useMemo(() => catalog.tapes.filter((tape) => tape.id !== "t-broadcast"), []);
@@ -64,6 +64,7 @@ export function TapeExplorer() {
     : selected && !starters.some((tape) => tape.id === selected.id) ? [selected, ...starters.slice(0, 7)] : starters;
   const held = selected ? onTape(selected) : [];
   const related = selected ? relatedTo(selected, new Set(held.map((clip) => clip.id))) : [];
+  const returnHref = lensHref("/tapes", search.toString(), { open: selected?.id });
 
   useEffect(() => {
     if (!requested || requested === openedRef.current) return;
@@ -74,9 +75,11 @@ export function TapeExplorer() {
   }, [requested]);
 
   function choose(tape: SourceTape) {
-    const next = new URLSearchParams(search.toString());
-    next.set("open", tape.id);
-    router.replace(`/tapes?${next.toString()}`, { scroll: false });
+    window.history.pushState(null, "", lensHref("/tapes", window.location.search, { open: tape.id }));
+  }
+
+  function setSelection(patch: Record<string, string | null>) {
+    window.history.replaceState(null, "", lensHref("/tapes", window.location.search, patch));
   }
 
   return (
@@ -91,12 +94,12 @@ export function TapeExplorer() {
       <div className="tape-explorer-tools">
         <div role="group" aria-label="Source type">
           {SCOPES.map((item) => (
-            <button key={item.id} type="button" aria-pressed={scope === item.id} onClick={() => setScope(item.id)}>{item.label}</button>
+            <button key={item.id} type="button" aria-pressed={scope === item.id} onClick={() => setSelection({ scope: item.id === "ALL" ? null : item.id })}>{item.label}</button>
           ))}
         </div>
         <label>
           <span className="sr-only">Find a tape</span>
-          <input type="search" value={find} onChange={(event) => setFind(event.target.value)} placeholder="Find a code, place, year…" />
+          <input type="search" value={find} onChange={(event) => setSelection({ q: event.target.value || null })} placeholder="Find a code, place, year…" />
         </label>
       </div>
 
@@ -110,14 +113,14 @@ export function TapeExplorer() {
                 <h2>{selected.originalLabel}</h2>
                 <p>{getLocation(selected.locationId)?.name ?? "Place unconfirmed"} · {selected.recordedApproximate ?? selected.recordedDate}</p>
                 <p className="tape-explorer-note">{selected.notes}</p>
-                <Link href={`/tapes/${selected.id}`} className="tape-explorer-open">OPEN THE SOURCE FILE <span aria-hidden>→</span></Link>
+                <Link href={tapeHref(selected.id, returnHref)} className="tape-explorer-open">OPEN THE SOURCE FILE <span aria-hidden>→</span></Link>
               </div>
             </div>
             <div className="tape-explorer-related">
               <h3>IN THIS EXAMPLE FILE</h3>
-              {held.length ? held.slice(0, 4).map((clip) => <TapeClipLine key={clip.id} clip={clip} />) : <p className="tape-explorer-empty">No individually described frames yet.</p>}
+              {held.length ? held.slice(0, 4).map((clip) => <TapeClipLine key={clip.id} clip={clip} returnHref={returnHref} />) : <p className="tape-explorer-empty">No individually described frames yet.</p>}
               {related.length ? <h3>NEARBY IN THE CONCEPT INDEX</h3> : null}
-              {related.map((clip) => <TapeClipLine key={clip.id} clip={clip} />)}
+              {related.map((clip) => <TapeClipLine key={clip.id} clip={clip} returnHref={returnHref} />)}
             </div>
           </section>
         ) : null}
@@ -138,7 +141,7 @@ export function TapeExplorer() {
             );
           }) : <p className="tape-explorer-empty">No sources match this search.</p>}
           {scope === "ALL" && !needle && !showAll ? (
-            <button className="tape-explorer-all" type="button" onClick={() => setShowAll(true)}>VIEW ALL {allTapes.length} CONCEPT SOURCES <span aria-hidden>→</span></button>
+            <button className="tape-explorer-all" type="button" onClick={() => setSelection({ all: "1" })}>VIEW ALL {allTapes.length} CONCEPT SOURCES <span aria-hidden>→</span></button>
           ) : null}
         </section>
       </div>
@@ -146,9 +149,9 @@ export function TapeExplorer() {
   );
 }
 
-function TapeClipLine({ clip }: { clip: ArchiveClip }) {
+function TapeClipLine({ clip, returnHref }: { clip: ArchiveClip; returnHref: string }) {
   return (
-    <Link href={`/clip/${clip.slug}`} className="tape-clip-line">
+    <Link href={clipHref(clip.slug, returnHref)} className="tape-clip-line">
       <span>{clip.year}</span>
       <strong>{clipHeading(clip)}</strong>
       <small>{clip.youtubeId ? "PUBLIC SOURCE" : "EXAMPLE ENTRY"}</small>

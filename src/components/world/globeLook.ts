@@ -16,7 +16,7 @@ export const GLOBE_VERT = /* glsl */ `
   }
 `;
 
-/** Day paper, analog night, gold terminator. Land + night come from authored canvases. */
+/** Natural Earth geography in warm archival tones; gentle day/night illumination. */
 export const GLOBE_FRAG = /* glsl */ `
   uniform sampler2D uMap;
   uniform sampler2D uNight;
@@ -42,20 +42,20 @@ export const GLOBE_FRAG = /* glsl */ `
     float wrap = max(ndl * 0.46 + 0.44, 0.0);
     float dusk = smoothstep(-0.46, 0.04, ndl) * (1.0 - smoothstep(-0.02, 0.5, ndl));
     float night = 1.0 - smoothstep(-0.14, 0.26, ndl);
-    vec3 lifted = tex * vec3(1.48, 1.36, 1.18) + vec3(0.016, 0.014, 0.011);
-    vec3 dayCol = lifted * (0.46 + wrap * 0.9);
+    vec3 lifted = tex * vec3(1.08, 1.04, 1.0) + vec3(0.012, 0.014, 0.017);
+    vec3 dayCol = lifted * (0.58 + wrap * 0.58);
     vec3 halfV = normalize(sun + view);
     float spec = pow(max(dot(n, halfV), 0.0), 26.0) * (1.0 - land);
     dayCol += vec3(0.24, 0.2, 0.14) * spec * day * 0.32;
-    vec3 nightLand = lifted * vec3(0.14, 0.12, 0.1);
+    vec3 nightLand = lifted * vec3(0.26, 0.25, 0.24);
     vec3 nightOcean = vec3(0.01, 0.012, 0.014) + vec3(0.018, 0.026, 0.026) * 0.42;
     vec3 nightCol = mix(nightOcean, nightLand, land);
     nightCol += lights * night * (0.62 + land * 0.55);
-    vec3 gold = vec3(0.88, 0.7, 0.38) * dusk * (0.2 + land * 0.1);
+    vec3 gold = vec3(0.68, 0.58, 0.4) * dusk * (0.055 + land * 0.035);
     float fres = pow(1.0 - max(dot(n, view), 0.0), 2.75);
     float sunEdge = pow(max(ndl, 0.0), 1.15);
-    vec3 rim = mix(vec3(0.36, 0.42, 0.42), vec3(0.86, 0.68, 0.38), sunEdge) * fres * 0.3;
-    float grain = (hash(vUv * vec2(1640.0, 820.0)) - 0.5) * 0.03;
+    vec3 rim = mix(vec3(0.34, 0.46, 0.52), vec3(0.72, 0.66, 0.48), sunEdge) * fres * 0.18;
+    float grain = (hash(vUv * vec2(2048.0, 1024.0)) - 0.5) * 0.013;
     gl_FragColor = vec4(mix(nightCol, dayCol, day) + gold + rim + grain, 1.0);
   }
 `;
@@ -86,7 +86,7 @@ export const LIMB_FRAG = /* glsl */ `
     vec3 lamp = vec3(0.78, 0.48, 0.28);
     vec3 cool = vec3(0.38, 0.46, 0.46);
     vec3 c = mix(cool, mix(warm, lamp, 0.28), lit);
-    float a = f * (0.2 + lit * 0.48) + f * anti * 0.08;
+    float a = f * (0.06 + lit * 0.15) + f * anti * 0.025;
     gl_FragColor = vec4(c, a);
   }
 `;
@@ -102,7 +102,7 @@ export const HAZE_FRAG = /* glsl */ `
     float f = pow(1.0 - abs(dot(n, view)), 2.95);
     float lit = pow(max(dot(n, sun), 0.0), 0.78);
     vec3 c = mix(vec3(0.74, 0.6, 0.4), vec3(0.46, 0.44, 0.4), 0.22);
-    float a = f * (0.09 + lit * 0.18) + pow(lit, 3.6) * f * 0.16;
+    float a = f * (0.02 + lit * 0.04);
     gl_FragColor = vec4(c, a);
   }
 `;

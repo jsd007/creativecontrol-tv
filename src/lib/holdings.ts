@@ -3,7 +3,7 @@ import type { ArchiveClip, SourceTape } from "@/data/types";
 import { clipHeading, isUnlogged } from "@/lib/clipDisplay";
 import { isAuthored } from "@/lib/visibility";
 
-/** Official @cctelevisionchannel embed — a holding, not a camera original. */
+/** Official public publisher embed — a reference, not a camera original. */
 export function isOfficialHolding(clip: Pick<ArchiveClip, "id" | "tags" | "youtubeId">) {
   return Boolean(clip.youtubeId) && isAuthored(clip as ArchiveClip);
 }
@@ -16,7 +16,8 @@ export function holdingPlace(clip: Pick<ArchiveClip, "locationId">) {
 export function holdingLine(clip: ArchiveClip) {
   const title = clipHeading(clip);
   const place = holdingPlace(clip);
-  return place ? `${clip.year} · ${title} · BROADCAST · ${place}` : `${clip.year} · ${title} · BROADCAST`;
+  const source = clip.publicSource?.publisher ?? "CC-TV";
+  return place ? `${clip.year} · ${title} · ${source} · ${place}` : `${clip.year} · ${title} · ${source}`;
 }
 
 export function sortHoldings(clips: ArchiveClip[]) {

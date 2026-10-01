@@ -41,22 +41,34 @@ export function CutProvider({ children }: { children: React.ReactNode }) {
   const pending = useRef<{ key: string; resolve: () => void } | null>(null);
   const busy = useRef(false);
   const queued = useRef<string | null>(null);
+  const routeKey = `${pathname}${search.toString() ? `?${search.toString()}` : ""}`;
+  const committed = useRef(routeKey);
+  // The animation timeout is not a route commit. Retain the intended destination
+  // until Next confirms it, so a fast return can cancel a still-pending route.
+  const intent = useRef<string | null>(null);
 
   useEffect(() => {
+    committed.current = routeKey;
+    if (intent.current === routeKey) intent.current = null;
     const wait = pending.current;
     if (!wait) return;
-    const key = `${pathname}${search.toString() ? `?${search.toString()}` : ""}`;
-    if (key === wait.key) {
+    if (routeKey === wait.key) {
       wait.resolve();
-      pending.current = null;
     }
-  }, [pathname, search]);
+  }, [routeKey]);
 
   const to = useCallback(
     (href: string) => {
       const { path, key } = destOf(href);
+      // The next page's DOM can appear before its history update. Queue first:
+      // a return link may still match the previous URL during that short window.
+      if (busy.current) {
+        queued.current = href;
+        return;
+      }
       const here = `${window.location.pathname}${window.location.search}`;
-      if (key === here) return;
+      if (key === here && key === committed.current && (!intent.current || intent.current === key)) return;
+      intent.current = key;
 
       const samePath = path === window.location.pathname;
       const presenting = readPresentFlag();
@@ -64,23 +76,20 @@ export function CutProvider({ children }: { children: React.ReactNode }) {
       const instant = reduced || (presenting ? keepLens : samePath);
 
       const navigate = () => {
-        router.push(key);
         return new Promise<void>((resolve) => {
-          pending.current = { key, resolve };
-          window.setTimeout(() => {
-            if (pending.current?.resolve === resolve) {
-              pending.current = null;
-              resolve();
-            }
-          }, 880);
+          // Settle an older wait before replacing it. Even an instant same-lens
+          // hop must not strand a view-transition callback waiting on that hop.
+          pending.current?.resolve();
+          const settle = () => {
+            window.clearTimeout(timeout);
+            if (pending.current?.resolve === settle) pending.current = null;
+            resolve();
+          };
+          const timeout = window.setTimeout(settle, 880);
+          pending.current = { key, resolve: settle };
+          router.push(key);
         });
       };
-
-      if (busy.current) {
-        if (presenting) queued.current = href;
-        else if (instant) void navigate();
-        return;
-      }
 
       if (instant) {
         document.documentElement.classList.remove("is-cutting", "is-present-cut");
@@ -100,15 +109,9 @@ export function CutProvider({ children }: { children: React.ReactNode }) {
         if (nextHref) to(nextHref);
       };
 
-      if (typeof document.startViewTransition === "function") {
-        const vt = document.startViewTransition(async () => {
-          await navigate();
-        });
-        void vt.finished.finally(finish);
-        return;
-      }
-
-      void fallbackCut(navigate).finally(finish);
+      // Keep navigation on the live DOM. Native snapshot transitions can swallow
+      // a mouse click on a newly visible return link while their top layer exits.
+      void fallbackCut(navigate).then(finish, finish);
     },
     [reduced, router],
   );

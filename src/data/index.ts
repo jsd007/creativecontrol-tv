@@ -20,6 +20,7 @@ import type { ArchiveClip, SourceTape, Transcript } from "./types";
 function linkRelations(clips: ArchiveClip[]): ArchiveClip[] {
   const byTape = new Map<string, ArchiveClip[]>();
   for (const clip of clips) {
+    if (!clip.sourceTapeId) continue;
     const list = byTape.get(clip.sourceTapeId) ?? [];
     list.push(clip);
     byTape.set(clip.sourceTapeId, list);

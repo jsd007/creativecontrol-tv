@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Html, Line, OrbitControls } from "@react-three/drei";
+import { Html, OrbitControls } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import Link from "next/link";
 import Image from "next/image";
@@ -14,6 +14,7 @@ import { youtubeThumbnail } from "@/data/youtube";
 import { PrototypeField } from "@/components/media/PrototypeMedia";
 import { clipHeading, isUnlogged } from "@/lib/clipDisplay";
 import { isAuthored } from "@/lib/visibility";
+import { clipHref, lensHref } from "@/lib/lensNavigation";
 import { CONTINENTS, CUTS, paintLand, paintNight, pathD } from "@/lib/geography";
 import { gsap, houseGsap } from "@/lib/gsap";
 import { activateOnSpace, isTypingTarget } from "@/lib/keys";
@@ -281,7 +282,7 @@ function FieldStars({ reduced }: { reduced: boolean }) {
   );
 }
 
-function FilmGrade() {
+function FilmGrade({ reduced }: { reduced: boolean }) {
   const mat = useMemo(
     () =>
       new THREE.ShaderMaterial({
@@ -296,7 +297,7 @@ function FilmGrade() {
     [],
   );
   useFrame(({ clock }) => {
-    mat.uniforms.uTime.value = clock.elapsedTime;
+    if (!reduced) mat.uniforms.uTime.value = clock.elapsedTime;
   });
   useEffect(() => () => mat.dispose(), [mat]);
   return (
@@ -332,18 +333,18 @@ function CityMark({
   const count = recordsToYear(location, year);
   const chicago = location.city === "Chicago";
   const intensity = chicago ? 1 : Math.min(1, location.glow + count / 40);
-  const glow = useMemo(() => (chicago ? glowTexture() : null), [chicago]);
+  const glow = useMemo(() => glowTexture(), []);
   useEffect(() => () => glow?.dispose(), [glow]);
 
   useFrame(({ camera, clock }) => {
     const face = facingAmount(pos, camera);
     const vis = face < 0.04 ? 0.1 : THREE.MathUtils.clamp(0.18 + face * 0.95, 0.18, 1);
-    if (markMat.current && !chicago) markMat.current.opacity = vis;
+    if (markMat.current) markMat.current.opacity = vis;
     if (wash.current) {
-      const pulse = chicago && !reduced ? 1 + Math.sin(clock.elapsedTime * 0.48) * 0.1 : 1;
-      wash.current.scale.setScalar(1.42 * pulse);
+      const pulse = selected && !reduced ? 1 + Math.sin(clock.elapsedTime * 0.7) * 0.09 : 1;
+      wash.current.scale.setScalar((selected ? 0.42 : chicago ? 0.3 : 0.16) * pulse);
       const mat = wash.current.material;
-      if (!Array.isArray(mat)) mat.opacity = 0.62 * vis;
+      if (!Array.isArray(mat)) mat.opacity = (selected ? 0.62 : 0.32) * vis;
     }
     const want = face > LABEL_FACE && hovered;
     if (want !== shown.current) {
@@ -356,9 +357,9 @@ function CityMark({
 
   return (
     <group position={pos}>
-      {chicago && glow ? (
+      {glow ? (
         <>
-          <sprite ref={wash} scale={0.96}>
+          <sprite ref={wash} scale={0.32}>
             <spriteMaterial
               map={glow}
               color="#e2b85c"
@@ -369,7 +370,7 @@ function CityMark({
               toneMapped={false}
             />
           </sprite>
-          <sprite scale={0.24}>
+          <sprite scale={selected ? 0.09 : 0.04}>
             <spriteMaterial
               map={glow}
               color="#efe6d6"
@@ -397,12 +398,12 @@ function CityMark({
           document.body.style.cursor = "auto";
         }}
       >
-        <sphereGeometry args={[chicago ? 0.045 : selected || hovered ? 0.034 : 0.014 + intensity * 0.016, 12, 12]} />
+        <sphereGeometry args={[selected || hovered ? 0.022 : 0.009 + intensity * 0.01, 12, 12]} />
         <meshBasicMaterial
           ref={markMat}
           color={chicago ? "#e2b85c" : selected || hovered ? "#f2ead9" : "#d4b05a"}
           transparent
-          opacity={chicago ? 0 : 1}
+          opacity={1}
           depthWrite={false}
         />
       </mesh>
@@ -427,24 +428,6 @@ function CityMark({
           </div>
         </Html>
       ) : null}
-    </group>
-  );
-}
-
-function Arcs({ year }: { year: number }) {
-  const chicago = catalog.locations.find((l) => l.id === "chicago");
-  if (!chicago || year < 2001) return null;
-  const from = latLonToVec(chicago.lat, chicago.lon, 1.64);
-  return (
-    <group>
-      {catalog.locations
-        .filter((l) => l.id !== "chicago" && l.glow > 0.2)
-        .map((t) => {
-          const to = latLonToVec(t.lat, t.lon, 1.64);
-          const mid = from.clone().add(to).multiplyScalar(0.5).normalize().multiplyScalar(2.02);
-          const curve = new THREE.QuadraticBezierCurve3(from, mid, to);
-          return <Line key={t.id} points={curve.getPoints(28)} color="#c4a05a" transparent opacity={year >= 2009 ? 0.14 : 0.08} lineWidth={1} />;
-        })}
     </group>
   );
 }
@@ -535,7 +518,7 @@ function CameraRig({
 
     tween.current = gsap.to(flight, {
       u: 1,
-      duration: chicago ? 2.9 : 2.4,
+      duration: chicago ? 1.8 : 1.6,
       ease: "power2.inOut",
       onUpdate: () => apply(flight.u),
       onComplete: () => {
@@ -636,10 +619,10 @@ function placeStories(location: Location, year: number): ArchiveClip[] {
     .slice(0, 6);
 }
 
-function WorldStory({ clip, index }: { clip: ArchiveClip; index: number }) {
+function WorldStory({ clip, index, returnHref }: { clip: ArchiveClip; index: number; returnHref: string }) {
   const place = getLocation(clip.locationId);
   return (
-    <Link href={`/clip/${clip.slug}`} className="world-story group">
+    <Link href={clipHref(clip.slug, returnHref)} className="world-story group">
       <div className="world-story-image">
         {clip.youtubeId ? (
           <Image src={youtubeThumbnail(clip.youtubeId)} alt="" width={320} height={200} unoptimized />
@@ -661,7 +644,8 @@ export function WorldGlobe() {
   const search = useSearchParams();
   const reduced = usePrefersReducedMotion();
   const narrow = useIsNarrow();
-  const [year, setYear] = useState(2026);
+  const [year, setYear] = useState(() => Math.max(1994, Math.min(2026, Number(search.get("year")) || 2026)));
+  const [ambient, setAmbient] = useState(true);
   const [selected, setSelected] = useState(() => {
     const raw = search.get("city");
     return cities.find((city) => city.id === raw || city.slug === raw)?.id ?? "chicago";
@@ -679,15 +663,8 @@ export function WorldGlobe() {
   const front = FRONT_PLACES.map((id) => cities.find((city) => city.id === id)).filter((city): city is Location => Boolean(city));
   const otherPlaces = marks.filter((city) => !FRONT_PLACES.includes(city.id));
 
-  useEffect(() => {
-    if (!loc) return;
-    if (records) return;
-    const latest = Math.max(
-      0,
-      ...catalog.clips.filter((c) => getLocation(c.locationId)?.city === loc.city).map((c) => c.year),
-    );
-    if (latest > year) setYear(latest);
-  }, [loc, records, year]);
+  const still = reduced || !ambient;
+  const returnHref = lensHref("/world", search.toString(), { city: selected, year: String(year) });
   // Layout width and reduced motion should not replace the defining interaction.
   // The static map is only for devices that cannot render WebGL at all.
   const useGlobe = mounted && webgl;
@@ -699,11 +676,11 @@ export function WorldGlobe() {
   }, []);
 
   useEffect(() => {
-    const raw = search.get("city");
-    if (!raw) return;
+    const raw = search.get("city") ?? "chicago";
     const hit = cities.find((c) => c.id === raw || c.slug === raw || c.city.toLowerCase() === raw.toLowerCase());
-    if (hit) setSelected(hit.id);
-  }, [cities, search]);
+    if (hit && hit.id !== selected) { setSelected(hit.id); setFlying(true); }
+    setYear(Math.max(1994, Math.min(2026, Number(search.get("year")) || 2026)));
+  }, [cities, search, selected]);
 
   useEffect(() => {
     if (search.get("fly") === "1") setFlying(true);
@@ -727,22 +704,26 @@ export function WorldGlobe() {
     setSelected(id);
     setSettling(false);
     setFlying(true);
-  }, []);
+    window.history.pushState(null, "", lensHref("/world", search.toString(), { city: id, year: String(year) }));
+  }, [search, year]);
+
+  const changeYear = (value: number) => {
+    setYear(value);
+    window.history.replaceState(null, "", lensHref("/world", search.toString(), { city: selected, year: String(value) }));
+  };
 
   const travel = useCallback((dir: 1 | -1) => {
-    setSelected((cur) => {
-      const i = cities.findIndex((c) => c.id === cur);
-      return cities[(i + dir + cities.length) % cities.length].id;
-    });
-    setSettling(false);
-    setFlying(true);
-  }, [cities]);
+    const i = marks.findIndex((c) => c.id === selected);
+    if (marks.length) choose(marks[(i + dir + marks.length) % marks.length].id);
+  }, [marks, selected, choose]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (isTypingTarget(e.target)) return;
-      if (e.key === "ArrowRight" || e.key === "ArrowDown") travel(1);
-      if (e.key === "ArrowLeft" || e.key === "ArrowUp") travel(-1);
+      if (isTypingTarget(e.target) || (e.target instanceof Element && e.target.closest("button, summary, a, input"))) return;
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        travel(e.key === "ArrowRight" ? 1 : -1);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -773,13 +754,13 @@ export function WorldGlobe() {
         ) : null}
         <div className="world-time-control">
           <label htmlFor="world-year">THROUGH {year}</label>
-          <input id="world-year" type="range" min={1994} max={2026} value={year} onChange={(event) => setYear(Number(event.target.value))} className="world-year" />
+          <input id="world-year" type="range" min={1994} max={2026} value={year} onChange={(event) => changeYear(Number(event.target.value))} className="world-year" />
           <div aria-hidden><span>1994</span><span>2026</span></div>
         </div>
         <details className="world-time-mobile">
           <summary>TIME · THROUGH {year}</summary>
           <label htmlFor="world-year-mobile" className="sr-only">Show records through year {year}</label>
-          <input id="world-year-mobile" type="range" min={1994} max={2026} value={year} onChange={(event) => setYear(Number(event.target.value))} className="world-year" />
+          <input id="world-year-mobile" type="range" min={1994} max={2026} value={year} onChange={(event) => changeYear(Number(event.target.value))} className="world-year" />
           <div aria-hidden><span>1994</span><span>2026</span></div>
         </details>
       </aside>
@@ -812,14 +793,13 @@ export function WorldGlobe() {
           >
             <color attach="background" args={["#0a0908"]} />
             <ambientLight intensity={0.1} />
-            <Sun reduced={reduced} />
+            <Sun reduced={still} />
             <pointLight position={[-2.2, -0.6, -2.8]} intensity={0.12} color="#c4a05a" />
-            <FieldStars reduced={reduced} />
+            <FieldStars reduced={still} />
             <GlobeBody cities={cities} />
-            <AtmosphereShell radius={1.66} frag={AIR_FRAG} side={THREE.FrontSide} additive />
-            <AtmosphereShell radius={1.82} frag={LIMB_FRAG} />
-            <AtmosphereShell radius={2.08} frag={HAZE_FRAG} additive />
-            <Arcs year={year} />
+            <AtmosphereShell radius={1.625} frag={AIR_FRAG} side={THREE.FrontSide} additive />
+            <AtmosphereShell radius={1.66} frag={LIMB_FRAG} />
+            <AtmosphereShell radius={1.76} frag={HAZE_FRAG} additive />
             {cities.map((city) => (
               <CityMark
                 key={city.id}
@@ -827,7 +807,7 @@ export function WorldGlobe() {
                 selected={selected === city.id}
                 hovered={hovered === city.id}
                 year={year}
-                reduced={reduced}
+                reduced={still}
                 onSelect={choose}
                 onHover={setHovered}
               />
@@ -843,7 +823,7 @@ export function WorldGlobe() {
                 onArrive={arrive}
               />
             ) : null}
-            <FilmGrade />
+            <FilmGrade reduced={still} />
             <OrbitControls
               ref={controls}
               enabled={!flying}
@@ -872,6 +852,12 @@ export function WorldGlobe() {
           {loc ? <Link href={`/places/${loc.slug}`} onKeyDown={activateOnSpace}>EXPLORE {loc.city.toUpperCase()} <span aria-hidden>→</span></Link> : null}
         </div>
         {useGlobe ? <p className="world-gesture" aria-hidden>{narrow ? "DRAG TO ROTATE" : "DRAG TO ROTATE · SCROLL TO ZOOM"}</p> : null}
+        {useGlobe ? (
+          <div className="world-view-controls">
+            <button type="button" onClick={() => { setSettling(false); setFlying(true); }}>CENTER PLACE</button>
+            {!reduced ? <button type="button" aria-pressed={!ambient} onClick={() => setAmbient((value) => !value)}>{ambient ? "PAUSE AMBIENCE" : "RESUME AMBIENCE"}</button> : null}
+          </div>
+        ) : null}
       </section>
 
       <aside className="world-stories" aria-live="polite">
@@ -880,7 +866,7 @@ export function WorldGlobe() {
           <p>{stories.length} {stories.length === 1 ? "RECORD" : "RECORDS"}</p>
         </div>
         <p className="world-stories-context">Selected examples through {year}. Public uploads are marked; other entries illustrate a proposed archive.</p>
-        {stories.length ? stories.map((clip, index) => <WorldStory key={clip.id} clip={clip} index={index} />) : (
+        {stories.length ? stories.map((clip, index) => <WorldStory key={clip.id} clip={clip} index={index} returnHref={returnHref} />) : (
           <p className="world-stories-empty">No example entries through {year}. Move the year forward or choose another place.</p>
         )}
         {loc ? <Link href={`/archive?location=${loc.id}`} className="world-all-link">BROWSE ALL {loc.city.toUpperCase()} RECORDS <span aria-hidden>→</span></Link> : null}

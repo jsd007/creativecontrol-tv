@@ -1,11 +1,13 @@
 node_modules
+docs
+tests
+scripts
 .next
 .next-*
 out
-.env
-.env.local
 *.log
 creative control reel.mp4
 /Jeenyuhs_loading.mp4
 /unnamed-3.jpg
-docs/research
+*.tsbuildinfo
+.env*
