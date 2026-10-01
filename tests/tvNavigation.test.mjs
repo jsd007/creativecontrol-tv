@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { ALL_PROGRAMS, TV_STARTERS, tvChannel, tvHref, tvNeighbors, tvSelection } from "../src/lib/tvNavigation.ts";
+import { ALL_PROGRAMS, TV_STARTERS, tvChannel, tvClipHref, tvHref, tvNeighbors, tvReturnHref, tvSelection } from "../src/lib/tvNavigation.ts";
 
 const row = (slug, index, block = "TEAR UP", year = 2014) => ({
   clip: { id: slug, slug, title: `Original ${slug}`, year }, title: slug, block, index,
@@ -47,4 +47,20 @@ test("program links preserve presentation and guide context while encoding value
   assert.equal(params.get("clip"), "tear-up-round-1");
   assert.equal(params.get("q"), "Round");
   assert.equal(params.has("page"), false);
+});
+
+test("archive details return to the chosen title and preserve guide context", () => {
+  const details = new URL(tvClipHref("tear-up-round-2", "/tv?ch=07&block=TEAR+UP&q=Round&page=1&present=1"), "http://localhost");
+  assert.equal(details.pathname, "/clip/tear-up-round-2");
+  const back = new URL(tvReturnHref(details.searchParams.get("tv")), "http://localhost");
+  assert.equal(back.searchParams.get("clip"), "tear-up-round-2");
+  assert.equal(back.searchParams.get("block"), "TEAR UP");
+  assert.equal(back.searchParams.get("q"), "Round");
+  assert.equal(back.searchParams.get("page"), "1");
+  assert.equal(back.searchParams.get("present"), "1");
+});
+
+test("return links reject external destinations and discard unrelated parameters", () => {
+  for (const raw of [undefined, "https://example.com", "//example.com/tv", "/tv-other?ch=07", `/tv?q=${"x".repeat(2048)}`]) assert.equal(tvReturnHref(raw), undefined);
+  assert.equal(tvReturnHref("/tv?ch=07&redirect=https%3A%2F%2Fexample.com"), "/tv?ch=07");
 });

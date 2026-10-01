@@ -89,6 +89,7 @@ export function Television() {
   const goChannel = useCallback((n: number) => {
     const nextCh = ((n % CHANNELS.length) + CHANNELS.length) % CHANNELS.length;
     if (nextCh === ch) return;
+    focusScreen.current = window.matchMedia("(max-width: 1000px)").matches;
     const firstSlot = openingSlot(CHANNELS[nextCh], boards[nextCh]);
     navigate({ ch: CHANNELS[nextCh].n, clip: boards[nextCh][firstSlot]?.slug ?? null, block: null, q: null, page: null });
     acquire(MOTION.acquireMs);
@@ -176,7 +177,7 @@ export function Television() {
             onPrevious={() => previous && tuneSlot(previous.index)}
           />
         </div>
-        <Guide channel={channel} sections={sections} programs={programs} results={results} find={find} block={block} page={page}
+        <Guide channel={channel} sections={sections} programs={programs} results={results} find={find} block={block} page={page} programLink={programLink}
           onFind={(value) => navigate({ q: value.slice(0, 120), block: value.trim() && !block && channel.id === "broadcast" ? ALL_PROGRAMS : block, page: null }, true)}
           onBlock={(value) => navigate({ block: value, q: null, page: null }, true)}
           onPage={(value) => navigate({ page: value ? String(value) : null }, true)}

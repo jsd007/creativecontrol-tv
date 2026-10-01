@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, type KeyboardEvent } from "react";
+import { useEffect, useRef, type KeyboardEvent } from "react";
 import { accentOnAir, guideNowClass, guideWindow, type Channel, type GuideSection } from "@/lib/television";
-import { ALL_PROGRAMS, type TVProgram } from "@/lib/tvNavigation";
+import { ALL_PROGRAMS, tvClipHref, type TVProgram } from "@/lib/tvNavigation";
+import { usePrefersReducedMotion } from "@/lib/motion";
 
 type Props = {
   channel: Channel;
@@ -13,6 +14,7 @@ type Props = {
   find: string;
   block: string;
   page: number;
+  programLink: string;
   onFind: (value: string) => void;
   onBlock: (value: string) => void;
   onPage: (value: number) => void;
@@ -21,14 +23,28 @@ type Props = {
   onTune: (index: number) => void;
 };
 
-export function Guide({ channel, sections, programs, results, find, block, page, onFind, onBlock, onPage, onReset, nowId, onTune }: Props) {
+export function Guide({ channel, sections, programs, results, find, block, page, programLink, onFind, onBlock, onPage, onReset, nowId, onTune }: Props) {
   const root = useRef<HTMLElement>(null);
+  const focusPage = useRef(false);
+  const reduced = usePrefersReducedMotion();
   const isBroadcast = channel.id === "broadcast";
   const needle = find.trim().toLowerCase();
   const browsing = Boolean(needle || block);
   const windowed = guideWindow(results, page, 8);
   const start = windowed.page * 8 + 1;
   const end = Math.min(start + windowed.rows.length - 1, results.length);
+
+  function changePage(next: number) {
+    focusPage.current = true;
+    onPage(next);
+  }
+
+  useEffect(() => {
+    if (!focusPage.current) return;
+    focusPage.current = false;
+    root.current?.querySelector<HTMLHeadingElement>("h2")?.focus({ preventScroll: true });
+    root.current?.scrollIntoView({ block: "start", behavior: reduced ? "auto" : "smooth" });
+  }, [windowed.page, reduced]);
 
   function arrowKeys(e: KeyboardEvent, index: number) {
     if (!["ArrowDown", "ArrowUp"].includes(e.key)) return;
@@ -45,7 +61,7 @@ export function Guide({ channel, sections, programs, results, find, block, page,
       <div className="tv-guide-head">
         <div>
           <p className="font-cond text-[12px] tracking-[0.22em] text-leader">PROGRAM GUIDE</p>
-          <h2 className="mt-1 font-display text-2xl leading-none text-paper">
+          <h2 tabIndex={-1} className="mt-1 font-display text-2xl leading-none text-paper">
             {browsing ? (needle ? "Find a program" : block === ALL_PROGRAMS ? "All broadcasts" : block) : isBroadcast ? "Start watching" : channel.name}
           </h2>
           <p className="mt-2 font-sans text-[13px] leading-snug text-dust">
@@ -96,6 +112,7 @@ export function Guide({ channel, sections, programs, results, find, block, page,
               on={program.clip.id === nowId}
               onTune={onTune}
               onArrow={arrowKeys}
+              detailHref={tvClipHref(program.clip.slug, programLink)}
             />
           ))}
         </div>
@@ -113,8 +130,8 @@ export function Guide({ channel, sections, programs, results, find, block, page,
         <div className="tv-guide-pager">
           <span>{start}–{end} OF {results.length}</span>
           <div>
-            <button type="button" disabled={!windowed.hasPrev} onClick={() => onPage(windowed.page - 1)} aria-label="Previous guide page">← PREV</button>
-            <button type="button" disabled={!windowed.hasMore} onClick={() => onPage(windowed.page + 1)} aria-label="Next guide page">NEXT →</button>
+            <button type="button" disabled={!windowed.hasPrev} onClick={() => changePage(windowed.page - 1)} aria-label="Previous guide page">← PREV</button>
+            <button type="button" disabled={!windowed.hasMore} onClick={() => changePage(windowed.page + 1)} aria-label="Next guide page">NEXT →</button>
           </div>
         </div>
       ) : null}
@@ -142,6 +159,7 @@ function TitleRow({
   on,
   onTune,
   onArrow,
+  detailHref,
 }: {
   channel: Channel;
   program: TVProgram;
@@ -149,6 +167,7 @@ function TitleRow({
   on: boolean;
   onTune: (index: number) => void;
   onArrow: (e: KeyboardEvent, index: number) => void;
+  detailHref: string;
 }) {
   const { clip, title, block, index } = program;
   return (
@@ -169,7 +188,7 @@ function TitleRow({
           <span className="tv-guide-row-meta block">{block === String(clip.year) ? block : `${block} · ${clip.year}`}</span>
         </button>
       </div>
-      <Link href={`/clip/${clip.slug}`} aria-label={`Open archive file for ${title}`} className="tv-guide-row-file">
+      <Link href={detailHref} aria-label={`Open archive file for ${title}`} className="tv-guide-row-file">
         DETAILS ↗
       </Link>
     </div>

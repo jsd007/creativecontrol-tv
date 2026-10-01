@@ -50,3 +50,21 @@ export function tvHref(current: string, patch: Record<string, string | null>) {
   }
   return `/tv${params.size ? `?${params.toString()}` : ""}`;
 }
+
+export function tvClipHref(slug: string, programLink: string) {
+  const query = programLink.split("?")[1] ?? "";
+  const returnTo = tvHref(query, { clip: slug });
+  return `/clip/${encodeURIComponent(slug)}?${new URLSearchParams({ tv: returnTo })}`;
+}
+
+/** Clip pages may return only to the TV lens, never to an arbitrary supplied URL. */
+export function tvReturnHref(raw?: string) {
+  if (!raw?.startsWith("/tv?") || raw.length > 2048) return undefined;
+  const incoming = new URLSearchParams(raw.slice(4));
+  const safe = new URLSearchParams();
+  for (const key of ["ch", "clip", "block", "q", "page", "present"]) {
+    const value = incoming.get(key);
+    if (value) safe.set(key, value);
+  }
+  return tvHref(safe.toString(), {});
+}

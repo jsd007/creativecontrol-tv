@@ -1,5 +1,7 @@
 # After the proof — finishing the archive
 
+Current refinement handoff: [October 1 update](UPDATE_2026-10-01.md). Normal browsing now has simpler entry points across the lenses. The old aisle camera and deeply nested TV guide are no longer the default; do not restore them merely to match this earlier roadmap. Keep the entrance simple, the globe central, and the deeper content reachable without making the first visit dense.
+
 The seven-scene presentation is the shareable baseline. Keep it concise until Coodie has seen it:
 
 `door → Earth → Chicago → one record → official air → CC-0217 → 1994–2026`

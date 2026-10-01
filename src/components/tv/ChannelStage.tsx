@@ -9,6 +9,7 @@ import type { Channel } from "@/lib/television";
 import { accentOnAir, accentRule } from "@/lib/television";
 import { houseGsap } from "@/lib/gsap";
 import { GATE_EASE } from "@/lib/motion";
+import { tvClipHref } from "@/lib/tvNavigation";
 import { Acquire } from "./Acquire";
 
 type Props = {
@@ -109,7 +110,7 @@ export function ChannelStage({
       </div>
       <div className="tv-screen-actions">
         {now ? (
-          <Link href={`/clip/${now.slug}`} className="text-paper underline underline-offset-4">
+          <Link href={tvClipHref(now.slug, programLink)} className="text-paper underline underline-offset-4">
             CLIP DETAILS
           </Link>
         ) : null}
