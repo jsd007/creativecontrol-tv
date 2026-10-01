@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { TapeMosaic } from "@/components/tapes/TapeMosaic";
+import { TapeExplorer } from "@/components/tapes/TapeExplorer";
 
 export const metadata: Metadata = {
   title: "The Tapes",
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function TapesPage() {
   return (
     <Suspense>
-      <TapeMosaic />
+      <TapeExplorer />
     </Suspense>
   );
 }

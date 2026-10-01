@@ -6,9 +6,18 @@ export function isUnlogged(clip: Pick<ArchiveClip, "id" | "tags">) {
   return !isAuthored(clip as ArchiveClip);
 }
 
+/** Short screen labels for a few verbatim upload titles; the catalog retains source wording. */
+function screenTitle(title: string) {
+  if (/^Curren\$y\s*-\s*Wiz Khalifa\s*-\s*NYC CMJ/.test(title)) return "Curren$y & Wiz Khalifa at NYC CMJ";
+  if (title.startsWith("Woodstock 2009 - Curren$y")) return "Curren$y at Woodstock 2009";
+  if (title.startsWith("Curren$y NYC CMJ - BBKings")) return "Curren$y at B.B. King Blues Club";
+  if (title.startsWith("ESPN 30 FOR 30 DOCUMENTARY - BENJI 1984")) return "Benji | 30 for 30 trailer";
+  return title.replace(/\s+-\s+(?:(?:WWW\.)?CREATIVECONTROL\.TV|CREATIVE CONTROL)\s*$/i, "").trim();
+}
+
 /** Authored shot-log title, or UNLOGGED — never an invented scene name. */
 export function clipHeading(clip: Pick<ArchiveClip, "id" | "tags" | "title">) {
-  return isUnlogged(clip) ? "UNLOGGED" : clip.title;
+  return isUnlogged(clip) ? "UNLOGGED" : screenTitle(clip.title);
 }
 
 /** Museum caption — catalog, vault, or a narrator about the camera. Not a year beat. */
@@ -37,7 +46,7 @@ export function filmBeat(opts: {
 
 /** On-air / GUIDE title. Unlogged density is never a program name. */
 export function programTitle(clip: Pick<ArchiveClip, "id" | "tags" | "title">) {
-  return isUnlogged(clip) ? "" : clip.title;
+  return isUnlogged(clip) ? "" : screenTitle(clip.title);
 }
 
 export function clipTechnical(

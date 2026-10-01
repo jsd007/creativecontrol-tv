@@ -2,7 +2,7 @@
 
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
-import { CHANNELS, accentNumber, onAirTitle } from "@/lib/television";
+import { CHANNELS, accentNumber } from "@/lib/television";
 import { houseGsap } from "@/lib/gsap";
 import { GATE_EASE } from "@/lib/motion";
 
@@ -47,19 +47,24 @@ export function Tuner({ ch, counts, reduced, onPick }: Props) {
 
   return (
     <nav ref={root} className="tv-tuner relative mt-3" aria-label="Tuner">
-      <p className="font-cond text-[11px] tracking-[0.22em] text-dust">TUNER</p>
+      <div className="tv-tuner-header">
+        <p className="font-cond text-[12px] tracking-[0.22em] text-dust">CHOOSE A CHANNEL</p>
+        <div>
+          <button type="button" onClick={() => onPick(ch - 1)} aria-label="Previous channel">← PREV</button>
+          <button type="button" onClick={() => onPick(ch + 1)} aria-label="Next channel">NEXT →</button>
+        </div>
+      </div>
       <div data-tuner-strip className="relative mt-2">
-        <ul className="hand-strip flex flex-wrap gap-x-1 gap-y-2">
+        <ul className="hand-strip flex gap-x-1 gap-y-2">
           {CHANNELS.map((item, i) => {
             const on = i === ch;
-            const title = onAirTitle(item);
             const held = counts[i] ?? 0;
             return (
               <li key={item.id}>
                 <button
                   type="button"
                   aria-pressed={on}
-                  aria-label={`${item.n} ${item.name}, ${held} titles${title ? `, ${title}` : ""}`}
+                  aria-label={`${item.n} ${item.name}, ${held} ${held === 1 ? "title" : "titles"}`}
                   onClick={() => onPick(i)}
                   className={`min-w-[4.5rem] px-1.5 py-1 text-left ${on ? "text-paper" : "text-dust hover:text-bone"}`}
                 >
