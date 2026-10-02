@@ -6,6 +6,7 @@ import { programTitle } from "@/lib/clipDisplay";
 import { isTypingTarget } from "@/lib/keys";
 import { MOTION, usePrefersReducedMotion } from "@/lib/motion";
 import { playSwitch } from "@/lib/sound";
+import { playbackSession } from "@/lib/playbackSession";
 import { ALL_PROGRAMS, tvChannel, tvHref, tvNeighbors, tvSelection, type TVProgram } from "@/lib/tvNavigation";
 import { availableViewingJourneys } from "@/lib/viewingJourneys";
 import {
@@ -51,6 +52,8 @@ export function Television() {
   const ch = tvChannel(search.get("ch"), CHANNELS.length, DEFAULT_CH);
   const [switching, setSwitching] = useState(false);
   const [clock, setClock] = useState("00:00:00");
+  const [autoplay, setAutoplay] = useState(false);
+  const [playRequest, setPlayRequest] = useState(0);
   const reduced = usePrefersReducedMotion();
   const acquireTimer = useRef(0);
   const screen = useRef<HTMLDivElement>(null);
@@ -96,18 +99,27 @@ export function Television() {
     acquireTimer.current = window.setTimeout(() => setSwitching(false), ms);
   }, [reduced]);
 
+  // A tuner/program action is intent to watch, unlike filtering or opening this page.
+  const requestPlayback = useCallback(() => {
+    playbackSession.engage();
+    setAutoplay(true);
+    setPlayRequest((request) => request + 1);
+  }, []);
+
   const goChannel = useCallback((n: number) => {
     const nextCh = ((n % CHANNELS.length) + CHANNELS.length) % CHANNELS.length;
+    requestPlayback();
     if (nextCh === ch && !journey) return;
     focusScreen.current = window.matchMedia("(max-width: 1000px)").matches;
     const firstSlot = openingSlot(CHANNELS[nextCh], boards[nextCh]);
     navigate({ ch: CHANNELS[nextCh].n, clip: boards[nextCh][firstSlot]?.slug ?? null, journey: null, block: null, q: null, page: null });
     acquire(MOTION.acquireMs);
-  }, [boards, ch, acquire, journey]);
+  }, [boards, ch, acquire, journey, requestPlayback]);
 
   function tuneSlot(index: number) {
     const clip = lineup[index];
     if (!clip) return;
+    requestPlayback();
     const reveal = window.matchMedia("(max-width: 1000px)").matches;
     if (index === slot) {
       if (reveal) screen.current?.scrollIntoView({ block: "start", behavior: reduced ? "auto" : "smooth" });
@@ -122,6 +134,7 @@ export function Television() {
   function startJourney(id: string) {
     const selected = JOURNEYS.find((item) => item.id === id);
     if (!selected) return;
+    requestPlayback();
     focusScreen.current = window.matchMedia("(max-width: 1000px)").matches;
     navigate({ ch: "07", clip: selected.clips[0].slug, journey: selected.id, block: null, q: null, page: null });
     acquire(MOTION.surfMs);
@@ -138,6 +151,8 @@ export function Television() {
     const broadcastPrograms = guideSections(broadcastChannel, broadcastLineup).flatMap((section) => section.rows);
     const resultIndex = broadcastPrograms.findIndex((clip) => clip.slug === slug);
     if (resultIndex < 0) return;
+    requestPlayback();
+    if (now?.slug === slug) return;
     focusScreen.current = window.matchMedia("(max-width: 1000px)").matches;
     navigate({ ch: "07", clip: slug, journey: null, block: ALL_PROGRAMS, q: null, page: resultIndex >= 8 ? String(Math.floor(resultIndex / 8)) : null });
     acquire(MOTION.surfMs);
@@ -206,6 +221,8 @@ export function Television() {
             onNext={() => next && tuneSlot(next.index)}
             onPrevious={() => previous && tuneSlot(previous.index)}
             onPairPick={tunePair}
+            autoplay={autoplay}
+            playRequest={playRequest}
             journeys={<ViewingJourneys journeys={JOURNEYS} active={journey} position={position} onPick={startJourney} onLeave={leaveJourney} />}
           />
         </div>

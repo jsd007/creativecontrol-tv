@@ -43,7 +43,7 @@ export function ViewingJourneys({ journeys, active, position, onPick, onLeave }:
     <section className={styles.root} aria-labelledby="viewing-journeys-title">
       <div className={styles.head}>
         <h3 id="viewing-journeys-title" className={styles.eyebrow}>WATCH A SHORT STORY</h3>
-        <p>Choose a path, then press play.</p>
+        <p>Choose a path to start watching.</p>
       </div>
       <div className={styles.cards}>
         {journeys.map((journey) => (

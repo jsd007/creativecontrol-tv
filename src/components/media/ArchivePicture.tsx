@@ -12,11 +12,13 @@ type Props = {
   className?: string;
   large?: boolean;
   chrome?: "full" | "stamp";
+  autoplay?: boolean;
+  playRequest?: number;
 };
 
-export function ArchivePicture({ clip, className = "", large = false, chrome = "full" }: Props) {
+export function ArchivePicture({ clip, className = "", large = false, chrome = "full", autoplay = false, playRequest = 0 }: Props) {
   if (clip.youtubeId && !isUnlogged(clip)) {
-    return <BroadcastPlayer youtubeId={clip.youtubeId} title={clip.title} publisher={clip.publicSource?.publisher} large={large} className={className} />;
+    return <BroadcastPlayer youtubeId={clip.youtubeId} title={clip.title} publisher={clip.publicSource?.publisher} large={large} className={className} autoplay={autoplay} playRequest={playRequest} />;
   }
   return <PrototypeMedia clip={clip} large={large} chrome={chrome} className={className} />;
 }

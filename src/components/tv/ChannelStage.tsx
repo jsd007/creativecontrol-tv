@@ -33,6 +33,8 @@ type Props = {
   onNext: () => void;
   onPrevious: () => void;
   onPairPick: (slug: string) => void;
+  autoplay: boolean;
+  playRequest: number;
   journeys?: ReactNode;
 };
 
@@ -54,6 +56,8 @@ export function ChannelStage({
   onNext,
   onPrevious,
   onPairPick,
+  autoplay,
+  playRequest,
   journeys,
 }: Props) {
   const third = useRef<HTMLDivElement>(null);
@@ -90,11 +94,12 @@ export function ChannelStage({
       <div className="tv-stage-frame relative mx-auto w-full overflow-hidden">
         {now ? (
           <ArchivePicture
-            key={now.id}
             clip={now}
             large={Boolean(now.youtubeId)}
             chrome="stamp"
             className="aspect-video w-full"
+            autoplay={autoplay}
+            playRequest={playRequest}
           />
         ) : null}
         <Acquire on={switching} accent={channel.accent} n={channel.n} reduced={reduced} />
@@ -145,7 +150,7 @@ export function ChannelStage({
           <p className={styles.eyebrow}>THE WORK / THE PROCESS</p>
           <div className={styles.pairButtons} role="group" aria-label={`Work and process for ${workProcess.title}`}>
             {workProcess.parts.map((part) => (
-              <button key={part.clipId} type="button" aria-pressed={part.clipId === now?.id} onClick={() => part.clipId !== now?.id && onPairPick(part.clip.slug)}>
+              <button key={part.clipId} type="button" aria-pressed={part.clipId === now?.id} onClick={() => onPairPick(part.clip.slug)}>
                 {part.label} {part.clipId === now?.id ? "· SELECTED" : "→"}
               </button>
             ))}
