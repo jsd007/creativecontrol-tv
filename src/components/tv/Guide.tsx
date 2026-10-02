@@ -67,11 +67,11 @@ export function Guide({ channel, sections, programs, results, find, block, page,
             {journeyTitle ?? (browsing ? (needle ? "Find a program" : block === ALL_PROGRAMS ? "All broadcasts" : block) : isBroadcast ? "Start watching" : channel.name)}
           </h2>
           <p className="mt-2 font-sans text-[13px] leading-snug text-dust">
-            {journeyTitle ? `${results.length} parts in order. Choose a title, then press play.` : browsing
+            {journeyTitle ? `${results.length} parts in order. Choose a title to watch.` : browsing
               ? `${results.length} ${results.length === 1 ? "program" : "programs"} in this view`
               : isBroadcast
-                ? "Six starting points. Choose a title, then press play."
-                : `${programs.length} public ${programs.length === 1 ? "program" : "programs"}. Choose a title, then press play.`}
+                ? "Six starting points. Choose a title to watch."
+                : `${programs.length} public ${programs.length === 1 ? "program" : "programs"}. Choose a title to watch.`}
           </p>
         </div>
         <span className="font-mono text-[11px] tracking-[0.12em] text-dust">CH {channel.n}</span>
@@ -151,7 +151,7 @@ export function Guide({ channel, sections, programs, results, find, block, page,
           {programs.length} public uploads indexed across verified blocks. Search or choose a block to go deeper.
         </p>
       ) : null}
-      {journeyTitle ? <p className="tv-guide-note">An editorial path through released public videos. Search or choose a block to leave this sequence. Playback starts only when you press play.</p> : null}
+      {journeyTitle ? <p className="tv-guide-note">An editorial path through released public videos. Choose a part to watch; your sound setting carries across programs. Search or choose a block to leave this sequence.</p> : null}
       {!isBroadcast ? <p className="tv-guide-note">An editorial selection of released public videos, not an official playlist or private archive inventory.</p> : null}
     </section>
   );

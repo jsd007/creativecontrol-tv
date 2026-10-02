@@ -1,5 +1,6 @@
 import { usePrefersReducedMotion } from "@/lib/motion";
 import { useCallback, useSyncExternalStore } from "react";
+import { playbackSession } from "./playbackSession";
 
 export type HouseVoice = "threshold" | "acquire" | "cut" | "tape";
 
@@ -11,34 +12,26 @@ const HOUSE_SRC: Record<HouseVoice, string> = {
 };
 
 let ctx: AudioContext | null = null;
-let enabled = false;
 let room: { stop: () => void } | null = null;
 let load: Promise<void> | null = null;
 const buffers = new Map<HouseVoice, AudioBuffer>();
-const listeners = new Set<() => void>();
-
-function emit() {
-  listeners.forEach((fn) => fn());
-}
-
 function context() {
-  if (typeof window === "undefined" || !enabled) return null;
+  if (typeof window === "undefined" || !isSoundEnabled()) return null;
   if (!ctx) ctx = new AudioContext();
   return ctx;
 }
 
 export function isSoundEnabled() {
-  return enabled;
+  return playbackSession.getSnapshot().sound === "on";
 }
 
 export function subscribeSound(fn: () => void) {
-  listeners.add(fn);
-  return () => listeners.delete(fn);
+  return playbackSession.subscribe(fn);
 }
 
 function gate() {
   const ac = context();
-  if (!enabled || !ac || ac.state === "suspended") return null;
+  if (!isSoundEnabled() || !ac || ac.state === "suspended") return null;
   return ac;
 }
 
@@ -296,23 +289,27 @@ export function stopRoomTone() {
   room = null;
 }
 
+// Native video mute and the site sound switch share one preference.
+playbackSession.subscribe(() => {
+  if (!isSoundEnabled()) stopRoomTone();
+});
+
 export async function unlockSound() {
   const ac = context();
   if (ac) await ac.resume();
 }
 
 export async function setSoundEnabled(on: boolean, opts?: { reduced?: boolean }) {
-  enabled = on;
+  playbackSession.setSoundEnabled(on);
   if (on) {
     await unlockSound();
     const ac = context();
     if (ac) await loadHouse(ac);
-    if (!opts?.reduced) startRoomTone();
+    if (isSoundEnabled() && !opts?.reduced) startRoomTone();
   } else {
     stopRoomTone();
     if (ctx && ctx.state !== "closed") await ctx.suspend();
   }
-  emit();
 }
 
 export function useSound() {
