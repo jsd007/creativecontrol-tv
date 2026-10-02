@@ -227,12 +227,13 @@ export interface ArchiveClip {
     url: string;
     /** Upload/publication date, not necessarily the film's premiere. */
     published?: string;
-    kind: "trailer" | "music-video" | "documentary-excerpt" | "interview" | "project-page";
+    kind: "trailer" | "music-video" | "documentary-excerpt" | "behind-the-scenes" | "interview" | "project-page";
   };
   contentState?: "public-source" | "project-reference" | "placeholder";
   /** Editorial browsing group; never presented as an official publisher playlist. */
   programBlock?: string;
-  credits?: { name: string; role: string }[];
+  /** Named publisher credits. Person IDs are explicit, never guessed from a company name. */
+  credits?: { name: string; role: string; personIds?: string[] }[];
   transcriptId?: string;
   featured: boolean;
   visibility: Visibility;

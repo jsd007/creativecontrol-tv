@@ -49,7 +49,7 @@ export const publicMediaReplacements: ArchiveClip[] = [
     dateExact: "2010-04-02", year: 2010, locationId: "dallas", peopleIds: ["badu"],
     trackIds: ["window-seat"], albumIds: ["newamerykah"], projectIds: ["window"],
     youtubeId: "9hVp47f5YZg", publicSource: source("Erykah Badu", "9hVp47f5YZg", "2010-04-02", "music-video"),
-    credits: [{ name: "Coodie & Chike", role: "Directors" }],
+    credits: [{ name: "Coodie & Chike", role: "Directors", personIds: ["coodie", "chike"] }],
     relatedClipIds: ["c-51", "c-34", "c-public-children"], featured: true,
     programBlock: "MUSIC VIDEOS", hue: 40,
   }),
@@ -59,7 +59,7 @@ export const publicMediaReplacements: ArchiveClip[] = [
     dateExact: "2022-02-04", year: 2022, era: "jeen-yuhs", peopleIds: ["ye"], projectIds: ["jeenyuhs"],
     collectionIds: ["public-previews"], type: "Title", mediaKind: "LEADER", featured: true,
     youtubeId: "X3d5rT7FGLE", publicSource: source("Netflix", "X3d5rT7FGLE", "2022-02-04", "trailer"),
-    credits: [{ name: "Coodie & Chike", role: "Documentary directors" }],
+    credits: [{ name: "Coodie & Chike", role: "Documentary directors", personIds: ["coodie", "chike"] }],
     relatedClipIds: ["c-public-first-look", "c-public-slow-jamz", "c-public-teyana"], programBlock: "JEEN-YUHS", hue: 30,
   }),
   publicMedia({
@@ -79,7 +79,7 @@ export const publicMediaReplacements: ArchiveClip[] = [
     trackIds: ["jesus-walks"], albumIds: ["dropout"], projectIds: ["jesus-walks"],
     collectionIds: ["through-the-wire", "road-dropout", "first-times", "chicago-before"],
     youtubeId: "_AXbK-i45TU", publicSource: source("Channel Zero / channelzerotv", "_AXbK-i45TU", "2006-10-02", "music-video"),
-    credits: [{ name: "Coodie & Chike", role: "Directors" }], relatedClipIds: ["c-public-through-wire", "c-47", "c-public-slow-jamz"],
+    credits: [{ name: "Coodie & Chike", role: "Directors", personIds: ["coodie", "chike"] }], relatedClipIds: ["c-public-through-wire", "c-47", "c-public-slow-jamz"],
     programBlock: "MUSIC VIDEOS", featured: true, hue: 48,
   }),
   publicMedia({
@@ -101,7 +101,7 @@ export const publicMediaAdditions: ArchiveClip[] = [
     year: 2003, era: "through-the-wire", peopleIds: ["ye"], trackIds: ["through-the-wire"], albumIds: ["dropout"],
     projectIds: ["ttw"], collectionIds: ["through-the-wire", "road-dropout", "first-times"],
     youtubeId: "uvb-1wjAtk4", publicSource: source("Channel Zero / channelzerotv", "uvb-1wjAtk4", "2006-10-03", "music-video"),
-    credits: [{ name: "Coodie & Chike", role: "Directors" }], relatedClipIds: ["c-46", "c-47", "c-public-slow-jamz"],
+    credits: [{ name: "Coodie & Chike", role: "Directors", personIds: ["coodie", "chike"] }], relatedClipIds: ["c-46", "c-47", "c-public-slow-jamz"],
     programBlock: "MUSIC VIDEOS", featured: true, hue: 35,
   }),
   publicMedia({
@@ -118,7 +118,7 @@ export const publicMediaAdditions: ArchiveClip[] = [
     dateExact: "2021-09-25", year: 2021, era: "jeen-yuhs", peopleIds: ["ye", "yasiin"], projectIds: ["jeenyuhs"],
     collectionIds: ["public-previews", "road-dropout"], type: "Conversation",
     youtubeId: "WPDAbEVCSTU", publicSource: source("Netflix", "WPDAbEVCSTU", "2021-09-25", "documentary-excerpt"),
-    credits: [{ name: "Coodie & Chike", role: "Documentary directors" }], relatedClipIds: ["c-47", "c-25", "c-public-netflix-studio"],
+    credits: [{ name: "Coodie & Chike", role: "Documentary directors", personIds: ["coodie", "chike"] }], relatedClipIds: ["c-47", "c-25", "c-public-netflix-studio"],
     programBlock: "JEEN-YUHS", hue: 42,
   }),
   publicMedia({
@@ -128,7 +128,7 @@ export const publicMediaAdditions: ArchiveClip[] = [
     year: 2017, era: "documents", peopleIds: ["ye", "teyana"], projectIds: ["jeenyuhs"],
     collectionIds: ["studio-nights"], themes: ["studio", "authorship"], type: "Studio",
     youtubeId: "yhOsxMhe8eo", publicSource: source("TIME", "yhOsxMhe8eo", "2022-03-07", "documentary-excerpt"),
-    credits: [{ name: "Coodie & Chike", role: "Documentary directors" }], relatedClipIds: ["c-public-netflix-studio", "c-25"],
+    credits: [{ name: "Coodie & Chike", role: "Documentary directors", personIds: ["coodie", "chike"] }], relatedClipIds: ["c-public-netflix-studio", "c-25"],
     programBlock: "JEEN-YUHS", featured: true, hue: 30,
   }),
   publicMedia({
@@ -138,7 +138,7 @@ export const publicMediaAdditions: ArchiveClip[] = [
     year: 2004, era: "through-the-wire", peopleIds: ["ye"], projectIds: ["jeenyuhs"], albumIds: ["dropout"],
     collectionIds: ["through-the-wire", "road-dropout", "first-times"], type: "BTS",
     youtubeId: "0nc1agwE1sQ", publicSource: source("TIME", "0nc1agwE1sQ", "2022-02-28", "documentary-excerpt"),
-    credits: [{ name: "Coodie & Chike", role: "Documentary directors" }], relatedClipIds: ["c-public-netflix-studio", "c-public-through-wire", "c-25"],
+    credits: [{ name: "Coodie & Chike", role: "Documentary directors", personIds: ["coodie", "chike"] }], relatedClipIds: ["c-public-netflix-studio", "c-public-through-wire", "c-25"],
     programBlock: "JEEN-YUHS", hue: 28,
   }),
   publicMedia({
@@ -147,17 +147,17 @@ export const publicMediaAdditions: ArchiveClip[] = [
     dateExact: "2022-02-23", year: 2022, era: "jeen-yuhs", peopleIds: ["ye", "jamie-foxx"], projectIds: ["jeenyuhs"],
     albumIds: ["dropout"], collectionIds: ["studio-nights", "road-dropout"], themes: ["studio", "authorship"], type: "Studio",
     youtubeId: "MGZ8LR0bSYc", publicSource: source("Netflix", "MGZ8LR0bSYc", "2022-02-23", "documentary-excerpt"),
-    credits: [{ name: "Coodie & Chike", role: "Documentary directors" }, { name: "Coodie", role: "Camera, per publisher" }],
+    credits: [{ name: "Coodie & Chike", role: "Documentary directors", personIds: ["coodie", "chike"] }, { name: "Coodie", role: "Camera, per publisher", personIds: ["coodie"] }],
     relatedClipIds: ["c-public-slow-jamz", "c-public-teyana", "c-25"], programBlock: "JEEN-YUHS", hue: 38,
   }),
 ];
 
 /** Ordered selections are our proof's curation, never publisher playlists or unseen holdings. */
 export const PUBLIC_CHANNEL_SELECTIONS = {
-  "channel-zero": ["c-52", "c-53", "c-55", "c-54"],
+  "channel-zero": ["c-cz-camron-1998", "c-cz-mase-1998", "c-cz-chicago-hip-hop-101", "c-cz-jesus-walks-making", "c-cz-homecoming-1", "c-52", "c-53", "c-55"],
   origins: ["c-public-through-wire", "c-46", "c-47", "c-public-slow-jamz", "c-public-first-look", "c-57"],
-  chicago: ["c-46", "c-104", "c-34", "c-52", "c-53", "c-55", "c-54"],
-  studio: ["c-public-netflix-studio", "c-public-teyana", "c-74", "c-72", "c-96", "c-186", "c-212", "c-284"],
+  chicago: ["c-cz-camron-1998", "c-46", "c-cz-homecoming-1", "c-104", "c-34", "c-52", "c-53"],
+  studio: ["c-public-netflix-studio", "c-cz-nipsey-session", "c-public-teyana", "c-74", "c-72", "c-186", "c-212", "c-284"],
   "new-york": ["c-27", "c-76", "c-59", "c-99", "c-100", "c-415", "c-portfolio-coney"],
   performances: ["c-415", "c-126", "c-99", "c-315", "c-346", "c-407"],
   // Keep the legacy channel id/number so saved links survive; name it PREVIEWS in the UI.

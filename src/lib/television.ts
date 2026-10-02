@@ -31,7 +31,7 @@ export const CHANNELS: Channel[] = [
     n: "00",
     id: "channel-zero",
     name: "CHANNEL ZERO",
-    voice: "Released public-access interviews.",
+    voice: "Early interviews and the work behind the videos.",
     accent: "zero",
     match: selected("channel-zero"),
     selection: PUBLIC_CHANNEL_SELECTIONS["channel-zero"],

@@ -26,7 +26,7 @@ const SPINE_TYPES = ["Studio", "Interview", "Performance", "Broadcast", "Unseen"
 const SPINE_COLLECTIONS: { id: string; label: string }[] = [
   { id: "channel-zero", label: "Channel Zero" },
   { id: "through-the-wire", label: "Through the Wire" },
-  { id: "coodies-picks", label: "Coodie's Picks" },
+  { id: "coodies-picks", label: "House Picks" },
   { id: "unseen", label: "Unseen" },
   { id: "classics", label: "Classics" },
   { id: "road-dropout", label: "College Dropout road" },

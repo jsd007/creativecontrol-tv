@@ -10,7 +10,7 @@ import {
   transcriptSearchText,
 } from "@/data";
 import { bindCollectionFilter, inHouseCut } from "@/lib/collectionMembership";
-import { MONTHS_SHORT } from "@/lib/format";
+import { isRecordedDate, MONTHS_SHORT } from "@/lib/format";
 import type { ArchiveClip, ClipType } from "@/data/types";
 import { isAuthored, isDiscoverable } from "@/lib/visibility";
 
@@ -54,6 +54,7 @@ export function parseFilters(sp: Record<string, string | string[] | undefined>):
 
 function matchesQuery(clip: ArchiveClip, q: string) {
   const personNames = clip.peopleIds.map((id) => getPerson(id)?.name ?? "").join(" ");
+  const creditNames = clip.credits?.map((credit) => `${credit.name} ${credit.role}`).join(" ") ?? "";
   const loc = getLocation(clip.locationId);
   const tape = getTape(clip.sourceTapeId);
   const hay = [
@@ -63,6 +64,7 @@ function matchesQuery(clip: ArchiveClip, q: string) {
     clip.themes.join(" "),
     clip.type,
     personNames,
+    creditNames,
     loc?.name,
     loc?.city,
     tape?.code,
@@ -91,7 +93,7 @@ export function filterClips(filters: ArchiveFilters): ArchiveClip[] {
         return false;
       }
     }
-    if (filters.person && !clip.peopleIds.includes(filters.person)) return false;
+    if (filters.person && !clip.peopleIds.includes(filters.person) && !clip.credits?.some((credit) => credit.personIds?.includes(filters.person!))) return false;
     if (filters.track && !clip.trackIds.includes(filters.track)) return false;
     if (filters.album && !clip.albumIds.includes(filters.album)) return false;
     if (filters.project && !clip.projectIds.includes(filters.project)) return false;
@@ -186,7 +188,7 @@ export function relationScore(from: ArchiveClip, to: ArchiveClip) {
   if (to.sourceTapeId && to.sourceTapeId === from.sourceTapeId) score += 100;
   if (overlap(from.projectIds, to.projectIds).length) score += 50;
   if (overlap(from.trackIds, to.trackIds).length) score += 45;
-  if (from.dateExact && from.dateExact === to.dateExact) score += 40;
+  if (isRecordedDate(from) && isRecordedDate(to) && from.dateExact === to.dateExact) score += 40;
 
   const people = overlap(from.peopleIds, to.peopleIds);
   const subjects = people.filter((id) => !CREW.has(id));

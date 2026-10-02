@@ -26,6 +26,9 @@ import { isBroadcastShelf } from "@/data/youtube";
 import { TapeFrame } from "@/components/tapes/TapeFrame";
 import { TapeObject } from "@/components/tapes/TapeObject";
 import { clipHref, tapeHref } from "@/lib/lensNavigation";
+import { FilmCredits } from "@/components/clip/FilmCredits";
+import { WorkProcess } from "@/components/clip/WorkProcess";
+import { ClipJourneys } from "@/components/clip/ClipJourneys";
 
 export function ClipView({ clip, activeSegmentId, returnHref }: { clip: ArchiveClip; activeSegmentId?: string; returnHref?: string }) {
   const loc = getLocation(clip.locationId);
@@ -97,6 +100,8 @@ export function ClipView({ clip, activeSegmentId, returnHref }: { clip: ArchiveC
       <p className="type-meta tracking-[0.16em]">
         {recordLabel} · {broadcast || projectReference ? sourceLabel : tape?.code ?? "UNFILED"} · {formatDate(clip)}
       </p>
+
+      <WorkProcess clipId={clip.id} returnHref={returnHref} />
 
       <ClipStage
         cassette={
@@ -190,6 +195,7 @@ export function ClipView({ clip, activeSegmentId, returnHref }: { clip: ArchiveC
         </section>
       ) : null}
 
+      <ClipJourneys clipId={clip.id} returnHref={returnHref} />
       {dossier}
 
       {transcript ? (
@@ -214,16 +220,7 @@ function PublicProjectNotes({ clip, projects }: { clip: ArchiveClip; projects: P
   if (!clip.publicSource) return null;
   return (
     <div className="mt-5 max-w-xl border-t border-paper/10 pt-4">
-      {clip.credits?.length ? (
-        <dl className="space-y-2 text-[14px] leading-snug text-bone">
-          {clip.credits.map((credit) => (
-            <div key={`${credit.role}-${credit.name}`}>
-              <dt className="type-label">{credit.role.toUpperCase()}</dt>
-              <dd className="mt-0.5">{credit.name}</dd>
-            </div>
-          ))}
-        </dl>
-      ) : null}
+      <FilmCredits clip={clip} />
       {projects.map((project) => project.dateNote ? <p key={project.id} className="mt-4 text-[13px] leading-relaxed text-dust">{project.dateNote}</p> : null)}
     </div>
   );

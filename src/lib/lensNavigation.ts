@@ -8,7 +8,7 @@ const LENSES: Record<LensPath, { label: string; keys: readonly string[] }> = {
   },
   "/tapes": { label: "YOUR SOURCE SELECTION", keys: ["open", "scope", "q", "all", "present"] },
   "/timeline": { label: "YOUR TIMELINE", keys: ["through", "year", "month", "day", "present"] },
-  "/tv": { label: "YOUR TV SELECTION", keys: ["ch", "clip", "block", "q", "page", "present"] },
+  "/tv": { label: "YOUR TV SELECTION", keys: ["ch", "clip", "block", "q", "page", "journey", "present"] },
 };
 
 /** A record can return only to a known local lens, never a supplied external URL. */

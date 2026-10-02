@@ -1,10 +1,12 @@
 "use client";
 
 import { useGSAP } from "@gsap/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { getClip } from "@/data";
 import type { ArchiveClip } from "@/data/types";
+import { youtubeThumbnail } from "@/data/youtube";
 import { HeldFrame } from "@/components/media/HeldFrame";
 import { PrototypeMedia } from "@/components/media/PrototypeMedia";
 import { STAR_KIND_LABEL, weightLine, type Constellation, type StarNode } from "@/lib/constellation";
@@ -30,6 +32,14 @@ function EmptyAperture() {
 
 function BondStill({ clip }: { clip: ArchiveClip }) {
   if (isClosed(clip)) return <HeldFrame clip={clip} className="aspect-[4/3] w-full" />;
+  if (clip.youtubeId) {
+    return (
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-ink">
+        <Image src={youtubeThumbnail(clip.youtubeId)} alt="" fill unoptimized sizes="(min-width: 768px) 25vw, 100vw" className="object-cover" />
+        <span className="absolute bottom-2 left-2 bg-void/90 px-2 py-1 font-mono text-[9px] tracking-[0.1em] text-paper">PUBLIC SOURCE</span>
+      </div>
+    );
+  }
   return <PrototypeMedia clip={clip} chrome="stamp" className="aspect-[4/3] w-full" />;
 }
 
@@ -52,7 +62,7 @@ function Bond({
       onMouseEnter={onEnter}
       onFocusCapture={onEnter}
     >
-      <Link href={stillHref} className="node-bond-still block" onKeyDown={activateOnSpace}>
+      <Link href={stillHref} aria-label={clip ? `View ${clip.title}` : `Explore ${node.label}`} className="node-bond-still block" onKeyDown={activateOnSpace}>
         {clip ? <BondStill clip={clip} /> : <EmptyAperture />}
       </Link>
       <div className="min-w-0">

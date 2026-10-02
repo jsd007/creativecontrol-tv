@@ -2,6 +2,8 @@ import type { ArchiveClip } from "@/data/types";
 
 export type TVProgram = { clip: ArchiveClip; title: string; block: string; index: number };
 export const ALL_PROGRAMS = "__all__";
+/** A small allow-list also keeps clip return links free of arbitrary journey query values. */
+export const TV_JOURNEY_IDS = ["homecoming", "early-chicago", "studio-connections"] as const;
 export const TV_STARTERS = [
   "wiki-wikispeaks",
   "through-the-wire-official-video",
@@ -18,8 +20,15 @@ export function tvChannel(raw: string | null, count: number, fallback: number) {
 }
 
 /** The same selection drives the guide and previous/next. Browsing never silently tunes the player. */
-export function tvSelection(programs: TVProgram[], broadcast: boolean, block: string, query: string) {
+export function tvSelection(programs: TVProgram[], broadcast: boolean, block: string, query: string, journeyClipIds: readonly string[] = []) {
   const needle = query.trim().toLowerCase();
+  if (broadcast && journeyClipIds.length && !block && !needle) {
+    const byId = new Map(programs.map((program) => [program.clip.id, program]));
+    return journeyClipIds.flatMap((id) => {
+      const program = byId.get(id);
+      return program ? [program] : [];
+    });
+  }
   if (broadcast && !block && !needle) {
     return TV_STARTERS.flatMap((slug) => {
       const program = programs.find((row) => row.clip.slug === slug);
@@ -66,5 +75,7 @@ export function tvReturnHref(raw?: string) {
     const value = incoming.get(key);
     if (value) safe.set(key, value);
   }
+  const journey = incoming.get("journey");
+  if (journey && TV_JOURNEY_IDS.some((id) => id === journey)) safe.set("journey", journey);
   return tvHref(safe.toString(), {});
 }

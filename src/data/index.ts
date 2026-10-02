@@ -16,6 +16,8 @@ import { broadcastClipsFromUploads } from "./broadcastClips";
 import { expandClips } from "./expand";
 import { transcripts } from "./transcripts";
 import { publicMediaAdditions, publicMediaReplacements } from "./publicMedia";
+import { channelZeroClips, channelZeroPeople, channelZeroProjects } from "./channelZero";
+import { isRecordedDate } from "../lib/format";
 import type { ArchiveClip, SourceTape, Transcript } from "./types";
 
 function linkRelations(clips: ArchiveClip[]): ArchiveClip[] {
@@ -34,8 +36,8 @@ function linkRelations(clips: ArchiveClip[]): ArchiveClip[] {
     const sameDay = clips.filter(
       (c) =>
         c.id !== clip.id &&
-        c.dateExact &&
-        clip.dateExact &&
+        isRecordedDate(c) &&
+        isRecordedDate(clip) &&
         c.dateExact === clip.dateExact,
     );
     const related = [
@@ -59,10 +61,10 @@ function attachTranscripts(clips: ArchiveClip[]): ArchiveClip[] {
 }
 
 const replacements = new Map(publicMediaReplacements.map((clip) => [clip.id, clip]));
-const selectedAuthored = [...authoredClips.map((clip) => replacements.get(clip.id) ?? clip), ...publicMediaAdditions];
+const selectedAuthored = [...authoredClips.map((clip) => replacements.get(clip.id) ?? clip), ...publicMediaAdditions, ...channelZeroClips];
 
 export const catalog = {
-  people,
+  people: [...people, ...channelZeroPeople],
   locations,
   eras,
   collections,
@@ -70,7 +72,7 @@ export const catalog = {
   organizations,
   tracks,
   albums,
-  projects,
+  projects: [...projects, ...channelZeroProjects],
   events,
   tapes,
   clips: attachTranscripts(
@@ -158,7 +160,7 @@ export function cityLocations() {
 export function clipsForPerson(id: string) {
   const person = getPerson(id);
   if (!person) return [];
-  return catalog.clips.filter((c) => c.peopleIds.includes(person.id));
+  return catalog.clips.filter((c) => c.peopleIds.includes(person.id) || c.credits?.some((credit) => credit.personIds?.includes(person.id)));
 }
 
 export function clipsForLocation(id: string) {
