@@ -2,12 +2,13 @@ import { catalog } from "@/data";
 import type { ArchiveClip } from "@/data/types";
 import { YOUTUBE_PLAYLISTS, getYoutubeUpload } from "@/data/youtube";
 import { programTitle } from "@/lib/clipDisplay";
-import { isOfficialHolding } from "@/lib/holdings";
 import { isOnAir } from "@/lib/visibility";
+import { PUBLIC_CHANNEL_SELECTIONS } from "@/data/publicMedia";
 
-/** Sibling channels stay house cuts. Official uploads air on CH 07. */
-function houseOnly(match: (c: ArchiveClip) => boolean) {
-  return (c: ArchiveClip) => !isOfficialHolding(c) && match(c);
+/** A themed editorial selection can reuse public releases without inventing private footage. */
+function selected(id: keyof typeof PUBLIC_CHANNEL_SELECTIONS) {
+  const ids = new Set<string>(PUBLIC_CHANNEL_SELECTIONS[id]);
+  return (c: ArchiveClip) => Boolean(c.youtubeId) && ids.has(c.id);
 }
 
 export const DAYPARTS = ["OPENING", "DAY", "STUDIO", "NIGHT", "LATE"] as const;
@@ -22,6 +23,7 @@ export type Channel = {
   voice: string;
   accent: ChannelAccent;
   match: (c: ArchiveClip) => boolean;
+  selection?: readonly string[];
 };
 
 export const CHANNELS: Channel[] = [
@@ -29,41 +31,46 @@ export const CHANNELS: Channel[] = [
     n: "00",
     id: "channel-zero",
     name: "CHANNEL ZERO",
-    voice: "Public access.",
+    voice: "Early interviews and the work behind the videos.",
     accent: "zero",
-    match: houseOnly((c) => c.era === "channel-zero" || c.collectionIds.includes("channel-zero")),
+    match: selected("channel-zero"),
+    selection: PUBLIC_CHANNEL_SELECTIONS["channel-zero"],
   },
   {
     n: "01",
     id: "origins",
     name: "ORIGINS",
-    voice: "First rooms.",
+    voice: "Early videos. Public documentary scenes.",
     accent: "house",
-    match: houseOnly((c) => c.collectionIds.includes("first-times") || c.era === "through-the-wire"),
+    match: selected("origins"),
+    selection: PUBLIC_CHANNEL_SELECTIONS.origins,
   },
   {
     n: "02",
     id: "chicago",
     name: "CHICAGO",
-    voice: "The city.",
+    voice: "Chicago-rooted artists and stories.",
     accent: "chicago",
-    match: houseOnly((c) => ["chicago", "south-side", "cottage-grove"].includes(c.locationId)),
+    match: selected("chicago"),
+    selection: PUBLIC_CHANNEL_SELECTIONS.chicago,
   },
   {
     n: "03",
     id: "studio",
     name: "STUDIO",
-    voice: "Sessions.",
+    voice: "Published sessions and creative process.",
     accent: "house",
-    match: houseOnly((c) => c.type === "Studio" || c.collectionIds.includes("studio-nights")),
+    match: selected("studio"),
+    selection: PUBLIC_CHANNEL_SELECTIONS.studio,
   },
   {
     n: "04",
     id: "new-york",
     name: "NEW YORK",
-    voice: "After Chicago.",
+    voice: "Artists, live rooms, and city stories.",
     accent: "house",
-    match: houseOnly((c) => c.collectionIds.includes("new-york")),
+    match: selected("new-york"),
+    selection: PUBLIC_CHANNEL_SELECTIONS["new-york"],
   },
   {
     n: "05",
@@ -71,15 +78,17 @@ export const CHANNELS: Channel[] = [
     name: "PERFORMANCES",
     voice: "Live rooms.",
     accent: "house",
-    match: houseOnly((c) => c.type === "Performance"),
+    match: selected("performances"),
+    selection: PUBLIC_CHANNEL_SELECTIONS.performances,
   },
   {
     n: "06",
     id: "unseen",
-    name: "UNSEEN",
-    voice: "Leftovers.",
+    name: "PREVIEWS",
+    voice: "Public trailers. Not unseen private tapes.",
     accent: "house",
-    match: houseOnly((c) => c.type === "Unseen" || c.collectionIds.includes("unseen")),
+    match: selected("unseen"),
+    selection: PUBLIC_CHANNEL_SELECTIONS.unseen,
   },
   {
     n: "07",
@@ -93,14 +102,15 @@ export const CHANNELS: Channel[] = [
     n: "08",
     id: "conversations",
     name: "CONVERSATIONS",
-    voice: "Talk.",
+    voice: "Filmmakers, artists, and portraits.",
     accent: "house",
-    match: houseOnly((c) => c.type === "Conversation" || c.type === "Interview"),
+    match: selected("conversations"),
+    selection: PUBLIC_CHANNEL_SELECTIONS.conversations,
   },
 ];
 
-/** Official public playlist names, then Channel Zero, then upload year. Never an invented show. */
-const NAMED_BLOCKS = ["CREATIVE CONTROL TV", "CHANNEL ZERO", "TEAR UP", "ECKŌ STUDIO SESSIONS", "BENT"] as const;
+/** Public playlist/upload groups plus the curated portfolio block; not a broadcast schedule. */
+const NAMED_BLOCKS = ["CREATIVE CONTROL TV", "PROJECTS & FILMS", "MUSIC VIDEOS", "JEEN-YUHS", "CHANNEL ZERO", "TEAR UP", "ECKŌ STUDIO SESSIONS", "BENT"] as const;
 
 export function daypart(clip: ArchiveClip): Daypart {
   if (clip.type === "Title" || clip.type === "Broadcast") return "OPENING";
@@ -127,6 +137,7 @@ function programDay(clips: ArchiveClip[], bias?: "leftovers") {
 }
 
 export function officialBlock(clip: ArchiveClip) {
+  if (clip.programBlock) return clip.programBlock;
   if (clip.tags.includes("ident")) return "CREATIVE CONTROL TV";
   const upload = clip.youtubeId ? getYoutubeUpload(clip.youtubeId) : undefined;
   const playlistId = upload?.playlistIds?.[0];
@@ -161,6 +172,10 @@ function programBroadcast(clips: ArchiveClip[]) {
 }
 
 export function channelLineup(channel: Channel) {
+  if (channel.selection) {
+    const byId = new Map(catalog.clips.map((clip) => [clip.id, clip]));
+    return channel.selection.map((id) => byId.get(id)).filter((clip): clip is ArchiveClip => Boolean(clip && channel.match(clip) && isOnAir(clip)));
+  }
   const list = catalog.clips.filter(channel.match);
   const programmed =
     channel.id === "broadcast"
@@ -183,7 +198,7 @@ export function guideSections(channel: Channel, lineup: ArchiveClip[]): GuideSec
   const sections: GuideSection[] = [];
   for (const clip of lineup) {
     if (!programTitle(clip)) continue;
-    const section = channel.id === "broadcast" ? officialBlock(clip) : daypart(clip);
+    const section = channel.id === "broadcast" ? officialBlock(clip) : channel.selection ? "PUBLIC SELECTION" : daypart(clip);
     const last = sections[sections.length - 1];
     if (last && last.section === section) last.rows.push(clip);
     else sections.push({ section, rows: [clip] });

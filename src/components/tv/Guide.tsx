@@ -19,11 +19,13 @@ type Props = {
   onBlock: (value: string) => void;
   onPage: (value: number) => void;
   onReset: () => void;
+  journeyTitle?: string;
+  onLeaveJourney?: () => void;
   nowId?: string;
   onTune: (index: number) => void;
 };
 
-export function Guide({ channel, sections, programs, results, find, block, page, programLink, onFind, onBlock, onPage, onReset, nowId, onTune }: Props) {
+export function Guide({ channel, sections, programs, results, find, block, page, programLink, onFind, onBlock, onPage, onReset, journeyTitle, onLeaveJourney, nowId, onTune }: Props) {
   const root = useRef<HTMLElement>(null);
   const focusPage = useRef(false);
   const reduced = usePrefersReducedMotion();
@@ -62,18 +64,20 @@ export function Guide({ channel, sections, programs, results, find, block, page,
         <div>
           <p className="font-cond text-[12px] tracking-[0.22em] text-leader">PROGRAM GUIDE</p>
           <h2 tabIndex={-1} className="mt-1 font-display text-2xl leading-none text-paper">
-            {browsing ? (needle ? "Find a program" : block === ALL_PROGRAMS ? "All broadcasts" : block) : isBroadcast ? "Start watching" : channel.name}
+            {journeyTitle ?? (browsing ? (needle ? "Find a program" : block === ALL_PROGRAMS ? "All broadcasts" : block) : isBroadcast ? "Start watching" : channel.name)}
           </h2>
           <p className="mt-2 font-sans text-[13px] leading-snug text-dust">
-            {browsing
+            {journeyTitle ? `${results.length} parts in order. Choose a title, then press play.` : browsing
               ? `${results.length} ${results.length === 1 ? "program" : "programs"} in this view`
               : isBroadcast
                 ? "Six starting points. Choose a title, then press play."
-                : `${programs.length} example ${programs.length === 1 ? "program" : "programs"} on this channel.`}
+                : `${programs.length} public ${programs.length === 1 ? "program" : "programs"}. Choose a title, then press play.`}
           </p>
         </div>
         <span className="font-mono text-[11px] tracking-[0.12em] text-dust">CH {channel.n}</span>
       </div>
+
+      {journeyTitle ? <button type="button" onClick={onLeaveJourney} className="tv-guide-return">← LEAVE JOURNEY / ALL BROADCASTS</button> : null}
 
       <div className="tv-guide-tools">
         <label className="tv-guide-field">
@@ -90,7 +94,7 @@ export function Guide({ channel, sections, programs, results, find, block, page,
         <label className="tv-guide-field">
           <span>PROGRAM BLOCK</span>
           <select value={block} onChange={(e) => onBlock(e.target.value)} aria-label="Choose a program block">
-            <option value="">{isBroadcast ? "Start here (6 picks)" : "Full channel"}</option>
+            <option value="">{journeyTitle ? "Current journey" : isBroadcast ? "Start here (6 picks)" : "Full channel"}</option>
             {isBroadcast ? <option value={ALL_PROGRAMS}>All public uploads ({programs.length})</option> : null}
             {sections.map((section) => (
               <option key={section.section} value={section.section}>
@@ -142,12 +146,13 @@ export function Guide({ channel, sections, programs, results, find, block, page,
         </button>
       ) : null}
 
-      {isBroadcast && !browsing ? (
+      {isBroadcast && !browsing && !journeyTitle ? (
         <p className="tv-guide-note">
           {programs.length} public uploads indexed across verified blocks. Search or choose a block to go deeper.
         </p>
       ) : null}
-      {!isBroadcast ? <p className="tv-guide-note">House-channel programming is an interface example, not a published schedule.</p> : null}
+      {journeyTitle ? <p className="tv-guide-note">An editorial path through released public videos. Search or choose a block to leave this sequence. Playback starts only when you press play.</p> : null}
+      {!isBroadcast ? <p className="tv-guide-note">An editorial selection of released public videos, not an official playlist or private archive inventory.</p> : null}
     </section>
   );
 }

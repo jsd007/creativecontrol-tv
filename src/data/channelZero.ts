@@ -1,0 +1,210 @@
+import type { ArchiveClip, Person, Project } from "./types";
+
+/** Curated from Channel Zero's public publisher metadata, checked 2 October 2026.
+ * Upload dates are not substituted for explicitly documented recording dates.
+ * Every player is the publisher's embed, never an ingested camera-original file.
+ */
+type ChannelZeroRecord = Pick<ArchiveClip, "id" | "slug" | "title" | "description" | "year" | "youtubeId" | "duration" | "publicSource"> & Partial<ArchiveClip>;
+
+function channelZero(record: ChannelZeroRecord): ArchiveClip {
+  return {
+    era: "network",
+    locationId: "",
+    peopleIds: [],
+    trackIds: [],
+    albumIds: [],
+    projectIds: ["cz"],
+    eventIds: [],
+    collectionIds: ["channel-zero"],
+    themes: ["access", "authorship"],
+    tags: ["public-source", "channel-zero"],
+    sourceTapeId: "",
+    startTimecode: "00:00:00:00",
+    endTimecode: "00:00:00:00",
+    thumbnail: "",
+    poster: "",
+    featured: false,
+    visibility: "PUBLIC",
+    rightsStatus: "UNCLEAR",
+    editorialStatus: "APPROVED",
+    sensitivityStatus: "NONE",
+    relatedClipIds: [],
+    type: "BTS",
+    mediaKind: "FIELD",
+    formatHint: "DIGITAL",
+    cameraCredit: "PUBLIC SOURCE",
+    contentState: "public-source",
+    programBlock: "CHANNEL ZERO",
+    hue: 40,
+    ...record,
+  };
+}
+
+function source(id: string, published: string, kind: NonNullable<ArchiveClip["publicSource"]>["kind"] = "behind-the-scenes") {
+  return { publisher: "Channel Zero / channelzerotv", url: `https://www.youtube.com/watch?v=${id}`, published, kind };
+}
+
+export const channelZeroPeople: Person[] = [
+  { id: "camron", slug: "camron", name: "Cam’ron", shortName: "Cam’ron", aka: ["Cam'ron"], roles: ["artist", "subject"], bio: "Interviewed by Coodie in Channel Zero's publicly released Chicago footage from 2 July 1998." },
+  { id: "mase", slug: "mase", name: "Ma$e", shortName: "Ma$e", aka: ["Mase", "Murder Mase"], roles: ["artist", "subject"], bio: "Appears with Kanye West in Channel Zero's public footage from Jermaine Dupri's birthday, circa 1998." },
+  { id: "ibn-jasper", slug: "ibn-jasper", name: "Ibn Jasper", shortName: "Ibn Jasper", roles: ["subject"], bio: "Named alongside Kanye West in Channel Zero's Chicago Hip Hop 101, which combines an early haircut conversation with gallery footage." },
+  { id: "reggie-know", slug: "reggie-know", name: "ReggieKnow", shortName: "ReggieKnow", aka: ["Reggie Know", "Polo Reg"], roles: ["artist", "subject"], bio: "Channel Zero's Chicago Hip Hop 101 features the Fashion Figure, Inc. creator and his Toy Tokyo gallery showing." },
+  { id: "nipsey", slug: "nipsey-hussle", name: "Nipsey Hussle", shortName: "Nipsey Hussle", roles: ["artist", "subject"], bio: "Appears with Curren$y and Wiz Khalifa in Channel Zero's public release of a New York studio session filmed on 6 December 2010." },
+  { id: "wiz", slug: "wiz-khalifa", name: "Wiz Khalifa", shortName: "Wiz Khalifa", roles: ["artist", "subject"], bio: "Appears with Nipsey Hussle and Curren$y in the New York session that Channel Zero credits to Coodie's camera." },
+  { id: "angie-stone", slug: "angie-stone", name: "Angie Stone", shortName: "Angie Stone", roles: ["artist", "subject"], bio: "Performs with Jamie Foxx in Channel Zero's public footage from Los Angeles on 13 February 2004." },
+  { id: "j-ivy", slug: "j-ivy", name: "J. Ivy", shortName: "J. Ivy", roles: ["camera", "artist"], bio: "Channel Zero credits J. Ivy and Coodie with filming the making of Jesus Walks, Part 3." },
+  { id: "pitbull", slug: "pitbull", name: "Pitbull", shortName: "Pitbull", roles: ["artist", "subject"], bio: "Channel Zero's two-part Culo production footage documents his debut video shoot in Miami during Calle Ocho 2004." },
+  { id: "lil-jon", slug: "lil-jon", name: "Lil Jon", shortName: "Lil Jon", aka: ["Lil' Jon"], roles: ["artist", "subject"], bio: "Named in Channel Zero's two-part making-of footage for Pitbull's Culo video." },
+  { id: "john-singleton", slug: "john-singleton", name: "John Singleton", shortName: "John Singleton", roles: ["director", "subject"], bio: "Channel Zero's publisher description identifies a cameo in the public making-of footage for Culo. No production role on this upload is assigned." },
+  { id: "dj-khaled", slug: "dj-khaled", name: "DJ Khaled", shortName: "DJ Khaled", roles: ["artist", "subject"], bio: "Channel Zero's publisher description identifies a cameo in the public making-of footage for Culo." },
+  { id: "uncle-luke", slug: "uncle-luke", name: "Uncle Luke", shortName: "Uncle Luke", roles: ["artist", "subject"], bio: "Channel Zero's publisher description identifies a cameo in the public making-of footage for Culo." },
+];
+
+export const channelZeroProjects: Project[] = [
+  {
+    id: "homecoming", slug: "homecoming", title: "Homecoming", year: 2008, kind: "video",
+    description: "The finished Kanye West video directed by Hype Williams. Channel Zero's separate, three-part making-of footage is shot and edited by Danny Joe Sorge.",
+    dateNote: "Apple Music dates the finished video to 2008. Channel Zero's making-of uploads are from December 2010; their descriptions do not give a recording day.",
+    sourceUrls: ["https://music.apple.com/us/music-video/homecoming/1445726268", "https://www.youtube.com/watch?v=Gk67adLmz3Q"],
+  },
+  {
+    id: "culo", slug: "culo", title: "Culo", year: 2004, kind: "video",
+    description: "Pitbull and Lil Jon. Channel Zero's two-part production footage was filmed by Danny Joe Sorge in Miami during Calle Ocho 2004.",
+    dateNote: "2004 is the filming year stated by Channel Zero, not an inferred release date. The public making-of uploads are from October 2006.",
+    sourceUrls: ["https://www.youtube.com/watch?v=zcsww5yUbyg", "https://www.youtube.com/watch?v=JUl9UTdNRxA"],
+  },
+];
+
+export const channelZeroClips: ArchiveClip[] = [
+  channelZero({
+    id: "c-cz-homecoming-1", slug: "channel-zero-homecoming-1", title: "Homecoming | Making of, Part 1",
+    description: "The first part of Channel Zero's three-part visit to the Chicago set. Danny Joe Sorge shot and edited this behind-the-scenes film; Hype Williams directed the finished Homecoming music video.",
+    dateExact: "2010-12-08", year: 2010,
+    dateNote: "Public upload: 8 December 2010. Filming day unconfirmed. The finished music video dates to 2008, per Apple Music.",
+    locationId: "chicago", peopleIds: ["ye"], projectIds: ["cz", "homecoming"],
+    collectionIds: ["channel-zero", "chicago-before"], themes: ["access", "authorship", "chicago"],
+    youtubeId: "Gk67adLmz3Q", duration: 535, publicSource: source("Gk67adLmz3Q", "2010-12-08"),
+    credits: [{ name: "Danny Joe Sorge", role: "Camera and editing", personIds: ["sorge"] }],
+    cameraCredit: "DANNY JOE SORGE", relatedClipIds: ["c-cz-homecoming-2", "c-cz-homecoming-3"], featured: true,
+  }),
+  channelZero({
+    id: "c-cz-homecoming-2", slug: "channel-zero-homecoming-2", title: "Homecoming | Making of, Part 2",
+    description: "The second chapter from Channel Zero's Chicago-set production film. Behind-the-scenes camera and editing are credited to Danny Joe Sorge, separately from Hype Williams's direction of the finished video.",
+    dateExact: "2010-12-08", year: 2010,
+    dateNote: "Public upload: 8 December 2010. Recording day is not stated by the publisher; the finished video dates to 2008.",
+    locationId: "chicago", peopleIds: ["ye"], projectIds: ["cz", "homecoming"],
+    collectionIds: ["channel-zero", "chicago-before"], themes: ["access", "authorship", "chicago"],
+    youtubeId: "NboNV468W5I", duration: 598, publicSource: source("NboNV468W5I", "2010-12-08"),
+    credits: [{ name: "Danny Joe Sorge", role: "Camera and editing", personIds: ["sorge"] }],
+    cameraCredit: "DANNY JOE SORGE", relatedClipIds: ["c-cz-homecoming-1", "c-cz-homecoming-3"],
+  }),
+  channelZero({
+    id: "c-cz-homecoming-3", slug: "channel-zero-homecoming-3", title: "Homecoming | Making of, Part 3",
+    description: "The final part of Channel Zero's three-part Homecoming making-of film, shot and edited by Danny Joe Sorge. The publication date precedes parts one and two; the viewing order follows the publisher's numbered titles.",
+    dateExact: "2010-12-07", year: 2010,
+    dateNote: "Public upload: 7 December 2010. Recording day unconfirmed. Numbered sequence, not upload-date order.",
+    locationId: "chicago", peopleIds: ["ye"], projectIds: ["cz", "homecoming"],
+    collectionIds: ["channel-zero", "chicago-before"], themes: ["access", "authorship", "chicago"],
+    youtubeId: "eNmBo6bdCPg", duration: 688, publicSource: source("eNmBo6bdCPg", "2010-12-07"),
+    credits: [{ name: "Danny Joe Sorge", role: "Camera and editing", personIds: ["sorge"] }],
+    cameraCredit: "DANNY JOE SORGE", relatedClipIds: ["c-cz-homecoming-1", "c-cz-homecoming-2"],
+  }),
+  channelZero({
+    id: "c-cz-jesus-walks-making", slug: "channel-zero-jesus-walks-making", title: "Jesus Walks, Part 3 | Making of",
+    description: "Channel Zero's public look at Coodie & Chike's third Jesus Walks video. The publisher separately credits this behind-the-scenes camera to Coodie and J. Ivy, rather than assigning the finished video's direction to the making-of upload.",
+    dateExact: "2006-10-24", year: 2006, era: "through-the-wire",
+    dateNote: "Public upload: 24 October 2006. The finished video is from 2004; no exact recording date is assigned to this making-of film.",
+    peopleIds: ["ye"], trackIds: ["jesus-walks"], albumIds: ["dropout"], projectIds: ["cz", "jesus-walks"],
+    collectionIds: ["channel-zero", "through-the-wire", "road-dropout", "first-times"],
+    youtubeId: "lOHcW1uEjbg", duration: 397, publicSource: source("lOHcW1uEjbg", "2006-10-24"),
+    credits: [{ name: "Coodie", role: "Camera", personIds: ["coodie"] }, { name: "J. Ivy", role: "Camera", personIds: ["j-ivy"] }],
+    cameraCredit: "COODIE & J. IVY", relatedClipIds: ["c-46", "c-public-through-wire", "c-cz-slow-jamz-making"], featured: true,
+  }),
+  channelZero({
+    id: "c-cz-camron-1998", slug: "channel-zero-camron-1998", title: "Cam’ron & Coodie | Chicago, 1998",
+    description: "Coodie interviews Cam’ron during his first Chicago promotion trip. Channel Zero identifies the Mercedes Club in Greektown and the recording date, 2 July 1998. The public release followed in 2025.",
+    dateExact: "1998-07-02", dateBasis: "recorded-year", year: 1998, era: "channel-zero",
+    dateNote: "Recorded 2 July 1998 at the Mercedes Club, Greektown, Chicago, per Channel Zero. Public upload: 17 April 2025.",
+    locationId: "chicago", peopleIds: ["camron", "coodie"], projectIds: ["cz"],
+    collectionIds: ["channel-zero", "chicago-before", "first-times"], type: "Interview", themes: ["access", "chicago", "before-fame"],
+    youtubeId: "n9FrujE2B54", duration: 504, publicSource: source("n9FrujE2B54", "2025-04-17", "interview"),
+    credits: [{ name: "Coodie", role: "Interviewer", personIds: ["coodie"] }],
+    relatedClipIds: ["c-cz-mase-1998", "c-cz-chicago-hip-hop-101"], featured: true, hue: 46,
+  }),
+  channelZero({
+    id: "c-cz-chicago-hip-hop-101", slug: "channel-zero-chicago-hip-hop-101", title: "Kanye, Ibn Jasper & ReggieKnow | Chicago Hip Hop 101",
+    description: "An early haircut conversation between Kanye West and Ibn Jasper meets Creative Control footage of ReggieKnow's Toy Tokyo gallery showing. The publisher credits Danny Joe Sorge for camera and editing, and Coodie & Chike for direction. This edit spans different periods, not a single dated Chicago session.",
+    dateExact: "2013-04-18", year: 2013,
+    dateNote: "Public upload: 18 April 2013. The haircut is described as pre-College Dropout; the gallery material has no exact recording date. No single filming year or city is asserted for the whole edit.",
+    peopleIds: ["ye", "ibn-jasper", "reggie-know"], projectIds: ["cz", "cctv"],
+    collectionIds: ["channel-zero", "chicago-before"], type: "Conversation", themes: ["chicago", "authorship", "friendship"],
+    youtubeId: "r2QJ53E7ytY", duration: 478, publicSource: source("r2QJ53E7ytY", "2013-04-18", "documentary-excerpt"),
+    credits: [{ name: "Danny Joe Sorge", role: "Camera and editing", personIds: ["sorge"] }, { name: "Coodie & Chike", role: "Directors", personIds: ["coodie", "chike"] }],
+    cameraCredit: "DANNY JOE SORGE", relatedClipIds: ["c-cz-camron-1998", "c-cz-mase-1998", "c-public-first-look"], featured: true,
+  }),
+  channelZero({
+    id: "c-cz-mase-1998", slug: "channel-zero-mase-1998", title: "Ma$e, Kanye & Coodie | JD’s Birthday, 1998",
+    description: "Channel Zero follows Coodie meeting Ma$e and the Harlem World crew at Jermaine Dupri's birthday, with Kanye West tagging along. The publisher places the footage around 1998 and credits camera and editing to Danny Joe Sorge.",
+    dateApproximate: "Circa 1998", dateBasis: "recorded-year", year: 1998, era: "channel-zero",
+    dateNote: "Circa 1998, per Channel Zero. Public upload: 23 October 2012. The description does not confirm a recording day or city.",
+    peopleIds: ["mase", "ye", "coodie"], projectIds: ["cz"],
+    collectionIds: ["channel-zero", "first-times"], type: "Interview", themes: ["access", "before-fame", "friendship"],
+    youtubeId: "QqwUO-iJIv8", duration: 172, publicSource: source("QqwUO-iJIv8", "2012-10-23", "interview"),
+    credits: [{ name: "Danny Joe Sorge", role: "Camera and editing", personIds: ["sorge"] }, { name: "Coodie", role: "Interviewer", personIds: ["coodie"] }],
+    cameraCredit: "DANNY JOE SORGE", relatedClipIds: ["c-cz-camron-1998", "c-cz-chicago-hip-hop-101"], featured: true, hue: 48,
+  }),
+  channelZero({
+    id: "c-cz-nipsey-session", slug: "channel-zero-nipsey-currensy-wiz", title: "Nipsey, Curren$y & Wiz | New York Session",
+    description: "A short studio visit with Nipsey Hussle, Curren$y and Wiz Khalifa. Channel Zero dates the New York session to 6 December 2010 and credits Coodie's camera; this public upload arrived in 2024.",
+    dateExact: "2010-12-06", dateBasis: "recorded-year", year: 2010,
+    dateNote: "Recorded 6 December 2010 in New York City, per Channel Zero. Public upload: 17 October 2024.",
+    locationId: "new-york", peopleIds: ["nipsey", "currensy", "wiz"], projectIds: ["cz"],
+    collectionIds: ["channel-zero", "studio-nights", "new-york"], type: "Studio", themes: ["studio", "friendship", "access"],
+    youtubeId: "g4oD9kzFcqw", duration: 94, publicSource: source("g4oD9kzFcqw", "2024-10-17", "documentary-excerpt"),
+    credits: [{ name: "Coodie", role: "Camera", personIds: ["coodie"] }],
+    cameraCredit: "COODIE", relatedClipIds: ["c-74", "c-72", "c-186"], featured: true, hue: 30,
+  }),
+  channelZero({
+    id: "c-cz-slow-jamz-making", slug: "channel-zero-slow-jamz-making", title: "Slow Jamz | Making of an Unreleased Version",
+    description: "Channel Zero visits an unreleased version of the Slow Jamz video in Chicago with Kanye West, Twista and Jamie Foxx. The publisher describes Kanye's early attempt at directing and credits Danny Joe Sorge's camera. This is not the finished commercial music video.",
+    dateExact: "2006-10-23", year: 2006, era: "through-the-wire",
+    dateNote: "Public upload: 23 October 2006. Filming date unconfirmed; the publisher identifies a previously unreleased version, not the finished music video.",
+    locationId: "chicago", peopleIds: ["ye", "twista", "jamie-foxx"], albumIds: ["dropout"], projectIds: ["cz"],
+    collectionIds: ["channel-zero", "road-dropout", "through-the-wire", "first-times"],
+    youtubeId: "KB4f8Bkg0_I", duration: 395, publicSource: source("KB4f8Bkg0_I", "2006-10-23"),
+    credits: [{ name: "Danny Joe Sorge", role: "Camera", personIds: ["sorge"] }],
+    cameraCredit: "DANNY JOE SORGE", relatedClipIds: ["c-public-netflix-studio", "c-public-slow-jamz", "c-cz-jamie-angie"], hue: 35,
+  }),
+  channelZero({
+    id: "c-cz-jamie-angie", slug: "channel-zero-jamie-foxx-angie-stone", title: "Jamie Foxx & Angie Stone | All-Star Weekend, 2004",
+    description: "Jamie Foxx and Angie Stone improvise together at Jamie's house, with Kanye West among the onlookers. Channel Zero identifies Los Angeles and 13 February 2004, during NBA All-Star Weekend. The public upload does not name a camera operator.",
+    dateExact: "2004-02-13", dateBasis: "recorded-year", year: 2004, era: "through-the-wire",
+    dateNote: "Recorded 13 February 2004 at Jamie Foxx's house in Los Angeles, per Channel Zero. Public upload: 13 December 2024. Camera credit unspecified.",
+    locationId: "los-angeles", peopleIds: ["jamie-foxx", "angie-stone", "ye"], projectIds: ["cz"],
+    collectionIds: ["channel-zero", "studio-nights"], type: "Performance", themes: ["studio", "friendship", "access"],
+    youtubeId: "apdm4zkG4RU", duration: 60, publicSource: source("apdm4zkG4RU", "2024-12-13", "documentary-excerpt"),
+    relatedClipIds: ["c-public-netflix-studio", "c-cz-slow-jamz-making"], featured: true, hue: 32,
+  }),
+  channelZero({
+    id: "c-cz-culo-1", slug: "channel-zero-culo-1", title: "Pitbull & Lil Jon | Making Culo, Part 1",
+    description: "The first part of Channel Zero's visit to Pitbull's debut video shoot, with Lil Jon and cameos identified by the publisher. Danny Joe Sorge filmed in Miami's Little Havana and Overtown neighborhoods during Calle Ocho 2004.",
+    dateApproximate: "Calle Ocho 2004", dateBasis: "recorded-year", year: 2004, era: "through-the-wire",
+    dateNote: "Filmed during Calle Ocho 2004 in Miami, per Channel Zero; exact day unconfirmed. Public upload: 24 October 2006.",
+    locationId: "miami", peopleIds: ["pitbull", "lil-jon", "john-singleton", "dj-khaled", "uncle-luke"], projectIds: ["cz", "culo"],
+    youtubeId: "zcsww5yUbyg", duration: 264, publicSource: source("zcsww5yUbyg", "2006-10-24"),
+    credits: [{ name: "Danny Joe Sorge", role: "Camera", personIds: ["sorge"] }],
+    cameraCredit: "DANNY JOE SORGE", relatedClipIds: ["c-cz-culo-2"], hue: 25,
+  }),
+  channelZero({
+    id: "c-cz-culo-2", slug: "channel-zero-culo-2", title: "Pitbull & Lil Jon | Making Culo, Part 2",
+    description: "The second chapter of Channel Zero's Culo production visit, with Pitbull and Lil Jon. Danny Joe Sorge's camera follows the Miami shoot during Calle Ocho 2004; the publisher also identifies John Singleton, DJ Khaled and Uncle Luke cameos.",
+    dateApproximate: "Calle Ocho 2004", dateBasis: "recorded-year", year: 2004, era: "through-the-wire",
+    dateNote: "Filmed during Calle Ocho 2004 in Miami, per Channel Zero; exact day unconfirmed. Public upload: 24 October 2006.",
+    locationId: "miami", peopleIds: ["pitbull", "lil-jon", "john-singleton", "dj-khaled", "uncle-luke"], projectIds: ["cz", "culo"],
+    youtubeId: "JUl9UTdNRxA", duration: 495, publicSource: source("JUl9UTdNRxA", "2006-10-24"),
+    credits: [{ name: "Danny Joe Sorge", role: "Camera", personIds: ["sorge"] }],
+    cameraCredit: "DANNY JOE SORGE", relatedClipIds: ["c-cz-culo-1"], hue: 25,
+  }),
+];
+
+export const CHANNEL_ZERO_CLIP_IDS = channelZeroClips.map((clip) => clip.id);

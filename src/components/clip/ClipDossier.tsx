@@ -50,11 +50,11 @@ export function ClipDossier({
             <span className="text-dust">—</span>
           )}
         </Row>
-        <Row label="PLACE">
+        {location ? <Row label="PLACE">
           <Link href={locationHref} className="hover:text-leader">
-            {location?.name ?? "Unfiled"}
+            {location.name}
           </Link>
-        </Row>
+        </Row> : null}
         {tracks.length || albums.length ? (
           <Row label="MUSIC">
             <div>
@@ -80,10 +80,11 @@ export function ClipDossier({
             ))}
           </Row>
         ) : null}
-        <Row label="RIGHTS">
+        <Row label={clip.publicSource ? "PROVENANCE" : "RIGHTS"}>
           <span className="font-mono text-[12px] tracking-[0.06em] text-bone">
-            {visibilityLabel(clip.visibility)} · {clip.rightsStatus.replaceAll("_", " ")}
-            {clip.sensitivityStatus !== "NONE" ? ` · ${clip.sensitivityStatus.replaceAll("_", " ")}` : ""}
+            {clip.publicSource
+              ? `${clip.publicSource.publisher} · ${clip.publicSource.kind === "project-page" ? "PUBLIC PROJECT PAGE" : "PUBLIC PUBLISHER EMBED"} · ARCHIVE RIGHTS NOT ASSESSED`
+              : <>{visibilityLabel(clip.visibility)} · {clip.rightsStatus.replaceAll("_", " ")}{clip.sensitivityStatus !== "NONE" ? ` · ${clip.sensitivityStatus.replaceAll("_", " ")}` : ""}</>}
           </span>
         </Row>
         <Row label="CUTS">

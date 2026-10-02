@@ -3053,6 +3053,28 @@ html.is-cutting.is-present-cut::view-transition-new(root) {
   overflow: clip;
 }
 
+.world-view-controls {
+  position: absolute;
+  top: 44px;
+  right: 20px;
+  display: flex;
+  gap: 14px;
+  z-index: 5;
+}
+.world-view-controls button {
+  padding: 8px 0;
+  font-family: var(--font-cond);
+  font-size: 11px;
+  letter-spacing: .1em;
+  color: var(--dust);
+}
+.world-view-controls button:hover,
+.world-view-controls button:focus-visible { color: var(--paper); }
+@media (max-width: 767px) {
+  .world-view-controls { top: 32px; right: 16px; gap: 14px; }
+  .world-view-controls button { font-size: 10px; min-height: 44px; }
+}
+
 .world-places,
 .world-stories {
   position: relative;

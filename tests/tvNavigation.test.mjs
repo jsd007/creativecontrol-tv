@@ -64,3 +64,19 @@ test("return links reject external destinations and discard unrelated parameters
   for (const raw of [undefined, "https://example.com", "//example.com/tv", "/tv-other?ch=07", `/tv?q=${"x".repeat(2048)}`]) assert.equal(tvReturnHref(raw), undefined);
   assert.equal(tvReturnHref("/tv?ch=07&redirect=https%3A%2F%2Fexample.com"), "/tv?ch=07");
 });
+
+test("journey guide and neighbors follow editorial order rather than upload or lineup order", () => {
+  const list = [row("part-3", 0), row("part-1", 14), row("part-2", 9)];
+  const sequence = tvSelection(list, true, "", "", ["part-1", "part-2", "part-3"]);
+  assert.deepEqual(sequence.map((item) => item.index), [14, 9, 0]);
+  assert.equal(tvNeighbors(sequence, "part-2").next.clip.id, "part-3");
+  assert.equal(tvNeighbors(sequence, "part-2").previous.clip.id, "part-1");
+});
+
+test("clip detail returns retain only known journey IDs", () => {
+  const details = new URL(tvClipHref("channel-zero-homecoming-2", "/tv?ch=07&journey=homecoming&present=1"), "https://archive.local");
+  const back = new URL(tvReturnHref(details.searchParams.get("tv")), "https://archive.local");
+  assert.equal(back.searchParams.get("journey"), "homecoming");
+  assert.equal(back.searchParams.get("clip"), "channel-zero-homecoming-2");
+  assert.equal(tvReturnHref("/tv?ch=07&journey=made-up"), "/tv?ch=07");
+});

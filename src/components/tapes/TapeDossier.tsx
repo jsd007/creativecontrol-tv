@@ -9,7 +9,7 @@ import { tapeHold } from "@/lib/visibility";
 import { TapeFrame } from "./TapeFrame";
 import { TapeObject } from "./TapeObject";
 
-export function TapeDossier({ tape }: { tape: SourceTape }) {
+export function TapeDossier({ tape, returnHref = "/tapes", returnLabel }: { tape: SourceTape; returnHref?: string; returnLabel?: string }) {
   const clips = clipsOnTape(tape.id);
   const broadcast = isBroadcastShelf(tape.id);
   const logged = clips.filter((c) => !isUnlogged(c)).length;
@@ -21,8 +21,8 @@ export function TapeDossier({ tape }: { tape: SourceTape }) {
   return (
     <div className="px-4 pb-24 md:px-6">
       <p className="pt-4 font-mono text-[12px] tracking-[0.1em] text-dust">
-        <Link href="/tapes" className="hover:text-paper">
-          THE TAPES
+        <Link href={returnHref} className="inline-flex min-h-11 items-center hover:text-paper">
+          {returnLabel ? `← BACK TO ${returnLabel}` : "THE TAPES"}
         </Link>{" "}
         / {tape.code}
       </p>
@@ -38,14 +38,19 @@ export function TapeDossier({ tape }: { tape: SourceTape }) {
           <p className="mt-4 font-mono text-[12px] tracking-[0.08em] text-dust">
             {broadcast
               ? `PUBLIC BROADCAST · ${tape.format} · YOUTUBE`
-              : `CAMERA ORIGINAL · ${tape.format} · ${tape.digitizationStatus}`}
+              : `CONCEPT CASSETTE · ${tape.format}`}
           </p>
         </div>
         <div className="bg-paper px-6 py-7 text-void md:px-8">
           <p className="font-mono text-[12px] tracking-[0.1em] text-void/70">
-            {tape.code} · {tape.format} · {tape.digitizationStatus}
+            {broadcast ? "PUBLIC SOURCE" : "EXAMPLE RECORD"} · {tape.code} · {tape.format}
           </p>
           <h1 className="mt-3 font-display text-4xl leading-none md:text-5xl">{tape.originalLabel}</h1>
+          {!broadcast ? (
+            <p className="mt-4 max-w-2xl text-[14px] leading-relaxed text-void/70">
+              Concept source example. Labels, dates, durations, and inventory status are illustrative, not verified holdings. No camera original is included.
+            </p>
+          ) : null}
           {hold ? (
             <p className="mt-4 font-cond text-[13px] tracking-[0.1em] text-hold">
               {hold.status}
@@ -92,7 +97,7 @@ export function TapeDossier({ tape }: { tape: SourceTape }) {
               <ol className="mt-4 list-none">
                 {group.clips.map((clip) => (
                   <li key={clip.id}>
-                    <HoldingLine clip={clip} />
+                    <HoldingLine clip={clip} returnHref={returnHref} />
                   </li>
                 ))}
               </ol>
@@ -102,12 +107,12 @@ export function TapeDossier({ tape }: { tape: SourceTape }) {
       ) : (
         <section className="mt-14">
           <p className="font-cond text-[12px] tracking-[0.1em] text-dust">
-            CONTACT SHEET · {logged} LOGGED · {unlogged} UNLOGGED
+            EXAMPLE CONTACT SHEET · {logged} LOGGED · {unlogged} UNLOGGED
             {hold ? ` · ${hold.count} HELD` : ""}
           </p>
           <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {clips.map((clip) => (
-              <TapeFrame key={clip.id} clip={clip} />
+              <TapeFrame key={clip.id} clip={clip} returnHref={returnHref} />
             ))}
           </div>
         </section>

@@ -1,5 +1,17 @@
 import type { ArchiveClip } from "@/data/types";
 
+export function publicMediaKind(clip: Pick<ArchiveClip, "publicSource">) {
+  switch (clip.publicSource?.kind) {
+    case "trailer": return "trailer";
+    case "music-video": return "music video";
+    case "documentary-excerpt": return "documentary excerpt";
+    case "behind-the-scenes": return "behind-the-scenes video";
+    case "interview": return "interview";
+    case "project-page": return "project reference";
+    default: return "video";
+  }
+}
+
 export function formatDuration(seconds: number) {
   const s = Math.max(0, Math.round(seconds));
   const m = Math.floor(s / 60);
@@ -9,6 +21,11 @@ export function formatDuration(seconds: number) {
     return `${h}:${String(m % 60).padStart(2, "0")}:${String(r).padStart(2, "0")}`;
   }
   return `${m}:${String(r).padStart(2, "0")}`;
+}
+
+/** An upload timestamp is not evidence that two cameras were present on the same day. */
+export function isRecordedDate(clip: Pick<ArchiveClip, "dateExact" | "youtubeId" | "dateBasis">) {
+  return Boolean(clip.dateExact && (!clip.youtubeId || clip.dateBasis === "recorded-year"));
 }
 
 export const MONTHS = [

@@ -6,6 +6,7 @@ import { clipHeading, isUnlogged } from "@/lib/clipDisplay";
 import { MONTHS_SHORT, parseArchiveDate, visibilityLabel } from "@/lib/format";
 import { holdingLead, isOfficialHolding } from "@/lib/holdings";
 import { isClosed } from "@/lib/visibility";
+import { clipHref, tapeHref } from "@/lib/lensNavigation";
 
 function sheetWhen(clip: ArchiveClip) {
   if (isUnlogged(clip)) return clip.startTimecode;
@@ -66,7 +67,7 @@ function stampFor(clip: ArchiveClip) {
   return "";
 }
 
-function IndexRow({ clip }: { clip: ArchiveClip }) {
+function IndexRow({ clip, returnHref }: { clip: ArchiveClip; returnHref?: string }) {
   const loc = getLocation(clip.locationId);
   const tape = getTape(clip.sourceTapeId);
   const people = clip.peopleIds.map((id) => getPerson(id)?.shortName).filter(Boolean).slice(0, 3);
@@ -74,13 +75,16 @@ function IndexRow({ clip }: { clip: ArchiveClip }) {
   const stamp = stampFor(clip);
   const subjects = people.length ? people.join(" · ") : clip.cameraCredit;
   const paperHold = clip.visibility === "MEMBERS_ONLY";
+  const recordLabel = clip.contentState === "project-reference"
+    ? "PROJECT REFERENCE"
+    : clip.youtubeId || clip.contentState === "public-source" ? "PUBLIC SOURCE" : "EXAMPLE ENTRY";
 
   return (
     <article className="index-row group border-t border-paper/10 py-3.5 md:grid md:grid-cols-[4.75rem_5.75rem_7.25rem_minmax(12rem,1.4fr)_minmax(7rem,0.7fr)_minmax(8rem,0.85fr)_7.5rem] md:items-baseline md:gap-x-5">
       <div className="flex flex-wrap items-baseline gap-x-2 md:contents">
         <p className="type-meta">{sheetWhen(clip)}</p>
         {tape ? (
-          <Link href={`/tapes/${tape.id}`} className="type-code hover:text-paper">
+          <Link href={tapeHref(tape.id, returnHref)} className="type-code hover:text-paper">
             {tape.code}
           </Link>
         ) : (
@@ -88,7 +92,7 @@ function IndexRow({ clip }: { clip: ArchiveClip }) {
         )}
         <p className="type-label">{unlogged ? "—" : clip.type.toUpperCase()}</p>
       </div>
-      <Link href={`/clip/${clip.slug}`} className="mt-1.5 min-w-0 md:mt-0">
+      <Link href={clipHref(clip.slug, returnHref)} className="mt-1.5 min-w-0 md:mt-0">
         <h3
           className={`leading-none group-hover:text-leader ${
             unlogged ? "font-mono text-[13px] tracking-[0.16em] text-dust" : "font-display text-[22px] text-paper md:text-[24px]"
@@ -109,7 +113,7 @@ function IndexRow({ clip }: { clip: ArchiveClip }) {
         </p>
         <p className="type-label">{subjects || "—"}</p>
         <p className={`font-mono text-[11px] tracking-[0.06em] md:text-right ${paperHold ? "text-hold" : "text-leader"}`}>
-          EXAMPLE ENTRY{stamp ? <><br />{stamp}</> : null}
+          {recordLabel}{stamp ? <><br />{stamp}</> : null}
         </p>
       </div>
     </article>
@@ -119,14 +123,38 @@ function IndexRow({ clip }: { clip: ArchiveClip }) {
 export function IndexSheet({
   clips,
   collapseOfficial = false,
+  foldYears = false,
   onYear,
+  returnHref,
 }: {
   clips: ArchiveClip[];
   collapseOfficial?: boolean;
+  foldYears?: boolean;
   onYear?: (year: number) => void;
+  returnHref?: string;
 }) {
   const groups = groupByYear(collapseOfficial ? collapseHoldings(clips) : clips);
   if (!groups.length) return null;
+
+  if (foldYears) {
+    return (
+      <section className="mt-8 border-y border-paper/15" aria-label="Browse the index by year">
+        <p className="type-label py-4">BROWSE BY YEAR · OPEN A YEAR TO SEE ITS RECORDS</p>
+        {groups.map((group) => (
+          <details key={group.year} className="border-t border-paper/15 py-1">
+            <summary className="flex min-h-14 cursor-pointer items-center justify-between gap-4 py-3 text-paper hover:text-leader">
+              <span className="font-display text-3xl">{group.year}</span>
+              <span className="type-label">{group.clips.length} SELECTED {group.clips.length === 1 ? "RECORD" : "RECORDS"} <span className="ml-4 text-leader" aria-hidden>+</span></span>
+            </summary>
+            <ol className="list-none pb-5">
+              {group.clips.map((clip) => <li key={clip.id}>{isOfficialHolding(clip) ? <HoldingLine clip={clip} returnHref={returnHref} /> : <IndexRow clip={clip} returnHref={returnHref} />}</li>)}
+            </ol>
+            {onYear ? <button type="button" onClick={() => onYear(group.year)} className="mb-5 min-h-11 font-cond text-[13px] tracking-[.1em] text-leader">OPEN FULL {group.year} INDEX <span aria-hidden>→</span></button> : null}
+          </details>
+        ))}
+      </section>
+    );
+  }
 
   return (
     <section className="mt-8" aria-label="Index">
@@ -144,7 +172,7 @@ export function IndexSheet({
           <ol className="mt-5 list-none">
             {group.clips.map((clip) => (
               <li key={clip.id}>
-                {isOfficialHolding(clip) ? <HoldingLine clip={clip} /> : <IndexRow clip={clip} />}
+                {isOfficialHolding(clip) ? <HoldingLine clip={clip} returnHref={returnHref} /> : <IndexRow clip={clip} returnHref={returnHref} />}
               </li>
             ))}
           </ol>

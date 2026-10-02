@@ -13,9 +13,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return { title: person?.name ?? "Person" };
 }
 
-export default async function PersonPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export default async function PersonPage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ role?: string | string[] }> }) {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
   const person = getPerson(slug);
   if (!person) notFound();
-  return <EntityView kind="person" person={person} clips={clipsForPerson(person.id)} />;
+  const role = typeof query.role === "string" ? query.role : undefined;
+  return <EntityView kind="person" person={person} clips={clipsForPerson(person.id)} creditRole={role} />;
 }

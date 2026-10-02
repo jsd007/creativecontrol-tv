@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { catalog, getTape } from "@/data";
 import { TapeDossier } from "@/components/tapes/TapeDossier";
+import { lensHref, parseLensReturn } from "@/lib/lensNavigation";
 
 export function generateStaticParams() {
   return catalog.tapes.map((t) => ({ id: t.id }));
@@ -13,9 +14,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return { title: tape ? tape.code : "Tape" };
 }
 
-export default async function TapePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function TapePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const [{ id }, search] = await Promise.all([params, searchParams]);
   const tape = getTape(id);
   if (!tape) notFound();
-  return <TapeDossier tape={tape} />;
+  const from = parseLensReturn(typeof search.from === "string" ? search.from : undefined);
+  return <TapeDossier tape={tape} returnHref={from?.href ?? lensHref("/tapes", "", { open: id })} returnLabel={from?.label} />;
 }

@@ -1,10 +1,7 @@
 "use client";
 
-import { useGSAP } from "@gsap/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { CHANNELS, accentNumber } from "@/lib/television";
-import { houseGsap } from "@/lib/gsap";
-import { GATE_EASE } from "@/lib/motion";
 
 type Props = {
   ch: number;
@@ -15,35 +12,18 @@ type Props = {
 
 export function Tuner({ ch, counts, reduced, onPick }: Props) {
   const root = useRef<HTMLElement>(null);
-  const hair = useRef<HTMLSpanElement>(null);
-  const first = useRef(true);
-
-  useGSAP(
-    () => {
-      const { gsap, Flip } = houseGsap();
-      const nav = root.current;
-      const line = hair.current;
-      if (!nav || !line) return;
-      const strip = nav.querySelector("[data-tuner-strip]");
-      const active = nav.querySelector("[aria-pressed='true']");
-      if (!(strip instanceof HTMLElement) || !(active instanceof HTMLElement)) return;
-      active.scrollIntoView({ inline: "center", block: "nearest", behavior: first.current || reduced ? "instant" : "smooth" });
-      const box = strip.getBoundingClientRect();
-      const on = active.getBoundingClientRect();
-      const x = on.left - box.left;
-      const y = on.bottom - box.top - 1;
-      const width = on.width;
-      if (first.current || reduced) {
-        gsap.set(line, { x, y, width, opacity: 1 });
-        first.current = false;
-        return;
-      }
-      const state = Flip.getState(line);
-      gsap.set(line, { x, y, width, opacity: 1 });
-      Flip.from(state, { duration: 0.34, ease: GATE_EASE });
-    },
-    { dependencies: [ch, reduced] },
-  );
+  useEffect(() => {
+    const nav = root.current;
+    const active = nav?.querySelector<HTMLElement>("[aria-pressed='true']");
+    if (!nav || !active) return;
+    const reveal = () => active.scrollIntoView({ inline: "center", block: "nearest", behavior: "instant" });
+    reveal();
+    // The selection belongs to the button, so scrolling/resizing cannot move it
+    // beneath another channel. Keep the selected channel visible on rotation.
+    const resize = new ResizeObserver(reveal);
+    resize.observe(nav);
+    return () => resize.disconnect();
+  }, [ch, reduced]);
 
   return (
     <nav ref={root} className="tv-tuner relative mt-3" aria-label="Tuner">
@@ -66,7 +46,7 @@ export function Tuner({ ch, counts, reduced, onPick }: Props) {
                   aria-pressed={on}
                   aria-label={`${item.n} ${item.name}, ${held} ${held === 1 ? "title" : "titles"}`}
                   onClick={() => onPick(i)}
-                  className={`min-w-[4.5rem] px-1.5 py-1 text-left ${on ? "text-paper" : "text-dust hover:text-bone"}`}
+                  className={`min-w-[4.5rem] border-b px-1.5 py-1 text-left ${on ? "border-leader text-paper" : "border-transparent text-dust hover:text-bone"}`}
                 >
                   <span className="flex items-baseline gap-2">
                     <span className={`font-cond text-[20px] leading-none tracking-[0.08em] md:text-[24px] ${on ? accentNumber(item.accent) : ""}`}>
@@ -80,7 +60,6 @@ export function Tuner({ ch, counts, reduced, onPick }: Props) {
             );
           })}
         </ul>
-        <span ref={hair} className="tv-tuner-hair" aria-hidden />
       </div>
     </nav>
   );

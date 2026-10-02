@@ -3,6 +3,7 @@ import type { ArchiveClip, Location, Person } from "@/data/types";
 import { clipHeading } from "@/lib/clipDisplay";
 import { relatedCards } from "@/lib/archiveQuery";
 import { isAuthored } from "@/lib/visibility";
+import { isRecordedDate } from "@/lib/format";
 
 export type StarKind = "person" | "place" | "project" | "clip" | "track" | "event";
 
@@ -56,7 +57,7 @@ const SPINE_IDS = ["coodie", "chike", "ye", "ali", "donda"] as const;
 const NODE_ORDER: StarKind[] = ["person", "project", "track", "place", "clip"];
 
 function authoredWith(personId: string) {
-  return catalog.clips.filter((c) => isAuthored(c) && c.peopleIds.includes(personId));
+  return catalog.clips.filter((c) => isAuthored(c) && (c.peopleIds.includes(personId) || c.credits?.some((credit) => credit.personIds?.includes(personId))));
 }
 
 function authoredAtPlace(locationId: string) {
@@ -89,7 +90,7 @@ function personAxis(centerId: string, otherId: string, shared: ArchiveClip[]): S
   if (!CREW.has(otherId)) return "SUBJECT";
   if (shared.some((c) => c.projectIds.length)) return "PROJECT";
   if (shared.some((c) => c.trackIds.length)) return "SONG";
-  if (shared.some((c) => c.dateExact)) return "DAY";
+  if (shared.some(isRecordedDate)) return "DAY";
   if (shared.some((c) => !isCityScale(c.locationId))) return "PLACE";
   if (shared.some((c) => c.sourceTapeId)) return "TAPE";
   if (CREW.has(centerId) && CREW.has(otherId)) return "PROJECT";
@@ -100,7 +101,7 @@ function clipAxis(from: ArchiveClip, to: ArchiveClip): StarAxis {
   if (to.sourceTapeId && to.sourceTapeId === from.sourceTapeId) return "TAPE";
   if (from.projectIds.some((id) => to.projectIds.includes(id))) return "PROJECT";
   if (from.trackIds.some((id) => to.trackIds.includes(id))) return "SONG";
-  if (from.dateExact && from.dateExact === to.dateExact) return "DAY";
+  if (isRecordedDate(from) && isRecordedDate(to) && from.dateExact === to.dateExact) return "DAY";
   const subjects = from.peopleIds.filter((id) => to.peopleIds.includes(id) && !CREW.has(id));
   if (subjects.length) return "SUBJECT";
   if (from.locationId === to.locationId && !isCityScale(from.locationId)) return "PLACE";

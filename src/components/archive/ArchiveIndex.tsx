@@ -8,7 +8,9 @@ import { activeFilterCount, filterClips, sentenceFor, yearsInCatalog } from "@/l
 import { bindCollectionFilter } from "@/lib/collectionMembership";
 import { clipHeading } from "@/lib/clipDisplay";
 import { isAuthored, isDiscoverable } from "@/lib/visibility";
+import { clipHref, lensHref } from "@/lib/lensNavigation";
 import { IndexSheet } from "./IndexSheet";
+import { PortfolioShelf } from "./PortfolioShelf";
 import Link from "next/link";
 
 const DECADES = [
@@ -24,7 +26,7 @@ const SPINE_TYPES = ["Studio", "Interview", "Performance", "Broadcast", "Unseen"
 const SPINE_COLLECTIONS: { id: string; label: string }[] = [
   { id: "channel-zero", label: "Channel Zero" },
   { id: "through-the-wire", label: "Through the Wire" },
-  { id: "coodies-picks", label: "Coodie's Picks" },
+  { id: "coodies-picks", label: "House Picks" },
   { id: "unseen", label: "Unseen" },
   { id: "classics", label: "Classics" },
   { id: "road-dropout", label: "College Dropout road" },
@@ -91,7 +93,8 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
   const pathname = usePathname();
   const search = useSearchParams();
   const [q, setQ] = useState(initial.q ?? "");
-  const [openDecade, setOpenDecade] = useState<string | null>(null);
+  const openDecade = search.get("decade");
+  const returnHref = lensHref("/archive", search.toString());
 
   const filters: ArchiveFilters = useMemo(
     () => ({
@@ -122,12 +125,12 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
   const sentence = sentenceFor(filters);
   const years = yearsInCatalog();
   const entrySlugs = [
-    "curren-y-wiz-khalifa-nyc-cmj-2009-www-creativecontrol-tv",
+    "through-the-wire-official-video",
+    "window-seat-one-take",
+    "joey-brooklyn-daylight",
     "wiki-wikispeaks",
-    "pro-era-beast-coastal",
-    "tear-up",
     "channel-zero-redman-erykah-badu",
-    "vision-behind-window-seat",
+    "a-cut-from-the-vault",
   ];
   const openingRecords = entrySlugs
     .map((slug) => catalog.clips.find((clip) => clip.youtubeId && clip.slug === slug))
@@ -169,7 +172,7 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
       : undefined,
   );
 
-  function setFilters(patch: Partial<Record<keyof ArchiveFilters, string | undefined>>) {
+  function setFilters(patch: Partial<Record<keyof ArchiveFilters | "decade", string | undefined>>) {
     const next = new URLSearchParams(search.toString());
     for (const [key, value] of Object.entries(patch)) {
       if (value) next.set(key, value);
@@ -184,23 +187,20 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
   }
 
   function chooseEra(id?: string) {
-    const next: Partial<Record<keyof ArchiveFilters, string | undefined>> = { era: id };
+    const next: Partial<Record<keyof ArchiveFilters | "decade", string | undefined>> = { era: id };
     if (id && yearNum) {
       const chosen = catalog.eras.find((e) => e.id === id);
       if (chosen && (yearNum < chosen.startYear || yearNum > chosen.endYear)) next.year = undefined;
     }
-    if (!id) setOpenDecade(null);
+    if (!id) next.decade = undefined;
     setFilters(next);
   }
 
   function chooseDecade(id: string) {
     const same = decadeId === id && !filters.year;
-    setOpenDecade(same ? null : id);
-    if (filters.year) {
-      const d = DECADES.find((row) => row.id === id);
-      const y = Number(filters.year);
-      if (d && (y < d.start || y > d.end)) setFilters({ year: undefined });
-    }
+    const d = DECADES.find((row) => row.id === id);
+    const outsideYear = filters.year && d && (Number(filters.year) < d.start || Number(filters.year) > d.end);
+    setFilters({ decade: same ? undefined : id, ...(outsideYear ? { year: undefined } : {}) });
   }
 
   function bindSearch(raw: string) {
@@ -288,7 +288,15 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
         <button type="submit" className="archive-search-submit">SEARCH</button>
       </form>
 
-      <details className="archive-refine mt-6">
+      <details
+        className="archive-refine mt-6"
+        open={search.get("refine") === "1"}
+        onToggle={(event) => {
+          const opened = event.currentTarget.open;
+          if (opened === (search.get("refine") === "1")) return;
+          window.history.replaceState(null, "", lensHref("/archive", window.location.search, { refine: opened ? "1" : null }));
+        }}
+      >
         <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-y border-paper/10 py-3 font-cond text-[13px] tracking-[0.14em] text-dust hover:text-paper">
           <span>REFINE THE INDEX</span>
           <span className={filterCount ? "text-leader" : "text-dust"}>
@@ -309,8 +317,7 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
             <button
               type="button"
               onClick={() => {
-                setOpenDecade(null);
-                setFilters({ year: undefined });
+                setFilters({ year: undefined, decade: undefined });
               }}
               aria-label="Span: all years"
               aria-pressed={!filters.year && !decadeId}
@@ -396,7 +403,7 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
           <ol>
             {openingRecords.map((clip, index) => (
               <li key={clip.id}>
-                <Link href={`/clip/${clip.slug}`}>
+                <Link href={clipHref(clip.slug, returnHref)}>
                   <span>{String(index + 1).padStart(2, "0")}</span>
                   <strong>{clipHeading(clip)}</strong>
                   <small>{clip.year} · PUBLIC SOURCE</small>
@@ -406,6 +413,8 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
           </ol>
         </section>
       ) : null}
+
+      {!querying ? <PortfolioShelf returnHref={returnHref} /> : null}
 
       <div className="archive-index-query mt-8 flex flex-wrap items-end justify-between gap-4 border-y border-paper/10 py-4">
         <div>
@@ -443,6 +452,8 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
 
       <IndexSheet
         clips={results}
+        returnHref={returnHref}
+        foldYears={!querying}
         collapseOfficial={!filters.year && !filters.q && !filters.month && !filters.day && !filters.collection}
         onYear={(y) => setFilter("year", filters.year === String(y) ? undefined : String(y))}
       />

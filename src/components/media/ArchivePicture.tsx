@@ -5,7 +5,7 @@ import { isUnlogged } from "@/lib/clipDisplay";
 import type { VoiceClip } from "@/lib/mediaVoice";
 
 type PictureClip = VoiceClip &
-  Pick<ArchiveClip, "id" | "tags" | "startTimecode" | "duration" | "cameraCredit" | "youtubeId" | "title">;
+  Pick<ArchiveClip, "id" | "tags" | "startTimecode" | "duration" | "cameraCredit" | "youtubeId" | "title" | "publicSource">;
 
 type Props = {
   clip: PictureClip;
@@ -16,7 +16,7 @@ type Props = {
 
 export function ArchivePicture({ clip, className = "", large = false, chrome = "full" }: Props) {
   if (clip.youtubeId && !isUnlogged(clip)) {
-    return <BroadcastPlayer youtubeId={clip.youtubeId} title={clip.title} large={large} className={className} />;
+    return <BroadcastPlayer youtubeId={clip.youtubeId} title={clip.title} publisher={clip.publicSource?.publisher} large={large} className={className} />;
   }
   return <PrototypeMedia clip={clip} large={large} chrome={chrome} className={className} />;
 }

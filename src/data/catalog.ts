@@ -13,6 +13,7 @@ import type {
   Track,
   Transcript,
 } from "./types";
+import { PORTFOLIO_BLOCK, portfolioClips, portfolioProjects } from "./portfolio";
 
 export const eras: Era[] = [
   {
@@ -36,7 +37,7 @@ export const eras: Era[] = [
     slug: "through-the-wire",
     name: "Through the Wire",
     startYear: 2002,
-    endYear: 2004,
+    endYear: 2006,
     description: "Accident, Polaroids, after-hours MTV. The first video as a duo.",
   },
   {
@@ -74,7 +75,7 @@ export const eras: Era[] = [
 ];
 
 export const collections: Collection[] = [
-  { id: "coodies-picks", slug: "coodies-picks", name: "Coodie's Picks", dek: "A filmmaker's hand on the catalog.", editorial: true },
+  { id: "coodies-picks", slug: "coodies-picks", name: "House Picks", dek: "An editorial selection for this proof, not a selection supplied by Coodie.", editorial: true },
   { id: "road-dropout", slug: "road-to-the-college-dropout", name: "The Road to The College Dropout", dek: "Before the album had a street date.", editorial: true },
   { id: "chicago-before", slug: "chicago-before", name: "Chicago Before the World Was Watching", dek: "South Side, West Side, the L, the sidewalk.", editorial: true },
   { id: "first-times", slug: "first-times", name: "First Times", dek: "First video, first night, first time the camera stays.", editorial: true },
@@ -84,6 +85,8 @@ export const collections: Collection[] = [
   { id: "through-the-wire", slug: "through-the-wire", name: "Through the Wire", dek: "The Polaroid idea. The after-hours cut.", editorial: true },
   { id: "unseen", slug: "unseen", name: "Unseen", dek: "Material that never survived a documentary cut.", editorial: true },
   { id: "classics", slug: "creative-control-classics", name: "Creative Control Classics", dek: "The house style after the name existed.", editorial: true },
+  { id: "portfolio", slug: "public-projects", name: "Projects & Films", dek: "Public trailers, music videos, and project references. Not private archive footage.", editorial: false },
+  { id: "public-previews", slug: "public-previews", name: "Public Previews", dek: "Official trailers and released excerpts. Not unseen private holdings.", editorial: false },
 ];
 
 export const themes: Theme[] = [
@@ -109,9 +112,12 @@ export const organizations: Organization[] = [
 ];
 
 export const people: Person[] = [
+  { id: "teyana", slug: "teyana-taylor", name: "Teyana Taylor", shortName: "Teyana Taylor", roles: ["artist"], bio: "Appears in TIME's publicly released jeen-yuhs studio outtake." },
+  { id: "jamie-foxx", slug: "jamie-foxx", name: "Jamie Foxx", shortName: "Jamie Foxx", roles: ["artist"], bio: "Appears in Netflix's public Slow Jamz recording excerpt." },
+  { id: "steez", slug: "capital-steez", name: "Capital STEEZ", shortName: "Capital STEEZ", roles: ["artist"], bio: "Performs with Joey Bada$$ in PRO ERA's public Survival Tactics video." },
   { id: "coodie", slug: "coodie-simmons", name: "Clarence “Coodie” Simmons", shortName: "Coodie", bornYear: 1971, origin: "Chicago", roles: ["camera", "director", "subject"], featured: true, bio: "Comedian who picked up a camera and did not put it down. Channel Zero. The long shoot." },
   { id: "chike", slug: "chike-ozah", name: "Chike Ozah", shortName: "Chike", bornYear: 1978, origin: "New Orleans", roles: ["director", "related"], featured: true, bio: "SCAD, MTV motion design, then the other half of the duo. Visual structure." },
-  { id: "sorge", slug: "danny-sorge", name: "Danny Sorge", shortName: "Danny Sorge", origin: "Chicago", roles: ["related"], bio: "Barbershop friend who asked Coodie to host Channel Zero." },
+  { id: "sorge", slug: "danny-sorge", name: "Danny Joe Sorge", shortName: "Danny Sorge", origin: "Chicago", roles: ["camera", "related"], bio: "Channel Zero collaborator. The publisher credits him with filming and editing the Homecoming behind-the-scenes series." },
   { id: "ye", slug: "kanye-west", name: "Kanye West", shortName: "Ye", aka: ["Kanye", "Ye"], origin: "Chicago", roles: ["artist", "subject"], featured: true, bio: "Public figure in a large portion of the early footage." },
   { id: "donda", slug: "donda-west", name: "Donda West", shortName: "Donda", origin: "Chicago", roles: ["subject"], bio: "Mother. Appears in publicly discussed footage from the long shoot." },
   { id: "common", slug: "common", name: "Common", shortName: "Common", aka: ["Common Sense"], origin: "Chicago", roles: ["artist", "subject"], bio: "Chicago MC present in the Channel Zero era of the city." },
@@ -143,6 +149,7 @@ export const locations: Location[] = [
   { id: "dd172", slug: "dd172-tribeca", name: "DD172 / Tribeca", city: "New York", region: "New York", country: "USA", lat: 40.717, lon: -74.01, glow: 0.55, description: "172 Duane Street. Warehouse as network." },
   { id: "coney", slug: "coney-island", name: "Coney Island", city: "New York", region: "New York", country: "USA", lat: 40.575, lon: -73.985, glow: 0.4, description: "Marbury. Housing, boardwalk, night diorama." },
   { id: "los-angeles", slug: "los-angeles", name: "Los Angeles", city: "Los Angeles", region: "California", country: "USA", lat: 34.052, lon: -118.244, glow: 0.48, description: "The accident year. Later industry rooms." },
+  { id: "miami", slug: "miami", name: "Miami", city: "Miami", region: "Florida", country: "USA", lat: 25.762, lon: -80.192, glow: 0.28, description: "Channel Zero's Making of Culo follows the shoot in Little Havana and Overtown during Calle Ocho 2004. City marker, not an exact camera position." },
   { id: "atlanta", slug: "atlanta", name: "Atlanta", city: "Atlanta", region: "Georgia", country: "USA", lat: 33.749, lon: -84.388, glow: 0.32, description: "Tours, rooms, layovers." },
   { id: "new-orleans", slug: "new-orleans", name: "New Orleans", city: "New Orleans", region: "Louisiana", country: "USA", lat: 29.951, lon: -90.072, glow: 0.36, description: "Chike's origin." },
   { id: "tokyo", slug: "tokyo", name: "Tokyo", city: "Tokyo", country: "Japan", lat: 35.676, lon: 139.65, glow: 0.22, description: "Later travel." },
@@ -159,7 +166,7 @@ export const tracks: Track[] = [
   { id: "two-words", slug: "two-words", title: "Two Words", artist: "Kanye West", year: 2004 },
   { id: "izzo", slug: "izzo-hova", title: "Izzo (H.O.V.A.)", artist: "Jay-Z", year: 2001 },
   { id: "window-seat", slug: "window-seat", title: "Window Seat", artist: "Erykah Badu", year: 2010 },
-  { id: "old-school-love", slug: "old-school-love", title: "Old School Love", artist: "Lupe Fiasco", year: 2014 },
+  { id: "old-school-love", slug: "old-school-love", title: "Old School Love", artist: "Lupe Fiasco", year: 2013 },
   { id: "michael-knight", slug: "michael-knight", title: "Michael Knight", artist: "Curren$y", year: 2010 },
   { id: "survival", slug: "survival-tactics", title: "Survival Tactics", artist: "Joey Bada$$", year: 2012 },
   { id: "hometown", slug: "hometown-hero", title: "Hometown Hero", artist: "Big K.R.I.T.", year: 2010 },
@@ -177,17 +184,20 @@ export const projects: Project[] = [
   { id: "cctv", slug: "creativecontrol-tv", title: "CreativeControl.tv", year: 2009, kind: "network", description: "Online network. Black Friday, 2009." },
   { id: "sessions", slug: "sessions-at-dd172", title: "Sessions at DD172", year: 2009, kind: "series", description: "Candid traffic through the warehouse." },
   { id: "window", slug: "window-seat", title: "Window Seat", year: 2010, kind: "video", description: "Dallas / Dealey Plaza language. One take, publicly reported." },
-  { id: "benji", slug: "benji", title: "Benji", year: 2012, kind: "film", description: "ESPN 30 for 30. Chicago." },
+  { id: "benji", slug: "benji", title: "Benji", year: 2012, kind: "film", description: "ESPN 30 for 30 documentary about Ben Wilson, directed by Coodie & Chike. Chicago.", releaseStatus: "released", dateNote: "ESPN premiere: 23 October 2012.", sourceUrls: ["https://espnpressroom.com/press-release/espn-films-benji-to-premiere-october-23-on-espn/"] },
   { id: "ali", slug: "the-peoples-champ", title: "Muhammad Ali: The People's Champ", year: 2015, kind: "film", description: "BET documentary." },
-  { id: "coney", slug: "a-kid-from-coney-island", title: "A Kid from Coney Island", year: 2019, kind: "film", description: "Stephon Marbury." },
+  { id: "coney", slug: "a-kid-from-coney-island", title: "A Kid from Coney Island", year: 2019, kind: "film", description: "Stephon Marbury documentary directed by Coodie & Chike. Tribeca world premiere in 2019; public rollout in 2020.", releaseStatus: "released", dateNote: "2019 festival premiere, 2020 public rollout. Boardroom trailer uploaded 30 January 2020.", sourceUrls: ["https://tribecafilm.com/festival/archive/kid-from-coney-island-2019", "https://www.youtube.com/watch?v=3UNVA-W_z6Q"] },
   { id: "jeenyuhs", slug: "jeen-yuhs", title: "jeen-yuhs: A Kanye Trilogy", year: 2022, kind: "series", description: "A cut from a much larger record." },
   { id: "podcast", slug: "creative-control-podcast", title: "Creative Control w/ Coodie & Chike", year: 2025, kind: "series", description: "Substack / podcast, 2025." },
-  { id: "kendalls-cross", slug: "kendalls-cross", title: "Kendall's Cross", year: 2025, kind: "film", description: "Title language observed on the 2025 company reel." },
+  { id: "kendalls-cross", slug: "kendalls-cross", title: "Kendall's Cross", year: 2025, kind: "film", description: "Wrestler Kendall Cross documentary directed by Coodie & Chike. Editor Timothy Fryett's portfolio lists a 2025 credit and Coming soon, not a confirmed release.", releaseStatus: "in-development", dateNote: "2025 is the crew portfolio's credit year, not a verified release date.", sourceUrls: ["https://www.fryett.org/"] },
   { id: "jesus-walks", slug: "jesus-walks", title: "Jesus Walks", year: 2004, kind: "video", description: "Publicly reported as the third Jesus Walks video." },
-  { id: "two-words", slug: "two-words", title: "Two Words", year: 2004, kind: "video", description: "College Dropout–era video, publicly listed among the duo’s early work." },
+  { id: "two-words", slug: "two-words", title: "Two Words", year: 2005, kind: "video", description: "Apple Music dates the official music video to 2005. The song is from the 2004 album; the artist-channel upload is from 2009.", sourceUrls: ["https://music.apple.com/us/music-video/two-words/1445705924", "https://www.youtube.com/watch?v=tkFOBx6j0l8"] },
+  { id: "survival-tactics", slug: "survival-tactics", title: "Survival Tactics", year: 2012, kind: "video", description: "Joey Bada$$ and Capital STEEZ. PRO ERA's publisher description credits Shot by Creative Control.", sourceUrls: ["https://www.youtube.com/watch?v=DDWAk8-leVA"] },
+  { id: "children-of-the-world", slug: "children-of-the-world", title: "Children of the World", year: 2010, kind: "video", description: "Big K.R.I.T.'s official artist upload credits direction to Creative Control.", sourceUrls: ["https://www.youtube.com/watch?v=wbG7tMyhjJQ"] },
   { id: "good-morning", slug: "good-morning", title: "Good Morning", year: 2013, kind: "film", description: "2013 short. Publicly reported Creative Control film; festival debut." },
   { id: "accel-origins", slug: "accel-origins", title: "Accel Origins", year: 2017, kind: "series", description: "2017 founder shorts, publicly listed as Coodie & Chike." },
   { id: "tear-up", slug: "tear-up", title: "TEAR UP", year: 2014, kind: "series", description: "Public CC Television playlist and uploads, 2014." },
+  ...portfolioProjects,
 ];
 
 export const events: Event[] = [
@@ -230,7 +240,10 @@ export const tapes: SourceTape[] = [
 ];
 
 function clip(partial: ArchiveClip): ArchiveClip {
-  return partial;
+  return {
+    contentState: partial.youtubeId ? "public-source" : "placeholder",
+    ...partial,
+  };
 }
 
 export const authoredClips: ArchiveClip[] = [
@@ -599,14 +612,17 @@ export const authoredClips: ArchiveClip[] = [
   }),
   clip({
     id: "c-34", slug: "old-school-love-mark", title: "Old School Love",
-    description: "A later Chicago return through Lupe. Marker in the classics collection.",
-    dateApproximate: "2014", year: 2014, era: "documents", locationId: "chicago",
-    peopleIds: ["coodie", "chike", "lupe"], trackIds: ["old-school-love"], albumIds: [], projectIds: [], eventIds: [],
-    collectionIds: ["classics", "chicago-before"], themes: ["chicago", "authorship"],
-    tags: ["visual"], sourceTapeId: "t-0550", startTimecode: "01:10:00:00", endTimecode: "01:14:00:00",
-    duration: 240, thumbnail: "", poster: "", featured: false, visibility: "PUBLIC", rightsStatus: "MUSIC_PENDING",
-    editorialStatus: "APPROVED", sensitivityStatus: "NONE", relatedClipIds: ["c-21"], type: "BTS",
-    mediaKind: "CONTACT", formatHint: "DIGITAL", cameraCredit: "CREATIVE CONTROL", hue: 25,
+    description: "Lupe Fiasco's official artist-channel video featuring Ed Sheeran. The publisher credits direction to Coodie & Chike. Uploaded 10 December 2013. This public music video replaces the earlier placeholder; it is not a Benji production tape.",
+    dateExact: "2013-12-10", year: 2013, era: "documents", locationId: "",
+    peopleIds: ["coodie", "chike", "lupe"], trackIds: ["old-school-love"], albumIds: [], projectIds: ["old-school-love"], eventIds: [],
+    collectionIds: ["classics", "portfolio"], themes: ["authorship"],
+    tags: ["public-portfolio", "visual", "broadcast"], sourceTapeId: "", startTimecode: "00:00:00:00", endTimecode: "00:00:00:00",
+    duration: 0, thumbnail: "", poster: "", youtubeId: "wVnu7zi0daY", featured: false, visibility: "PUBLIC", rightsStatus: "UNCLEAR",
+    editorialStatus: "APPROVED", sensitivityStatus: "NONE", relatedClipIds: ["c-104"], type: "Performance",
+    mediaKind: "FIELD", formatHint: "DIGITAL", cameraCredit: "DIRECTED BY COODIE & CHIKE", hue: 25,
+    contentState: "public-source", programBlock: PORTFOLIO_BLOCK,
+    publicSource: { publisher: "Lupe Fiasco", url: "https://www.youtube.com/watch?v=wVnu7zi0daY", published: "2013-12-10", kind: "music-video" },
+    credits: [{ name: "Coodie & Chike", role: "Directors", personIds: ["coodie", "chike"] }],
   }),
   clip({
     id: "c-35", slug: "yellow-field-after-the-open", title: "Yellow field, after the open",
@@ -786,12 +802,16 @@ export const authoredClips: ArchiveClip[] = [
   }),
   clip({
     id: "c-51", slug: "vision-behind-window-seat", title: "The Vision Behind Window Seat",
-    description: "Public YouTube upload, 10 May 2025. A talk about Window Seat — not the 2010 walk, not the Dallas production tape.",
-    dateExact: "2025-05-10", year: 2025, era: "after", locationId: "new-york",
-    peopleIds: ["coodie", "chike", "badu"], trackIds: ["window-seat"], albumIds: ["newamerykah"], projectIds: ["window", "podcast"], eventIds: [],
+    description: "Coodie & Chike explain the vision behind Window Seat in their own public conversation. The finished video and this later reflection are separate works, connected here by the project.",
+    dateExact: "2025-05-10", year: 2025, era: "after", locationId: "",
+    dateNote: "Public upload: 10 May 2025. The finished Window Seat video dates to 2010; this conversation's recording location is not specified.",
+    peopleIds: ["coodie", "chike"], trackIds: ["window-seat"], albumIds: ["newamerykah"], projectIds: ["window", "podcast"], eventIds: [],
     collectionIds: ["classics"], themes: ["authorship", "presence"],
-    tags: ["broadcast", "conversation"], sourceTapeId: "t-broadcast", startTimecode: "00:00:00:00", endTimecode: "00:00:00:00",
-    duration: 0, thumbnail: "", poster: "", youtubeId: "kgSY_jxKLnU", featured: true, visibility: "PUBLIC", rightsStatus: "UNCLEAR",
+    tags: ["broadcast", "conversation", "public-source"], sourceTapeId: "", startTimecode: "00:00:00:00", endTimecode: "00:00:00:00",
+    duration: 86, thumbnail: "", poster: "", youtubeId: "kgSY_jxKLnU", featured: true, visibility: "PUBLIC", rightsStatus: "UNCLEAR",
+    publicSource: { publisher: "Creative Control", url: "https://www.youtube.com/watch?v=kgSY_jxKLnU", published: "2025-05-10", kind: "interview" },
+    contentState: "public-source", programBlock: "CREATIVE CONTROL TV",
+    credits: [{ name: "Coodie & Chike", role: "Commentary", personIds: ["coodie", "chike"] }],
     editorialStatus: "FEATURED", sensitivityStatus: "NONE", relatedClipIds: ["c-20", "c-41"], type: "Conversation",
     mediaKind: "FIELD", formatHint: "DIGITAL", cameraCredit: "CREATIVE CONTROL", hue: 16,
   }),
@@ -1158,4 +1178,5 @@ export const authoredClips: ArchiveClip[] = [
     editorialStatus: "APPROVED", sensitivityStatus: "NONE", relatedClipIds: ["c-82", "c-83"], type: "Performance",
     mediaKind: "FIELD", formatHint: "DIGITAL", cameraCredit: "CREATIVE CONTROL", hue: 56,
   }),
+  ...portfolioClips,
 ];

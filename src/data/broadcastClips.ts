@@ -1,5 +1,6 @@
 import type { ArchiveClip, ClipType } from "./types";
 import { youtubeUploads, type YoutubeVideo } from "./youtube";
+import { PORTFOLIO_BLOCK } from "./portfolio";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -33,9 +34,12 @@ function uploadYear(video: YoutubeVideo) {
 }
 
 function peopleFrom(title: string) {
-  const ids = new Set(["coodie", "chike"]);
+  // A CC upload is not evidence that either filmmaker appears in the footage.
+  const ids = new Set<string>();
+  if (/\bcoodie\b/i.test(title)) ids.add("coodie");
+  if (/\bchike\b/i.test(title)) ids.add("chike");
   if (/\bkanye(\s+west)?\b/i.test(title)) ids.add("ye");
-  if (/\beryah\s+badu\b/i.test(title)) ids.add("badu");
+  if (/\berykah\s+badu\b/i.test(title)) ids.add("badu");
   if (/joey\s+bada|pro\s+era/i.test(title)) ids.add("joey");
   if (/curren\s*\$?y|currensy/i.test(title)) ids.add("currensy");
   if (/\bmos\s+def\b|\byasiin\b/i.test(title)) ids.add("yasiin");
@@ -50,10 +54,16 @@ function peopleFrom(title: string) {
 }
 
 function locationFrom(title: string) {
-  if (/channel\s*zero/i.test(title) || /\bbenji\b/i.test(title)) return "chicago";
+  // Title-backed place/project associations, not a claim about every filming
+  // location. In particular, publication by CC does not make a record NYC.
+  if (/channel\s*zero|\bbenji\b|\bchicago\b/i.test(title)) return "chicago";
   if (/\bdd172\b/i.test(title)) return "dd172";
   if (/dallas|dealey|window seat/i.test(title)) return "dallas";
-  return "new-york";
+  if (/\bconey\s+island\b/i.test(title)) return "coney";
+  if (/\bnew\s+york\b|\bnyc\b|\bbrooklyn\b|\btribeca\b/i.test(title)) return "new-york";
+  if (/\btokyo\b/i.test(title)) return "tokyo";
+  if (/\bnew\s+orleans\b/i.test(title)) return "new-orleans";
+  return "";
 }
 
 function typeFrom(title: string): ClipType {
@@ -129,14 +139,9 @@ function hueFor(id: string) {
 function clipFromUpload(video: YoutubeVideo, slug: string): ArchiveClip {
   const title = video.title;
   const year = uploadYear(video);
-  let type = typeFrom(title);
-  let locationId = locationFrom(title);
+  const type = typeFrom(title);
+  const locationId = locationFrom(title);
   const peopleIds = peopleFrom(title);
-  // Combo Ye+Chicago+2002+Studio stays the basement card only.
-  if (peopleIds.includes("ye") && locationId === "chicago" && year === 2002 && type === "Studio") {
-    locationId = "new-york";
-    type = "Broadcast";
-  }
   return {
     id: video.clipId ?? `c-${video.id}`,
     slug,
@@ -162,12 +167,27 @@ function clipFromUpload(video: YoutubeVideo, slug: string): ArchiveClip {
     thumbnail: "",
     poster: "",
     youtubeId: video.id,
+    contentState: "public-source",
+    relatedClipIds: [],
+    ...(video.id === "BgXLP8rCwEE" ? {
+      // Promote the existing CC trailer, rather than duplicating its catalog record.
+      programBlock: PORTFOLIO_BLOCK,
+      publicSource: {
+        publisher: "Creative Control",
+        url: "https://www.youtube.com/watch?v=BgXLP8rCwEE",
+        kind: "trailer" as const,
+      },
+      peopleIds: ["benji"],
+      collectionIds: ["classics", "portfolio", "chicago-before"],
+      themes: ["sports", "chicago", "memory"],
+      credits: [{ name: "Coodie & Chike", role: "Directors" }],
+      relatedClipIds: ["c-portfolio-coney", "c-portfolio-meal-ticket"],
+    } : {}),
     featured: false,
     visibility: "PUBLIC",
     rightsStatus: "UNCLEAR",
     editorialStatus: "APPROVED",
     sensitivityStatus: "NONE",
-    relatedClipIds: [],
     type,
     mediaKind: /trailer|preview|ep\.?\s*\d/i.test(title) ? "LEADER" : "FIELD",
     formatHint: "DIGITAL",

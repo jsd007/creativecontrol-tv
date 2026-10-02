@@ -2,6 +2,8 @@ import { catalog } from "@/data";
 import type { ArchiveClip, Location, Person, Project } from "@/data/types";
 import { EntityDoors } from "@/components/entity/EntityDoors";
 import { EntityField } from "@/components/entity/EntityField";
+import { FilmmakerWork } from "@/components/entity/FilmmakerWork";
+import { creditedPublicWork } from "@/lib/credits";
 import {
   buildEntityGraph,
   constellationHref,
@@ -16,17 +18,20 @@ export function EntityView({
   place,
   project,
   clips,
+  creditRole,
 }: {
   kind: Kind;
   person?: Person;
   place?: Location;
   project?: Project;
   clips: ArchiveClip[];
+  creditRole?: string;
 }) {
   const legal = person?.name ?? place?.name ?? project?.title ?? "";
   const mark = person?.shortName ?? place?.name ?? project?.title ?? "";
   const dek = person?.bio ?? place?.description ?? project?.description ?? "";
-  const kicker = kind === "person" ? "PERSON" : kind === "place" ? "PLACE" : "PROJECT";
+  const creditedWork = person ? creditedPublicWork(clips, person.id) : [];
+  const kicker = creditedWork.length ? "FILMMAKER / COLLABORATOR" : kind === "person" ? "PERSON" : kind === "place" ? "PLACE" : "PROJECT";
   const entityId = person?.id ?? place?.id ?? project?.id ?? "";
   const archiveHref =
     kind === "person" && person
@@ -42,7 +47,7 @@ export function EntityView({
       ? catalog.locations.find((l) => l.name === place.city && l.city === place.city)
       : undefined;
 
-  const years = [...new Set(clips.map((c) => c.year))].sort((a, b) => a - b);
+  const years = [...new Set((creditedWork.length ? creditedWork : clips).map((c) => c.year))].sort((a, b) => a - b);
   const firstYear = years[0];
   const lastYear = years[years.length - 1];
   const span =
@@ -78,6 +83,7 @@ export function EntityView({
 
         <EntityDoors
           doors={[
+            ...(creditedWork.length ? [{ href: "#made-by", label: "MADE BY", loud: true }] : []),
             { href: archiveHref, label: "THE INDEX", loud: true },
             ...(field ? [{ href: constellationHref(kind, entityId), label: "THE FIELD" }] : []),
             ...(place ? [{ href: "/world", label: "THE WORLD" }] : []),
@@ -90,8 +96,13 @@ export function EntityView({
         />
       </header>
 
+      {person && creditedWork.length ? <FilmmakerWork person={person} clips={clips} activeRole={creditRole} /> : null}
+
       {field ? (
-        <EntityField field={field} />
+        <section className={creditedWork.length ? "mt-12" : ""}>
+          {creditedWork.length ? <p className="type-label text-dust">CONNECTED PEOPLE, PLACES & PROJECTS</p> : null}
+          <EntityField field={field} />
+        </section>
       ) : (
         <p className="mt-16 font-mono text-[11px] tracking-[0.18em] text-dust">NO FRAMES</p>
       )}

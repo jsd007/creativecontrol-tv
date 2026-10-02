@@ -1,0 +1,29 @@
+.portfolio-shelf { margin: 48px 0; border-top: 1px solid var(--hairline); padding-top: 24px; }
+.portfolio-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+.portfolio-heading > p { max-width: 340px; color: var(--dust); font-size: 13px; line-height: 1.6; }
+.portfolio-heading div > p, .portfolio-copy > p:first-child { font-family: var(--font-mono); font-size: 10px; line-height: 1.5; letter-spacing: .08em; color: var(--dust); }
+.portfolio-heading h2 { font-family: var(--font-cond); font-size: clamp(30px,4vw,48px); line-height: 1.05; margin-top: 8px; }
+.portfolio-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 28px 20px; }
+.portfolio-card { min-width: 0; display: block; }
+.portfolio-image { aspect-ratio: 16/9; position: relative; overflow: hidden; background: var(--ink); }
+.portfolio-image img { width: 100%; height: 100%; object-fit: cover; opacity: .84; transition: opacity .2s; }
+.portfolio-card:hover img { opacity: 1; }
+.portfolio-image > span { position: absolute; left: 10px; bottom: 10px; background: var(--void); color: var(--paper); font: 9px var(--font-mono); letter-spacing: .08em; padding: 5px 7px; }
+.portfolio-reference { border: 1px solid var(--hairline); display: flex; align-items: center; padding: 20px; }
+.portfolio-reference > p { font: clamp(22px,3vw,38px)/1 var(--font-cond); color: var(--paper); }
+.portfolio-reference span { display: block; margin-top: 14px; font: 9px var(--font-mono); color: var(--dust); letter-spacing: .08em; }
+.portfolio-copy { padding-top: 12px; }
+.portfolio-copy h3 { font: 24px/1.1 var(--font-cond); margin-top: 6px; }
+.portfolio-credit { margin-top: 7px; color: var(--dust); font-size: 12px; }
+.portfolio-copy > span { display: block; margin-top: 12px; font: 11px var(--font-cond); letter-spacing: .08em; color: var(--leader); }
+.portfolio-card:hover h3 { color: var(--leader); }
+@media(max-width: 767px) {
+  .portfolio-heading { display: block; }
+  .portfolio-heading > p { margin-top: 12px; }
+  .portfolio-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px 12px; }
+  .portfolio-copy h3 { font-size: 21px; }
+  .portfolio-copy > p:first-child { font-size: 9px; }
+  .portfolio-reference { padding: 12px; }
+  .portfolio-reference span { font-size: 8px; margin-top: 8px; }
+}
+@media(prefers-reduced-motion: reduce) { .portfolio-image img { transition: none; } }

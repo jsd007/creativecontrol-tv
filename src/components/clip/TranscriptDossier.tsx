@@ -1,15 +1,18 @@
 import Link from "next/link";
 import type { ArchiveClip, Transcript } from "@/data/types";
 import { offsetSmpte } from "@/lib/format";
+import { clipHref } from "@/lib/lensNavigation";
 
 export function TranscriptDossier({
   clip,
   transcript,
   activeSegmentId,
+  returnHref,
 }: {
   clip: ArchiveClip;
   transcript: Transcript;
   activeSegmentId?: string;
+  returnHref?: string;
 }) {
   return (
     <section className="mt-16 max-w-3xl">
@@ -24,10 +27,11 @@ export function TranscriptDossier({
         {transcript.segments.map((seg) => {
           const active = activeSegmentId === seg.id;
           const tc = offsetSmpte(clip.startTimecode, seg.start);
+          const href = clipHref(clip.slug, returnHref);
           return (
             <li key={seg.id} id={`seg-${seg.id}`} className="scroll-mt-20">
               <Link
-                href={`/clip/${clip.slug}?seg=${seg.id}#seg-${seg.id}`}
+                href={`${href}${href.includes("?") ? "&" : "?"}seg=${encodeURIComponent(seg.id)}#seg-${encodeURIComponent(seg.id)}`}
                 className={`block border-l-2 py-3.5 pl-4 hover:text-leader ${
                   active ? "border-leader text-leader" : "border-paper/15 text-paper"
                 }`}

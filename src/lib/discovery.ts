@@ -25,6 +25,10 @@ function publicClips() {
   return catalog.clips.filter(isDiscoverable);
 }
 
+function publicVideos() {
+  return publicClips().filter((clip) => Boolean(clip.youtubeId));
+}
+
 /** PUBLIC house mock — not the official CH 07 file. */
 function housePublic(clip: ArchiveClip) {
   return isDiscoverable(clip) && isAuthored(clip) && !isOfficialHolding(clip);
@@ -58,6 +62,10 @@ export function takeMeSomewhereCity(seed = STABLE_SEED) {
 }
 
 export function watchSomethingUnseen(seed = STABLE_SEED): ArchiveClip {
+  // The surprise moment in a public proof should actually play, not imply private vault access.
+  const released = publicVideos().filter((clip) => clip.type === "BTS" || clip.type === "Studio" || clip.type === "Interview");
+  const realMoment = pick(released, seed + 7);
+  if (realMoment) return realMoment;
   const unseen = publicClips().filter(
     (c) => c.type === "Unseen" || c.collectionIds.includes("unseen"),
   );
@@ -96,9 +104,11 @@ export function onThisDay(date = new Date()): ArchiveClip[] {
 
 export function fromChicago(seed = STABLE_SEED): ArchiveClip {
   const chi = publicClips().filter((c) => getLocation(c.locationId)?.city === "Chicago");
+  const real = chi.filter((clip) => Boolean(clip.youtubeId));
   const house = chi.filter(housePublic);
   const authored = chi.filter(isAuthored);
   return (
+    pick(real, seed + 11) ??
     pick(house, seed + 11) ??
     pick(authored, seed + 11) ??
     pick(chi, seed + 11) ??
@@ -109,6 +119,10 @@ export function fromChicago(seed = STABLE_SEED): ArchiveClip {
 }
 
 export function coodiePick(seed = STABLE_SEED): ArchiveClip {
+  // Legacy function/collection IDs preserve links; this is a house selection, not Coodie's endorsement.
+  const real = publicVideos().filter((clip) => clip.featured);
+  const housePick = pick(real.length ? real : publicVideos(), seed + 4);
+  if (housePick) return housePick;
   const housePicks = housePublicClips().filter((c) => c.collectionIds.includes("coodies-picks"));
   const featuredHouse = housePicks.filter((c) => c.featured);
   const picks = publicClips().filter((c) => c.collectionIds.includes("coodies-picks"));
@@ -201,8 +215,8 @@ export function discoveryDoors(seed = STABLE_SEED, date = new Date()): Discovery
     },
     {
       id: "unseen",
-      label: "UNSEEN",
-      kicker: "A LEFTOVER",
+      label: "PUBLIC MOMENT",
+      kicker: "ON CAMERA",
       href: `/clip/${unseen.slug}`,
       note: `${clipHeading(unseen).toUpperCase()} · ${getLocation(unseen.locationId)?.name.toUpperCase() ?? ""} · ${unseen.year}`,
     },
@@ -222,8 +236,8 @@ export function discoveryDoors(seed = STABLE_SEED, date = new Date()): Discovery
     },
     {
       id: "pick",
-      label: "COODIE'S PICK",
-      kicker: "HIS CUT",
+      label: "HOUSE PICK",
+      kicker: "EDITORIAL SELECTION",
       href: `/clip/${pickClip.slug}`,
       note: `${clipHeading(pickClip).toUpperCase()} · ${pickClip.year}`,
     },

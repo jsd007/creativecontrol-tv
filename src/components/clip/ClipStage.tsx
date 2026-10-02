@@ -11,12 +11,13 @@ export function ClipStage({
   picture,
   file,
 }: {
-  cassette: React.ReactNode;
+  cassette?: React.ReactNode;
   picture: React.ReactNode;
   file: React.ReactNode;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const reduced = usePrefersReducedMotion();
+  const hasCassette = Boolean(cassette);
 
   useGSAP(
     () => {
@@ -26,36 +27,38 @@ export function ClipStage({
 
       if (reduced) {
         gsap.set(q(".clip-aperture"), { clipPath: "inset(0% 0% 0% 0%)", opacity: 1 });
-        gsap.set(q(".clip-cassette"), { y: 0, rotate: 0, opacity: 1 });
+        if (hasCassette) gsap.set(q(".clip-cassette"), { y: 0, rotate: 0, opacity: 1 });
         gsap.set(q(".clip-hair"), { scaleX: 1 });
         gsap.set(q(".clip-file"), { y: 0, opacity: 1 });
         return;
       }
 
-      gsap
+      const reveal = gsap
         .timeline({ defaults: { ease: GATE_EASE } })
         .fromTo(
           q(".clip-aperture"),
           { clipPath: "inset(7% 9% 7% 9%)", opacity: 0.76 },
           { clipPath: "inset(0% 0% 0% 0%)", opacity: 1, duration: MOTION.speak },
           0,
-        )
-        .fromTo(
+        );
+      if (hasCassette) {
+        reveal.fromTo(
           q(".clip-cassette"),
           { y: 16, rotate: -2.1, opacity: 0 },
           { y: 0, rotate: 0, opacity: 1, duration: MOTION.tape },
           0.05,
-        )
-        .fromTo(q(".clip-hair"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, transformOrigin: "left center" }, 0.1)
+        );
+      }
+      reveal.fromTo(q(".clip-hair"), { scaleX: 0 }, { scaleX: 1, duration: 0.4, transformOrigin: "left center" }, 0.1)
         .fromTo(q(".clip-file"), { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5 }, 0.18);
     },
-    { scope: root, dependencies: [reduced] },
+    { scope: root, dependencies: [reduced, hasCassette] },
   );
 
   return (
     <div ref={root} className="mt-6">
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(140px,188px)_minmax(0,1fr)] lg:gap-8">
-        <div className="clip-cassette max-w-[188px]">{cassette}</div>
+      <div className={`grid items-start gap-6 lg:gap-8 ${cassette ? "lg:grid-cols-[minmax(140px,188px)_minmax(0,1fr)]" : ""}`}>
+        {cassette ? <div className="clip-cassette max-w-[188px]">{cassette}</div> : null}
         <div className="clip-gate relative">
           <div className="pointer-events-none absolute -left-px -right-px -top-px h-px bg-leader/50" />
           <div className="clip-aperture relative bg-void">

@@ -118,6 +118,10 @@ export interface Project {
   year: number;
   kind: "film" | "series" | "video" | "network" | "show";
   description: string;
+  /** Public project evidence, not evidence that the prototype holds the film. */
+  sourceUrls?: string[];
+  dateNote?: string;
+  releaseStatus?: "released" | "announced" | "in-development";
 }
 
 export interface Event {
@@ -194,6 +198,9 @@ export interface ArchiveClip {
   description: string;
   dateExact?: string;
   dateApproximate?: string;
+  /** What the browsing year represents when it differs from public upload time. */
+  dateBasis?: "release-year" | "recorded-year";
+  dateNote?: string;
   year: number;
   era: string;
   locationId: string;
@@ -212,8 +219,21 @@ export interface ArchiveClip {
   thumbnail: string;
   poster: string;
   previewVideo?: string;
-  /** Official YouTube upload id on @cctelevisionchannel. Never a ripped file. */
+  /** Public publisher's YouTube upload id. Never a ripped file. */
   youtubeId?: string;
+  /** Explicit provenance for curated public media outside the CC upload listing. */
+  publicSource?: {
+    publisher: string;
+    url: string;
+    /** Upload/publication date, not necessarily the film's premiere. */
+    published?: string;
+    kind: "trailer" | "music-video" | "documentary-excerpt" | "behind-the-scenes" | "interview" | "project-page";
+  };
+  contentState?: "public-source" | "project-reference" | "placeholder";
+  /** Editorial browsing group; never presented as an official publisher playlist. */
+  programBlock?: string;
+  /** Named publisher credits. Person IDs are explicit, never guessed from a company name. */
+  credits?: { name: string; role: string; personIds?: string[] }[];
   transcriptId?: string;
   featured: boolean;
   visibility: Visibility;

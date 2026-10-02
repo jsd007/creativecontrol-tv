@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { catalog } from "@/data";
 import { PrototypeMedia } from "@/components/media/PrototypeMedia";
 import { leftoverFrames, storyFrames, yearSpan } from "@/components/collections/held";
@@ -46,7 +47,12 @@ export function CollectionIndex() {
                 </div>
                 {lead ? (
                   <Link href={href} className={flip ? "md:order-1" : undefined}>
-                    <PrototypeMedia clip={lead} chrome="stamp" className="aspect-[4/3] w-full" />
+                    {lead.youtubeId ? (
+                      <div className="relative aspect-[4/3] w-full overflow-hidden bg-paper/5">
+                        <Image src={`https://i.ytimg.com/vi/${lead.youtubeId}/hqdefault.jpg`} alt={lead.title} fill unoptimized sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+                        <span className="absolute bottom-3 left-3 bg-ink/90 px-2 py-1 font-mono text-[10px] tracking-[0.1em] text-leader">PUBLIC SOURCE</span>
+                      </div>
+                    ) : <PrototypeMedia clip={lead} chrome="stamp" className="aspect-[4/3] w-full" />}
                   </Link>
                 ) : null}
               </article>

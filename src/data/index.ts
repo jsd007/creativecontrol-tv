@@ -15,11 +15,15 @@ import {
 import { broadcastClipsFromUploads } from "./broadcastClips";
 import { expandClips } from "./expand";
 import { transcripts } from "./transcripts";
+import { publicMediaAdditions, publicMediaReplacements } from "./publicMedia";
+import { channelZeroClips, channelZeroPeople, channelZeroProjects } from "./channelZero";
+import { isRecordedDate } from "../lib/format";
 import type { ArchiveClip, SourceTape, Transcript } from "./types";
 
 function linkRelations(clips: ArchiveClip[]): ArchiveClip[] {
   const byTape = new Map<string, ArchiveClip[]>();
   for (const clip of clips) {
+    if (!clip.sourceTapeId) continue;
     const list = byTape.get(clip.sourceTapeId) ?? [];
     list.push(clip);
     byTape.set(clip.sourceTapeId, list);
@@ -32,8 +36,8 @@ function linkRelations(clips: ArchiveClip[]): ArchiveClip[] {
     const sameDay = clips.filter(
       (c) =>
         c.id !== clip.id &&
-        c.dateExact &&
-        clip.dateExact &&
+        isRecordedDate(c) &&
+        isRecordedDate(clip) &&
         c.dateExact === clip.dateExact,
     );
     const related = [
@@ -50,13 +54,17 @@ function linkRelations(clips: ArchiveClip[]): ArchiveClip[] {
 function attachTranscripts(clips: ArchiveClip[]): ArchiveClip[] {
   const byClip = new Map(transcripts.map((t) => [t.clipId, t.id]));
   return clips.map((clip) => {
+    if (clip.youtubeId || clip.publicSource) return clip;
     const transcriptId = byClip.get(clip.id);
     return transcriptId ? { ...clip, transcriptId } : clip;
   });
 }
 
+const replacements = new Map(publicMediaReplacements.map((clip) => [clip.id, clip]));
+const selectedAuthored = [...authoredClips.map((clip) => replacements.get(clip.id) ?? clip), ...publicMediaAdditions, ...channelZeroClips];
+
 export const catalog = {
-  people,
+  people: [...people, ...channelZeroPeople],
   locations,
   eras,
   collections,
@@ -64,11 +72,11 @@ export const catalog = {
   organizations,
   tracks,
   albums,
-  projects,
+  projects: [...projects, ...channelZeroProjects],
   events,
   tapes,
   clips: attachTranscripts(
-    linkRelations([...authoredClips, ...broadcastClipsFromUploads(authoredClips), ...expandClips()]),
+    linkRelations([...selectedAuthored, ...broadcastClipsFromUploads(selectedAuthored), ...expandClips()]),
   ),
 };
 
@@ -118,7 +126,9 @@ export function getTranscript(id: string): Transcript | undefined {
   return transcripts.find((t) => t.id === id || t.clipId === id);
 }
 
-export function transcriptForClip(clip: Pick<ArchiveClip, "id" | "transcriptId">) {
+export function transcriptForClip(clip: Pick<ArchiveClip, "id" | "transcriptId"> & Partial<Pick<ArchiveClip, "youtubeId" | "publicSource">>) {
+  // Concept transcripts are never evidence of speech in a real publisher video.
+  if (clip.youtubeId || clip.publicSource) return undefined;
   if (clip.transcriptId) {
     const byId = transcripts.find((t) => t.id === clip.transcriptId);
     if (byId) return byId;
@@ -126,7 +136,7 @@ export function transcriptForClip(clip: Pick<ArchiveClip, "id" | "transcriptId">
   return transcripts.find((t) => t.clipId === clip.id);
 }
 
-export function transcriptSearchText(clip: Pick<ArchiveClip, "id" | "transcriptId">) {
+export function transcriptSearchText(clip: Parameters<typeof transcriptForClip>[0]) {
   const tr = transcriptForClip(clip);
   if (!tr) return "";
   return tr.segments.map((s) => [s.speaker, s.text].filter(Boolean).join(" ")).join(" ");
@@ -150,7 +160,7 @@ export function cityLocations() {
 export function clipsForPerson(id: string) {
   const person = getPerson(id);
   if (!person) return [];
-  return catalog.clips.filter((c) => c.peopleIds.includes(person.id));
+  return catalog.clips.filter((c) => c.peopleIds.includes(person.id) || c.credits?.some((credit) => credit.personIds?.includes(person.id)));
 }
 
 export function clipsForLocation(id: string) {

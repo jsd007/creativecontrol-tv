@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { youtubeEmbedSrc, youtubeThumbnail } from "@/data/youtube";
 import { classNames } from "@/lib/format";
 
@@ -9,9 +10,10 @@ type Props = {
   title: string;
   className?: string;
   large?: boolean;
+  publisher?: string;
 };
 
-export function BroadcastPlayer({ youtubeId, title, className = "", large = false }: Props) {
+export function BroadcastPlayer({ youtubeId, title, className = "", large = false, publisher = "CC-TV" }: Props) {
   const [playing, setPlaying] = useState(false);
 
   return (
@@ -25,11 +27,14 @@ export function BroadcastPlayer({ youtubeId, title, className = "", large = fals
           className="absolute inset-0 h-full w-full"
         />
       ) : (
-        <button type="button" onClick={() => setPlaying(true)} className="absolute inset-0 block h-full w-full">
+        <button type="button" aria-label={`Play ${title}, muted`} onClick={() => setPlaying(true)} className="absolute inset-0 block h-full w-full">
           {/* Official YouTube thumbnail URL. Not downloaded into the repo. */}
-          <img
+          <Image
             src={youtubeThumbnail(youtubeId)}
             alt=""
+            fill
+            sizes={large ? "(max-width: 767px) 100vw, 70vw" : "(max-width: 767px) 50vw, 33vw"}
+            unoptimized
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
@@ -41,7 +46,7 @@ export function BroadcastPlayer({ youtubeId, title, className = "", large = fals
 
       <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between p-3">
         <span className="font-mono text-[9px] tracking-[0.16em] text-paper/80">PUBLIC BROADCAST</span>
-        {large ? <span className="font-mono text-[9px] tracking-[0.16em] text-paper/70">CC-TV</span> : null}
+        {large ? <span className="font-mono text-[9px] tracking-[0.16em] text-paper/70">{publisher.toUpperCase()}</span> : null}
       </div>
     </div>
   );
