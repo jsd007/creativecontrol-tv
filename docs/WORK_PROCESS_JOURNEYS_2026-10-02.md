@@ -9,7 +9,9 @@
 
 ## Demo paths
 
-Use these paths on the latest preview deployment. Production has not been promoted by this pass.
+Preview: [Open the Homecoming journey](https://creativecontrol-4edcqql6x-james-dombros-projects.vercel.app/tv?ch=07&journey=homecoming). Vercel confirmed READY, and playback plus the corrected public-source credit cards were verified on the deployed site. Application commit: `eff6a70` on `codex/world-history-refinement`, reviewed through [PR #4](https://github.com/jsd007/creativecontrol-tv/pull/4).
+
+Use these paths on that preview deployment. Production has not been promoted by this pass.
 
 - `/tv?ch=07&journey=homecoming`
 - `/tv?ch=07&journey=early-chicago`
