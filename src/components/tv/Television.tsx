@@ -146,11 +146,7 @@ export function Television() {
 
   const onTitle = now ? programTitle(now) : "";
   const nowMark =
-    channel.id === "broadcast" && now
-      ? officialBlock(now)
-      : now && daypart(now) !== channel.name
-        ? daypart(now)
-        : "";
+    now ? channel.selection ? "PUBLIC SELECTION" : channel.id === "broadcast" ? officialBlock(now) : daypart(now) : "";
 
   return (
     <div className="television px-4 pb-24 md:px-6">

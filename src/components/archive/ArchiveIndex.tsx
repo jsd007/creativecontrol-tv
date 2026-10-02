@@ -125,12 +125,12 @@ export function ArchiveIndex({ initial }: { initial: ArchiveFilters }) {
   const sentence = sentenceFor(filters);
   const years = yearsInCatalog();
   const entrySlugs = [
-    "curren-y-wiz-khalifa-nyc-cmj-2009-www-creativecontrol-tv",
+    "through-the-wire-official-video",
+    "window-seat-one-take",
+    "joey-brooklyn-daylight",
     "wiki-wikispeaks",
-    "pro-era-beast-coastal",
-    "tear-up",
     "channel-zero-redman-erykah-badu",
-    "vision-behind-window-seat",
+    "a-cut-from-the-vault",
   ];
   const openingRecords = entrySlugs
     .map((slug) => catalog.clips.find((clip) => clip.youtubeId && clip.slug === slug))

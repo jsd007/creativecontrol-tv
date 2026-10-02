@@ -1,5 +1,16 @@
 import type { ArchiveClip } from "@/data/types";
 
+export function publicMediaKind(clip: Pick<ArchiveClip, "publicSource">) {
+  switch (clip.publicSource?.kind) {
+    case "trailer": return "trailer";
+    case "music-video": return "music video";
+    case "documentary-excerpt": return "documentary excerpt";
+    case "interview": return "interview";
+    case "project-page": return "project reference";
+    default: return "video";
+  }
+}
+
 export function formatDuration(seconds: number) {
   const s = Math.max(0, Math.round(seconds));
   const m = Math.floor(s / 60);

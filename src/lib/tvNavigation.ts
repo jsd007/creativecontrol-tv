@@ -4,11 +4,11 @@ export type TVProgram = { clip: ArchiveClip; title: string; block: string; index
 export const ALL_PROGRAMS = "__all__";
 export const TV_STARTERS = [
   "wiki-wikispeaks",
-  "curren-y-wiz-khalifa-nyc-cmj-2009-www-creativecontrol-tv",
+  "through-the-wire-official-video",
+  "window-seat-one-take",
+  "jeen-yuhs-slow-jamz-studio",
   "channel-zero-redman-erykah-badu",
-  "tear-up",
-  "pro-era-beast-coastal",
-  "vision-behind-window-seat",
+  "a-cut-from-the-vault",
 ] as const;
 
 export function tvChannel(raw: string | null, count: number, fallback: number) {

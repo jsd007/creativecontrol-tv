@@ -14,7 +14,7 @@ import {
 import type { Album, ArchiveClip, Collection, Person, Project, Track } from "@/data/types";
 import { relatedCards, relatedClips } from "@/lib/archiveQuery";
 import { clipHeading, clipTechnical, isUnlogged } from "@/lib/clipDisplay";
-import { formatDate } from "@/lib/format";
+import { formatDate, publicMediaKind } from "@/lib/format";
 import { holdFor, isClosed } from "@/lib/visibility";
 import { ClipDossier } from "@/components/clip/ClipDossier";
 import { ClipSleeve } from "@/components/clip/ClipSleeve";
@@ -141,9 +141,10 @@ export function ClipView({ clip, activeSegmentId, returnHref }: { clip: ArchiveC
                   VIEW ORIGINAL · {publicSource.publisher.toUpperCase()} <span className="ml-2" aria-hidden>↗</span>
                 </a>
                 <p className="font-mono text-[11px] leading-relaxed text-dust">
-                  {projectReference ? "Public project credit. No archive footage is represented here." : `Public ${publicSource.kind === "trailer" ? "trailer" : "music video"} from the named publisher. Not a private archive holding.`}
+                  {projectReference ? "Public project credit. No archive footage is represented here." : `Public ${publicMediaKind(clip)} from the named publisher. Not a private archive holding.`}
                   {publicSource.published ? ` Published ${publicSource.published}.` : ""}
                 </p>
+                {clip.dateNote ? <p className="mt-2 font-mono text-[11px] leading-relaxed text-dust">{clip.dateNote}</p> : null}
               </div>
             ) : null}
             {hold ? (

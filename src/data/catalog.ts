@@ -37,7 +37,7 @@ export const eras: Era[] = [
     slug: "through-the-wire",
     name: "Through the Wire",
     startYear: 2002,
-    endYear: 2004,
+    endYear: 2005,
     description: "Accident, Polaroids, after-hours MTV. The first video as a duo.",
   },
   {
@@ -86,6 +86,7 @@ export const collections: Collection[] = [
   { id: "unseen", slug: "unseen", name: "Unseen", dek: "Material that never survived a documentary cut.", editorial: true },
   { id: "classics", slug: "creative-control-classics", name: "Creative Control Classics", dek: "The house style after the name existed.", editorial: true },
   { id: "portfolio", slug: "public-projects", name: "Projects & Films", dek: "Public trailers, music videos, and project references. Not private archive footage.", editorial: false },
+  { id: "public-previews", slug: "public-previews", name: "Public Previews", dek: "Official trailers and released excerpts. Not unseen private holdings.", editorial: false },
 ];
 
 export const themes: Theme[] = [
@@ -111,6 +112,9 @@ export const organizations: Organization[] = [
 ];
 
 export const people: Person[] = [
+  { id: "teyana", slug: "teyana-taylor", name: "Teyana Taylor", shortName: "Teyana Taylor", roles: ["artist"], bio: "Appears in TIME's publicly released jeen-yuhs studio outtake." },
+  { id: "jamie-foxx", slug: "jamie-foxx", name: "Jamie Foxx", shortName: "Jamie Foxx", roles: ["artist"], bio: "Appears in Netflix's public Slow Jamz recording excerpt." },
+  { id: "steez", slug: "capital-steez", name: "Capital STEEZ", shortName: "Capital STEEZ", roles: ["artist"], bio: "Performs with Joey Bada$$ in PRO ERA's public Survival Tactics video." },
   { id: "coodie", slug: "coodie-simmons", name: "Clarence “Coodie” Simmons", shortName: "Coodie", bornYear: 1971, origin: "Chicago", roles: ["camera", "director", "subject"], featured: true, bio: "Comedian who picked up a camera and did not put it down. Channel Zero. The long shoot." },
   { id: "chike", slug: "chike-ozah", name: "Chike Ozah", shortName: "Chike", bornYear: 1978, origin: "New Orleans", roles: ["director", "related"], featured: true, bio: "SCAD, MTV motion design, then the other half of the duo. Visual structure." },
   { id: "sorge", slug: "danny-sorge", name: "Danny Sorge", shortName: "Danny Sorge", origin: "Chicago", roles: ["related"], bio: "Barbershop friend who asked Coodie to host Channel Zero." },
@@ -186,7 +190,9 @@ export const projects: Project[] = [
   { id: "podcast", slug: "creative-control-podcast", title: "Creative Control w/ Coodie & Chike", year: 2025, kind: "series", description: "Substack / podcast, 2025." },
   { id: "kendalls-cross", slug: "kendalls-cross", title: "Kendall's Cross", year: 2025, kind: "film", description: "Wrestler Kendall Cross documentary directed by Coodie & Chike. Editor Timothy Fryett's portfolio lists a 2025 credit and Coming soon, not a confirmed release.", releaseStatus: "in-development", dateNote: "2025 is the crew portfolio's credit year, not a verified release date.", sourceUrls: ["https://www.fryett.org/"] },
   { id: "jesus-walks", slug: "jesus-walks", title: "Jesus Walks", year: 2004, kind: "video", description: "Publicly reported as the third Jesus Walks video." },
-  { id: "two-words", slug: "two-words", title: "Two Words", year: 2004, kind: "video", description: "College Dropout–era video, publicly listed among the duo’s early work." },
+  { id: "two-words", slug: "two-words", title: "Two Words", year: 2005, kind: "video", description: "Apple Music dates the official music video to 2005. The song is from the 2004 album; the artist-channel upload is from 2009.", sourceUrls: ["https://music.apple.com/us/music-video/two-words/1445705924", "https://www.youtube.com/watch?v=tkFOBx6j0l8"] },
+  { id: "survival-tactics", slug: "survival-tactics", title: "Survival Tactics", year: 2012, kind: "video", description: "Joey Bada$$ and Capital STEEZ. PRO ERA's publisher description credits Shot by Creative Control.", sourceUrls: ["https://www.youtube.com/watch?v=DDWAk8-leVA"] },
+  { id: "children-of-the-world", slug: "children-of-the-world", title: "Children of the World", year: 2010, kind: "video", description: "Big K.R.I.T.'s official artist upload credits direction to Creative Control.", sourceUrls: ["https://www.youtube.com/watch?v=wbG7tMyhjJQ"] },
   { id: "good-morning", slug: "good-morning", title: "Good Morning", year: 2013, kind: "film", description: "2013 short. Publicly reported Creative Control film; festival debut." },
   { id: "accel-origins", slug: "accel-origins", title: "Accel Origins", year: 2017, kind: "series", description: "2017 founder shorts, publicly listed as Coodie & Chike." },
   { id: "tear-up", slug: "tear-up", title: "TEAR UP", year: 2014, kind: "series", description: "Public CC Television playlist and uploads, 2014." },

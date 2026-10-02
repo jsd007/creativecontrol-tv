@@ -1,10 +1,12 @@
 import Link from "next/link";
+import Image from "next/image";
 import { catalog, getLocation, getPerson, getTape } from "@/data";
 import type { ArchiveClip, Collection } from "@/data/types";
 import { PrototypeMedia } from "@/components/media/PrototypeMedia";
 import { leftoverFrames, storyFrames, yearSpan } from "@/components/collections/held";
 import { clipHeading } from "@/lib/clipDisplay";
 import { visibilityLabel } from "@/lib/format";
+import { youtubeThumbnail } from "@/data/youtube";
 
 export function CollectionStory({ collection }: { collection: Collection }) {
   const held = storyFrames(collection.id);
@@ -111,7 +113,12 @@ function StoryBeat({ clip, open, flip }: { clip: ArchiveClip; open: boolean; fli
   return (
     <article className="grid items-center gap-8 py-12 md:grid-cols-2 md:gap-12 lg:gap-16 md:py-14">
       <Link href={`/clip/${clip.slug}`} className={`${open ? "frame-in-gate " : ""}block ${flip ? "md:order-2" : ""}`}>
-        <PrototypeMedia clip={clip} chrome="stamp" className="aspect-[4/3] w-full" />
+        {clip.youtubeId ? (
+          <div className="relative aspect-[4/3] overflow-hidden bg-ink">
+            <Image src={youtubeThumbnail(clip.youtubeId)} alt="" fill sizes="(max-width: 767px) 100vw, 50vw" unoptimized className="object-cover" />
+            <span className="absolute left-3 top-3 bg-void/90 px-2 py-1 font-mono text-[10px] tracking-[0.12em] text-paper">PUBLIC SOURCE</span>
+          </div>
+        ) : <PrototypeMedia clip={clip} chrome="stamp" className="aspect-[4/3] w-full" />}
       </Link>
       <div className={flip ? "md:order-1" : undefined}>
         <h2 className="max-w-[16ch] font-display text-3xl leading-none text-paper md:text-5xl">

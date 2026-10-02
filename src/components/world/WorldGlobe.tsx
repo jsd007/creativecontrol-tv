@@ -610,13 +610,14 @@ function WorldMap({
 const FRONT_PLACES = ["chicago", "new-york", "los-angeles", "atlanta", "new-orleans", "dallas"];
 
 function placeStories(location: Location, year: number): ArchiveClip[] {
-  return catalog.clips
+  const matching = catalog.clips
     .filter((clip) => {
       if (!isAuthored(clip) || isUnlogged(clip) || clip.year > year) return false;
       return getLocation(clip.locationId)?.city === location.city;
     })
-    .sort((a, b) => Number(Boolean(b.youtubeId)) - Number(Boolean(a.youtubeId)) || Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || a.year - b.year)
-    .slice(0, 6);
+    .sort((a, b) => Number(Boolean(b.youtubeId)) - Number(Boolean(a.youtubeId)) || Number(Boolean(b.featured)) - Number(Boolean(a.featured)) || a.year - b.year);
+  const publicStories = matching.filter((clip) => clip.youtubeId);
+  return (publicStories.length ? publicStories : matching).slice(0, 6);
 }
 
 function WorldStory({ clip, index, returnHref }: { clip: ArchiveClip; index: number; returnHref: string }) {

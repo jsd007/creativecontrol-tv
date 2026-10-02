@@ -69,7 +69,7 @@ export function Guide({ channel, sections, programs, results, find, block, page,
               ? `${results.length} ${results.length === 1 ? "program" : "programs"} in this view`
               : isBroadcast
                 ? "Six starting points. Choose a title, then press play."
-                : `${programs.length} example ${programs.length === 1 ? "program" : "programs"} on this channel.`}
+                : `${programs.length} public ${programs.length === 1 ? "program" : "programs"}. Choose a title, then press play.`}
           </p>
         </div>
         <span className="font-mono text-[11px] tracking-[0.12em] text-dust">CH {channel.n}</span>
@@ -147,7 +147,7 @@ export function Guide({ channel, sections, programs, results, find, block, page,
           {programs.length} public uploads indexed across verified blocks. Search or choose a block to go deeper.
         </p>
       ) : null}
-      {!isBroadcast ? <p className="tv-guide-note">House-channel programming is an interface example, not a published schedule.</p> : null}
+      {!isBroadcast ? <p className="tv-guide-note">An editorial selection of released public videos, not an official playlist or private archive inventory.</p> : null}
     </section>
   );
 }

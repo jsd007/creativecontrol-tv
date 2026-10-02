@@ -28,8 +28,8 @@ function sourceFile(specifier, from = sourceRoot) {
 function loadSource(specifier, from) {
   const filename = sourceFile(specifier, from);
   if (modules.has(filename)) return modules.get(filename).exports;
-  const module = { exports: {} };
-  modules.set(filename, module); // CommonJS-style caching also supports local cycles.
+  const loadedModule = { exports: {} };
+  modules.set(filename, loadedModule); // CommonJS-style caching also supports local cycles.
   const compiled = ts.transpileModule(fs.readFileSync(filename, "utf8"), {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
@@ -42,16 +42,18 @@ function loadSource(specifier, from) {
     ? loadSource(next, path.dirname(filename))
     : nativeRequire(next);
   new Function("require", "module", "exports", "__filename", "__dirname", compiled)(
-    localRequire, module, module.exports, filename, path.dirname(filename),
+    localRequire, loadedModule, loadedModule.exports, filename, path.dirname(filename),
   );
-  return module.exports;
+  return loadedModule.exports;
 }
 
-const { catalog, getClip, getProject, getTrack } = loadSource("@/data");
+const { catalog, getClip, getProject, getTrack, transcriptForClip, transcriptSearchText } = loadSource("@/data");
 const { youtubeUploads, YOUTUBE_CHANNEL } = loadSource("@/data/youtube");
 const { PUBLIC_PORTFOLIO_CLIP_IDS, PORTFOLIO_CLIP_IDS, PORTFOLIO_BLOCK } = loadSource("@/data/portfolio");
 const { officialBlock, CHANNELS, channelLineup } = loadSource("@/lib/television");
 const { relatedClips } = loadSource("@/lib/archiveQuery");
+const { filterClips } = loadSource("@/lib/archiveQuery");
+const { publicMediaReplacements, publicMediaAdditions, PUBLIC_CHANNEL_SELECTIONS } = loadSource("@/data/publicMedia");
 
 function unique(values, label) {
   assert.equal(new Set(values).size, values.length, `${label} are unique`);
@@ -75,7 +77,87 @@ test("external publishers do not inflate or contaminate the 366 CC uploads", () 
     assert.equal(officialIds.has(id), false, `${id} is not a CC channel upload`);
     assert.equal(catalog.clips.filter((clip) => clip.youtubeId === id).length, 1);
   }
-  assert.equal(catalog.clips.filter((clip) => clip.youtubeId).length, 370);
+  assert.equal(catalog.clips.filter((clip) => clip.youtubeId).length, 381);
+});
+
+test("all eleven new public records have publisher evidence and no invented cassette or transcript", () => {
+  const additions = [...publicMediaReplacements, ...publicMediaAdditions];
+  assert.equal(additions.length, 11);
+  for (const reference of additions) {
+    const clip = getClip(reference.id);
+    assert.equal(clip.contentState, "public-source");
+    assert.equal(clip.visibility, "PUBLIC");
+    assert.equal(clip.rightsStatus, "UNCLEAR");
+    assert.equal(clip.sourceTapeId, "");
+    assert.equal(clip.duration, 0);
+    assert.equal(clip.startTimecode, "00:00:00:00");
+    assert.equal(clip.endTimecode, "00:00:00:00");
+    assert.equal(clip.transcriptId, undefined);
+    assert.equal(transcriptForClip(clip), undefined);
+    assert.equal(transcriptSearchText(clip), "");
+    assert.equal(clip.publicSource.url, `https://www.youtube.com/watch?v=${clip.youtubeId}`);
+    assert.ok(clip.publicSource.publisher && clip.publicSource.published);
+  }
+});
+
+test("replacing a work card preserves its saved URL, not its prototype metadata", () => {
+  const aliases = {
+    "c-20": "window-seat-one-take", "c-25": "a-cut-from-the-vault", "c-27": "joey-brooklyn-daylight",
+    "c-46": "jesus-walks-third", "c-47": "two-words-card",
+  };
+  for (const [id, slug] of Object.entries(aliases)) assert.equal(getClip(slug).id, id);
+  assert.equal(getClip("c-20").type, "Performance", "Finished Window Seat is not a fabricated BTS scene");
+  assert.equal(getClip("c-27").type, "Performance");
+  assert.equal(getClip("c-25").locationId, "", "No invented London premiere tape");
+});
+
+test("every themed TV channel opens with four to eight real public programs", () => {
+  for (const [id, selection] of Object.entries(PUBLIC_CHANNEL_SELECTIONS)) {
+    const channel = CHANNELS.find((row) => row.id === id);
+    const lineup = channelLineup(channel);
+    assert.ok(lineup.length >= 4 && lineup.length <= 8, `${id} has a useful small selection`);
+    assert.deepEqual(lineup.map((clip) => clip.id), [...selection], `${id} preserves editorial order`);
+    assert.ok(lineup.every((clip) => clip.youtubeId && clip.visibility === "PUBLIC"));
+  }
+  assert.equal(CHANNELS.find((row) => row.id === "unseen").name, "PREVIEWS");
+});
+
+test("public releases are discoverable through their Index collection filters", () => {
+  for (const id of ["c-public-through-wire", "c-public-teyana", "c-public-netflix-studio", "c-20", "c-27"]) {
+    const clip = getClip(id);
+    for (const collection of clip.collectionIds) {
+      assert.ok(filterClips({ collection }).some((row) => row.id === id), `${id} remains discoverable in ${collection}`);
+    }
+  }
+});
+
+test("work and footage years never inherit later upload dates as recording dates", () => {
+  const expected = [
+    ["c-public-through-wire", 2003, "release-year", "2006-10-03"],
+    ["c-46", 2004, "release-year", "2006-10-02"],
+    ["c-47", 2005, "release-year", "2009-06-16"],
+    ["c-public-slow-jamz", 2004, "recorded-year", "2022-02-28"],
+    ["c-public-teyana", 2017, "recorded-year", "2022-03-07"],
+  ];
+  for (const [id, year, dateBasis, published] of expected) {
+    const clip = getClip(id);
+    assert.equal(clip.year, year);
+    assert.equal(clip.dateBasis, dateBasis);
+    assert.equal(clip.dateExact, undefined);
+    assert.equal(clip.publicSource.published, published);
+    assert.ok(clip.dateNote);
+  }
+  assert.equal(getProject("two-words").year, 2005);
+  assert.equal(getTrack("two-words").year, 2004);
+  assert.ok(catalog.eras.find((era) => era.id === getClip("c-47").era).endYear >= 2005, "Two Words' era includes its corrected video year");
+});
+
+test("the upload generator doesn't assign unsupported cities or universal on-screen directors", () => {
+  const unnamed = catalog.clips.filter((clip) => clip.sourceTapeId === "t-broadcast" && !clip.locationId);
+  assert.ok(unnamed.length > 250);
+  assert.ok(unnamed.some((clip) => clip.peopleIds.length === 0));
+  assert.equal(getClip("c-236").locationId, "tokyo");
+  assert.equal(getClip("c-344").locationId, "new-orleans");
 });
 
 test("public portfolio records retain exact publisher, source, role, and rights", () => {

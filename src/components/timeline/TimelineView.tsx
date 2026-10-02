@@ -29,12 +29,14 @@ const THREADS = TIMELINE_THREADS;
 const SPAN = TIMELINE_SPAN;
 const UPLOADS = new Map(youtubeUploads.map((upload) => [upload.id, upload]));
 const START_MOMENTS = [
-  { year: 1995, slug: "she-watch-channel-zero" },
-  { year: 2002, slug: "basement-october-2002" },
-  { year: 2009, slug: "curren-y-wiz-khalifa-nyc-cmj-2009-www-creativecontrol-tv" },
+  { year: 2003, slug: "through-the-wire-official-video" },
+  { year: 2004, slug: "jesus-walks-third" },
+  { year: 2010, slug: "window-seat-one-take" },
   { year: 2012, slug: "wiki-wikispeaks" },
-  { year: 2016, slug: "channel-zero-redman-erykah-badu" },
+  { year: 2017, slug: "jeen-yuhs-teyana-taylor-studio-outtake" },
+  { year: 2022, slug: "a-cut-from-the-vault" },
   { year: 2025, slug: "vision-behind-window-seat" },
+  { year: 2026, slug: "meal-ticket-official-trailer" },
 ];
 const DECADES = [
   { id: "1990s", start: 1994, end: 1999, line: "Public access. Informal rooms. Chicago." },
@@ -44,8 +46,8 @@ const DECADES = [
 ] as const;
 
 function matchesPath(path: TimelinePath, clip: ArchiveClip) {
-  if (path === "coodie") return clip.peopleIds.includes("coodie");
-  if (path === "chike") return clip.peopleIds.includes("chike");
+  if (path === "coodie") return clip.peopleIds.includes("coodie") || Boolean(clip.credits?.some((credit) => /coodie/i.test(credit.name)));
+  if (path === "chike") return clip.peopleIds.includes("chike") || Boolean(clip.credits?.some((credit) => /chike/i.test(credit.name)));
   if (path === "ye") return clip.peopleIds.includes("ye");
   if (path === "dropout") return clip.albumIds.includes("dropout") || clip.collectionIds.includes("road-dropout");
   if (path === "chicago") return getLocation(clip.locationId)?.city === "Chicago";
@@ -87,6 +89,7 @@ function spanBonds(clip?: ArchiveClip) {
 function uploadDateLabel(clip: ArchiveClip) {
   if (clip.contentState === "project-reference") return `PROJECT YEAR · ${clip.year}`;
   if (!clip.youtubeId) return `EXAMPLE DATE · ${formatDate(clip)}`;
+  if (clip.dateBasis) return `${clip.dateBasis === "release-year" ? "VIDEO YEAR" : "FOOTAGE YEAR"} · ${clip.year} · UPLOADED ${clip.publicSource?.published ?? "DATE UNCONFIRMED"}`;
   const upload = UPLOADS.get(clip.youtubeId);
   const published = clip.publicSource?.published ?? upload?.published;
   if (published) {
@@ -99,7 +102,8 @@ function uploadDateLabel(clip: ArchiveClip) {
 function yearSelection(clips: ArchiveClip[]) {
   const named = clips.filter((clip) => !isUnlogged(clip));
   const publicClips = named.filter((clip) => clip.youtubeId);
-  const pool = publicClips.length >= 6 ? publicClips : named;
+  // Never pad a real-media year with invented scenes just to fill six slots.
+  const pool = publicClips.length ? publicClips : named;
   const start = START_MOMENTS.find((moment) => pool.some((clip) => clip.slug === moment.slug));
   const ranked = [...pool].sort((a, b) =>
     Number(b.slug === start?.slug) - Number(a.slug === start?.slug) ||
@@ -180,7 +184,7 @@ export function TimelineView() {
     return map;
   }, [path]);
   const populated = SPAN.filter((value) => (byYear.get(value)?.length ?? 0) > 0);
-  const yearClips = year ? byYear.get(year) ?? [] : [];
+  const yearClips = year ? (byYear.get(year) ?? []).filter((clip) => !isUnlogged(clip)) : [];
   const datedMonths = [...new Set(yearClips.map((clip) => whenFor(clip).month).filter((value): value is number => value !== null))].sort((a, b) => a - b);
   const hasUndated = yearClips.some((clip) => whenFor(clip).undated);
   const periodClips = yearClips.filter((clip) => {
@@ -251,7 +255,7 @@ export function TimelineView() {
       ) : null}
 
       {!year && path === "all" ? (
-        <section className="timeline-starts" aria-label="Six moments to start with">
+        <section className="timeline-starts" aria-label="Public moments to start with">
           <div className="timeline-starts-head">
             <div><p className="type-label text-leader">START WITH A MOMENT</p><h2>Follow the years</h2></div>
             <p>Choose a moment to open its year and follow the connected people, places, and sources.</p>
@@ -314,7 +318,7 @@ export function TimelineView() {
               </details>
             ) : null}
           </div>
-          <p className="timeline-date-note">Upload dates are not necessarily filming dates. Sourced project references use project years; example entries use illustrative dates.</p>
+          <p className="timeline-date-note">Dates are labeled by source: publication, music-video release year, or documented footage year. Upload dates are not necessarily filming dates. Example entries use illustrative dates.</p>
           {selection.length ? (
             <div className={`timeline-record-grid${reduced ? "" : " film-advance"}`}>
               {selection.map((clip) => <TimelineRecord key={clip.id} clip={clip} returnHref={returnHref} />)}
@@ -333,7 +337,7 @@ function TimelineRecord({ clip, returnHref }: { clip: ArchiveClip; returnHref: s
     <Link href={clipHref(clip.slug, returnHref)} className="timeline-record group">
       <div className="timeline-record-frame">
         {clip.youtubeId ? <Image src={youtubeThumbnail(clip.youtubeId)} alt="" fill sizes="(max-width: 640px) 100vw, (max-width: 1000px) 50vw, 33vw" unoptimized /> : reference ? <p className="timeline-project-reference">{getProject(clip.projectIds[0])?.kind ?? "PROJECT"}<span>Media not included</span></p> : <PrototypeField clip={clip} className="absolute inset-0 h-full w-full" />}
-        <span className={`timeline-media-stamp${clip.youtubeId ? "" : " timeline-media-stamp-example"}`}>{clip.youtubeId ? "PUBLIC UPLOAD" : reference ? "PROJECT REFERENCE" : "EXAMPLE MEDIA"}</span>
+        <span className={`timeline-media-stamp${clip.youtubeId ? "" : " timeline-media-stamp-example"}`}>{clip.youtubeId ? "PUBLIC SOURCE" : reference ? "PROJECT REFERENCE" : "EXAMPLE MEDIA"}</span>
       </div>
       <p className="timeline-record-date">{uploadDateLabel(clip)}</p>
       <h2>{clipHeading(clip)}</h2>
@@ -370,7 +374,7 @@ function SpanFrame({ clip, kicker, story, era, onClick }: { clip?: ArchiveClip; 
       <div className="relative aspect-[4/3] overflow-hidden bg-ink shadow-frame">
         <div className="film-perfs" aria-hidden />
         {clip?.youtubeId ? <Image src={youtubeThumbnail(clip.youtubeId)} alt="" fill sizes="(max-width: 640px) 55vw, 240px" className="object-cover" unoptimized /> : clip?.contentState === "project-reference" ? <p className="timeline-project-reference">PROJECT<span>Media not included</span></p> : clip && !isUnlogged(clip) ? <PrototypeField clip={clip} className="absolute inset-0 h-full w-full" /> : null}
-        <span className={`timeline-media-stamp${clip?.youtubeId ? "" : " timeline-media-stamp-example"}`}>{clip?.youtubeId ? "PUBLIC UPLOAD" : clip?.contentState === "project-reference" ? "PROJECT REFERENCE" : "EXAMPLE MEDIA"}</span>
+        <span className={`timeline-media-stamp${clip?.youtubeId ? "" : " timeline-media-stamp-example"}`}>{clip?.youtubeId ? "PUBLIC SOURCE" : clip?.contentState === "project-reference" ? "PROJECT REFERENCE" : "EXAMPLE MEDIA"}</span>
       </div>
       <div className="mt-3">
         {era ? <p className="font-mono text-[12px] tracking-[0.08em] text-dust">{era}</p> : null}

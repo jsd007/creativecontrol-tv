@@ -198,6 +198,9 @@ export interface ArchiveClip {
   description: string;
   dateExact?: string;
   dateApproximate?: string;
+  /** What the browsing year represents when it differs from public upload time. */
+  dateBasis?: "release-year" | "recorded-year";
+  dateNote?: string;
   year: number;
   era: string;
   locationId: string;
@@ -224,7 +227,7 @@ export interface ArchiveClip {
     url: string;
     /** Upload/publication date, not necessarily the film's premiere. */
     published?: string;
-    kind: "trailer" | "music-video" | "project-page";
+    kind: "trailer" | "music-video" | "documentary-excerpt" | "interview" | "project-page";
   };
   contentState?: "public-source" | "project-reference" | "placeholder";
   /** Editorial browsing group; never presented as an official publisher playlist. */
